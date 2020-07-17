@@ -16,7 +16,8 @@ cd kernel/lib/owl/
 git checkout tags/release-19.06.03
 
 # build OWL
-./gradlew distZip
+JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 GRAAL_HOME=/usr/lib/jvm/java-11-graalvm GRADLE_OPTS=-Dorg.gradle.project.buildDir=./build ./gradlew distZip -Pdisable-pandoc -p. --project-cache-dir=../../build/.gradle
+#./gradlew distZip
 
 # build the C++ interface (requires a fix to allow for C++ 11)
 cd src/main/cpp/library/

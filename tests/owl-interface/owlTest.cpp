@@ -14,7 +14,7 @@ inline bool file_exists (const std::string& name) {
 std::string owlClassPath() {
     const std::string owlJarPath = std::string(OWL_JAR_LIB_NAME);
 
-    if(!file_exists)
+    if(!file_exists(owlJarPath))
 	    throw std::runtime_error("jar file not found !");
 
     std::stringstream cp;
