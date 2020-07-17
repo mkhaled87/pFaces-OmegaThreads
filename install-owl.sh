@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# install java
+sudo apt-get install -y default-jre
+sudo apt-get install -y default-jdk
+sudo apt-get install -y pandoc
+
 # delete any old installation
 rm -rf kernel/lib/owl/
 

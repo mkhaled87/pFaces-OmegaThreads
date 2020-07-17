@@ -2,11 +2,21 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <fstream>
 
 #include "owl.h"
 
+inline bool file_exists (const std::string& name) {
+	std::ifstream f(name.c_str());
+	      return f.good();
+}
+
 std::string owlClassPath() {
     const std::string owlJarPath = std::string(OWL_JAR_LIB_NAME);
+
+    if(!file_exists)
+	    throw std::runtime_error("jar file not found !");
+
     std::stringstream cp;
     cp << "-Djava.class.path=" << "\":" << owlJarPath << ":\"";
     return cp.str();
@@ -38,3 +48,4 @@ int main(){
 
     return 0;
 }
+
