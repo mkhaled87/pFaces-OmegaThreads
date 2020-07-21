@@ -10,6 +10,16 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "string_view": "cpp",
-        "ranges": "cpp"
-    }
+        "ranges": "cpp",
+        "queue": "cpp"
+    },
+    "cSpell.ignoreWords": [
+        "biconditional",
+        "buchi",
+        "join",
+        "join node type biconditional",
+        "node",
+        "strix",
+        "type"
+    ]
 }

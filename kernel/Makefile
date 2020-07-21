@@ -23,6 +23,7 @@ endif
 #
 # TODO: change the kernel source here to point to your c++ file
 #
+SUBDIRS = lib
 KERNEL_NAME = amytiss
 KERNEL_SRC  = $(KERNEL_NAME).cpp
 
@@ -40,10 +41,10 @@ kernel:
 	cp kernel.so ../kernel-pack/$(KERNEL_NAME).driver
 
 clean:
-	rm -rf ./lib
 	rm -f -r Debug
 	rm -f -r Release
 	rm -f -r x64
 	rm -f -r .vs
 	rm -f *.o
 	rm -f *.so
+	for dir in $(SUBDIRS); do $(MAKE) clean -C $$dir $@; done
