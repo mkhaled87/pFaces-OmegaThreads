@@ -10,7 +10,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     HOME_PATH=Contents/Home
 else
     echo "Installing GraalVM-20.1.0 for Ubuntu Linux ..."
-    GRAALVM_FILE=graalvm-ce-java11-darwin-amd64-20.1.0.tar.gz
+    GRAALVM_FILE=graalvm-ce-java11-linux-amd64-20.1.0.tar.gz
     PROFILE_FILE=~/.bashrc 
     INSTALL_PATH=/opt
     BIN_PATH=bin
