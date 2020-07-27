@@ -1,4 +1,4 @@
-SUBDIRS = strix-aut-cpp
+SUBDIRS = strix-ltl2dpa cudd
 
 .PHONY: all clean
 

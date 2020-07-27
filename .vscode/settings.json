@@ -11,7 +11,8 @@
         "utility": "cpp",
         "string_view": "cpp",
         "ranges": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "iostream": "cpp"
     },
     "cSpell.ignoreWords": [
         "biconditional",
