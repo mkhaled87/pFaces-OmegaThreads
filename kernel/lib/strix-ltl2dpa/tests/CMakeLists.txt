@@ -4,6 +4,11 @@ project(testProject)
 
 # compile for C++11
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_BUILD_TYPE Debug)
+
+# add boost
+find_package (Boost 1.53 REQUIRED)
+include_directories (${Boost_INCLUDE_DIRS})
 
 # Additional directories: the ltl2dpa lib
 include_directories("../include")

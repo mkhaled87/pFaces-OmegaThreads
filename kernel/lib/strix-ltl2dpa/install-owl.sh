@@ -28,7 +28,7 @@ java --version
 
 # install GraalVM Native-Image
 echo "Installing GraalVM-20.1.0 Native-Image ..."
-$INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH/gu install native-image
+sudo $INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH/gu install native-image
 
 # remove old owl
 rm -rf ./owl

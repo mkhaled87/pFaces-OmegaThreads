@@ -3,6 +3,8 @@ PROJECT_ROOT=.
 #----
 # TO DO: check the output of "uname -o" on HPUX and AIX
 #----
+CXX = g++
+GCC = gcc
 OS= $(shell uname)
 
 ifeq ($(OS),Gnu/Linux)
