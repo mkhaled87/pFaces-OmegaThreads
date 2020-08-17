@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -19,10 +21,6 @@
 #include <boost/functional/hash.hpp>
 
 #include "StrixLtl2Dpa.h"
-
-// a suitable number for reserving initial items in the vectors
-constexpr size_t RESERVE = 4096;
-
 
 struct Edge {
     strix_aut::node_id_t successor;
@@ -513,6 +511,9 @@ public:
 
 class PGame{
 
+    // a suitable number for reserving initial items in the vectors
+    static constexpr size_t RESERVE = 4096;    
+
     // a link to the DPA-tree-struct
     strix_aut::AutomatonTreeStructure& structure;
 
@@ -545,6 +546,7 @@ class PGame{
     std::vector<strix_aut::node_id_t> env_node_map;
     std::vector<bool> env_node_reachable;
     std::vector<strix_aut::product_state_t> product_states;
+    std::vector<SpecSeq<strix_aut::node_id_t>> state_labels;
 
 
     // winning things
@@ -867,6 +869,9 @@ public:
                                     states.push_back(std::move(new_state));
                                     queue_max.push(ScoredProductState(score, succ));
                                 }
+                                else {
+                                    succ = result.first->second.ref_id;
+                                }
                             }    
 
                             // now, add the edge
@@ -982,4 +987,99 @@ public:
         std::cout << "Number of sys edges  : " << n_sys_edges << std::endl;
         std::cout << "Number of colors     : " << n_colors << std::endl;
     }
+
+    strix_aut::node_id_t get_initial_node(){
+        return initial_node;
+    }
+
+    strix_aut::node_id_t get_n_env_nodes(){
+        return n_env_nodes;
+    }
+    strix_aut::node_id_t get_n_env_edges(){
+        return n_env_edges;
+    }
+    strix_aut::node_id_t get_n_sys_edges(){
+        return n_sys_edges;
+    }
+    strix_aut::node_id_t get_n_sys_nodes(){
+        return n_sys_nodes;
+    }
+
+
+    strix_aut::Player getSysWinner(strix_aut::node_id_t sys_node) const {
+        return sys_winner[sys_node];
+    }
+
+    strix_aut::Player getEnvWinner(strix_aut::node_id_t env_node) const {
+        return env_winner[env_node];
+    }
+
+    void setSysWinner(strix_aut::node_id_t sys_node, strix_aut::Player winner) {
+        sys_winner[sys_node] = winner;
+    }
+
+    inline void setEnvWinner(strix_aut::node_id_t env_node, strix_aut::Player winner) {
+        env_winner[env_node] = winner;
+    }
+
+    strix_aut::edge_id_t getSysSuccsBegin(strix_aut::node_id_t sys_node) const { 
+        return sys_succs_begin[sys_node]; 
+    }
+
+    strix_aut::edge_id_t getSysSuccsEnd(strix_aut::node_id_t sys_node) const { 
+        return sys_succs_begin[sys_node + 1]; 
+    }
+
+    Edge getSysEdge(strix_aut::edge_id_t sys_edge) const {
+        return Edge(env_node_map[sys_succs[sys_edge].successor], sys_succs[sys_edge].color);
+    }
+
+    BDD getSysOutput(strix_aut::edge_id_t sys_edge) const { 
+        return sys_output[sys_edge]; 
+    }
+
+    strix_aut::edge_id_t getEnvSuccsBegin(strix_aut::node_id_t env_node) const { 
+        return env_succs_begin[env_node]; 
+    }
+
+    strix_aut::edge_id_t getEnvSuccsEnd(strix_aut::node_id_t env_node) const { 
+        return env_succs_begin[env_node + 1]; 
+    }
+
+    strix_aut::node_id_t getEnvEdge(strix_aut::edge_id_t env_edge) const { 
+        return env_succs[env_edge]; 
+    }
+
+    BDD getEnvInput(strix_aut::edge_id_t env_edge) const {
+        return env_input[env_edge]; 
+    }
+
+    BDD anyOutput() const { 
+        return manager_output_bdds.bddOne(); 
+    }
+    
+    BDD noOutput() const { 
+        return manager_output_bdds.bddZero(); 
+    }
+    
+    BDD anyInput() const { 
+        return manager_input_bdds.bddOne(); 
+    }
+    
+    BDD noInput() const { 
+        return manager_input_bdds.bddZero(); 
+    }
+    
+    SpecSeq<strix_aut::letter_t> addUnrealizableInputMask(SpecSeq<strix_aut::letter_t> input) const {
+        return SpecSeq<strix_aut::letter_t>(input.number | true_inputs_mask, input.unspecifiedBits & ~(true_inputs_mask | false_inputs_mask));
+    }
+
+    SpecSeq<strix_aut::letter_t> addRealizableOutputMask(SpecSeq<strix_aut::letter_t> output) const {
+        return SpecSeq<strix_aut::letter_t>(output.number | true_outputs_mask, output.unspecifiedBits & ~(true_outputs_mask | false_outputs_mask));
+    }
+
+    SpecSeq<strix_aut::node_id_t> getStateLabel(strix_aut::node_id_t env_node) const {
+        return state_labels[env_node];
+    }
+
 };

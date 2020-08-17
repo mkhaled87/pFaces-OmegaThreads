@@ -23,5 +23,6 @@
         "node",
         "strix",
         "type"
-    ]
+    ],
+    "git.ignoreLimitWarning": true
 }

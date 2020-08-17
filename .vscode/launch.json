@@ -6,15 +6,11 @@
     "configurations": [
         {
             "name": "Ltl2Dpa Test",
-            "type": "cppdbg",
+            "type": "lldb",
             "request": "launch",
             "program": "/Users/mk/Workspace/GitLab/pFaces-OmegaThreads/kernel/lib/strix-ltl2dpa/tests/build/test",
             "args": [],
-            "stopAtEntry": true,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "lldb"
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
