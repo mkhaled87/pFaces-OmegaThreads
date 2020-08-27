@@ -1,4 +1,4 @@
-SUBDIRS = strix-ltl2dpa cudd
+SUBDIRS = ltl2dpa
 
 .PHONY: all clean
 

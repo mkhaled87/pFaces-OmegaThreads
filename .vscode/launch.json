@@ -8,7 +8,7 @@
             "name": "Ltl2Dpa Test",
             "type": "lldb",
             "request": "launch",
-            "program": "/Users/mk/Workspace/GitLab/pFaces-OmegaThreads/kernel/lib/strix-ltl2dpa/tests/build/test",
+            "program": "/Users/mk/Workspace/GitLab/pFaces-OmegaThreads/kernel/lib/strix-ltl2dpa/tests/symmodel_solver/build/test",
             "args": [],
             "cwd": "${workspaceFolder}"
         }
