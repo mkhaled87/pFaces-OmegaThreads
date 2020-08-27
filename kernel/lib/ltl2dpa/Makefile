@@ -13,7 +13,8 @@ endif
 
 clean:
 	rm -rf ./build/
-	rm -rf ./tests/build/
+	rm -rf ./tests/strix/build/
+	rm -rf ./tests/symmodel_solver/build/
 	rm -f -r Debug
 	rm -f -r Release
 	rm -f -r x64

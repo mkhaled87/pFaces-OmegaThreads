@@ -1,3 +1,0 @@
-/Users/mk/Workspace/GitLab/pFaces-OmegaThreads/kernel/lib/ltl2dpa/tests/symmodel_solver/build/CMakeFiles/rebuild_cache.dir
-/Users/mk/Workspace/GitLab/pFaces-OmegaThreads/kernel/lib/ltl2dpa/tests/symmodel_solver/build/CMakeFiles/edit_cache.dir
-/Users/mk/Workspace/GitLab/pFaces-OmegaThreads/kernel/lib/ltl2dpa/tests/symmodel_solver/build/CMakeFiles/test.dir
