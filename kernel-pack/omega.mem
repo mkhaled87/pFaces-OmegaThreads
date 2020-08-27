@@ -1,0 +1,16 @@
+#-----------------------------------------------------------------------
+# File: omega.mem
+# Date: 01.08.2020
+# Athr: M. Khaled
+# Desc: This file describes the memory buffers needed by the kernel.
+#-----------------------------------------------------------------------
+
+# function 0: exampleKernelFunction
+exampleKernelFunction{ 
+
+	# argument 0.0: data_in
+	data_in{
+        MemConfig               = "pfaces_rw_global";
+		isNewOrResident			= "true"; 
+	}
+}

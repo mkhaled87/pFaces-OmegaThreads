@@ -1,0 +1,10 @@
+#-----------------------------------------------------------------------
+# File: config.template
+# Date: 01.08.2020
+# Athr: M. Khaled
+# Desc: This file describes the template of any later config file to be loaded to the kernel.
+#-----------------------------------------------------------------------
+
+# a name to be given to any project (i.e., a configuration)
+# this can be used lated to save output files
+project_name = string

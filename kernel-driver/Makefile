@@ -25,10 +25,23 @@ endif
 #
 SUBDIRS = lib
 KERNEL_NAME = omega
-KERNEL_SRC  = $(KERNEL_NAME).cpp
+KERNEL_SRCs  = $(KERNEL_NAME).cpp
 
 
-.PHONY: clean all
+.PHONY: all
+	
+all: kernel_driver
+
+kernel_driver: libs
+	for src in $(KERNEL_SRCs); do \
+		$(CC) -c -o $${src}.o -fPIC $(CXXFLAGS) $(PFACES_SDK_INC) $${src}; \
+	done
+	$(CC) -shared -o combined_kernel.so $(PFACES_SDK_LNK) $(EXTRA_LNK) *.o
+	cp combined_kernel.so ../kernel-pack/$(KERNEL_NAME).driver
+	rm combined_kernel.so
+
+libs:
+	cd lib; make; cd ..;
 
 clean:
 	rm -f -r Debug
@@ -38,15 +51,3 @@ clean:
 	rm -f *.o
 	rm -f *.so
 	for dir in $(SUBDIRS); do $(MAKE) clean -C $$dir $@; done
-	
-all: kernel_driver
-
-kernel_driver: libs
-	$(CC) -c -o amytissPDFs.o -fPIC $(CXXFLAGS) $(PFACES_SDK_INC) amytissPDFs.cpp
-	$(CC) -c -o kernel.o -fPIC $(CXXFLAGS) $(PFACES_SDK_INC) $(KERNEL_SRC)
-	$(CC) -shared -o kernel.so $(PFACES_SDK_LNK) $(EXTRA_LNK) kernel.o amytissPDFs.o
-	cp kernel.so ../kernel-pack/$(KERNEL_NAME).driver
-
-libs:
-	cd lib; make; cd ..;
-

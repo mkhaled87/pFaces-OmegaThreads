@@ -1,4 +1,4 @@
-SUBDIRS = kernel
+SUBDIRS = kernel-driver
 
 .PHONY: all clean push pull
 

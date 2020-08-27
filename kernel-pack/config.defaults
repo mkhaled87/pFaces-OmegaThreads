@@ -1,0 +1,10 @@
+#-----------------------------------------------------------------------
+# File: config.defaults
+# Date: 01.08.2020
+# Athr: M. Khaled
+# Desc: This file describes the defaults of any config file that
+# will be loaded later to the kernel.
+#-----------------------------------------------------------------------
+
+project_name = "unnamed";
+

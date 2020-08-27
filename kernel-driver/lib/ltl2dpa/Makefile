@@ -1,8 +1,12 @@
 .PHONY: all owl clean
 
 all: owl
-	rm -rf build
+ifneq ($(wildcard ./build/.*),)
+	$(info ltl2dpa is found and we assume it is installed.)
+else
+	$(info Building ltl2dpa ...)
 	mkdir build; cd build; cmake ..; make
+endif
 
 owl:
 ifneq ($(wildcard ./owl/.*),)
