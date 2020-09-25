@@ -53,7 +53,6 @@ namespace pFacesOmegaKernels {
 		// get the initial state
 		auto x_conc_initial = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.states.initial_state"));
 		x_initial = OmegaUtils::Conc2Flat(x_conc_initial, x_qs, x_lb, x_widths);
-		std::cout << std::endl << std::endl <<  "x_initial = " << x_initial << std::endl << std::endl;
 
 		// fill the func info
     	func_info_construct_symmodel = 

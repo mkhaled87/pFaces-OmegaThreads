@@ -99,7 +99,7 @@ class Omega2dSimulator(arcade.Window):
         self.sys_state = x_0
         self.last_action = [0.0]*len(x_lb)
         self.system = arcade.Sprite("vehicle.png", 0.035)
-        self.controller = Controller("vehicle_2targets.mdf")
+        self.controller = Controller("vehicle.mdf")
 
     def get_current_symbol(self):
         return qnt_x.conc_to_flat(self.sys_state)
@@ -124,8 +124,8 @@ class Omega2dSimulator(arcade.Window):
             sym_state = self.get_current_symbol()
             print("controller got: " + str(sym_state) + " = " + str_list(self.sys_state))
             actions_list = self.controller.get_control_actions(sym_state)
-            print("controller sent: " + str(actions_list[1]))
-            self.last_action = qnt_u.flat_to_conc(actions_list[1])
+            print("controller sent: " + str(actions_list[0]))
+            self.last_action = qnt_u.flat_to_conc(actions_list[0])
             print("u_to_apply: " + str_list(self.last_action))
             #self.last_action = [1.0, 0.0]
             self.sub_steps = 0

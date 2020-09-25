@@ -281,21 +281,33 @@ void PGame<T, L1, L2>::constructArena(){
         std::vector<symbolic_t> possible_env_sym_states = {states[ref_id].second.value};
         for (symbolic_t sym_state : possible_env_sym_states){
 
+            // the state of the sym model
+            SymState current_sym_state = sym_model.construct_state(sym_state);
+            
             // new sys node with successors
             strix_aut::node_id_t sys_node = n_sys_nodes + cur_n_sys_nodes;
             std::map<GameEdge, std::vector<symbolic_t>> sys_successors;
             strix_aut::edge_id_t cur_sys_node_n_sys_edges = 0;
 
-            // the state of the sym model
-            
-            SymState input_sym_state = sym_model.construct_state(sym_state);
-
-
             // for all outputs : the controls
             for (symbolic_t sym_control = 0; sym_control < sym_model.get_n_controls(); sym_control++){
 
+                std::vector<SymState> new_sym_states = sym_model.get_posts(current_sym_state, sym_control);
+
+                // a check to see if any post is BUTTOM or OVERFLOW
+                bool one_post_is_BUTTOM_or_OVERFLOW = false;
+                for(auto new_sym_state : new_sym_states){
+                    strix_aut::letter_t letter = sym_spec.get_complete_clause(new_sym_state, sym_control);
+                    strix_aut::product_state_t new_dpa_state(product_state_size);
+                    const strix_aut::ColorScore cs = sym_spec.dpa.getSuccessor(states[ref_id].first, new_dpa_state, letter);
+                    
+                    if (sym_spec.dpa.isBottomState(new_dpa_state) || new_sym_state.type == SymState::SYM_STATE_TYPE::OVERFLOW_STATE)
+                        one_post_is_BUTTOM_or_OVERFLOW = true;
+                }
+                if(one_post_is_BUTTOM_or_OVERFLOW)
+                    continue;
+
                 // for all post states of the sym model
-                std::vector<SymState> new_sym_states = sym_model.get_posts(input_sym_state, sym_control);
                 for(auto new_sym_state : new_sym_states){
                     
                     // compute joint letter for automata lookup
@@ -313,45 +325,39 @@ void PGame<T, L1, L2>::constructArena(){
                     // score
                     double score = -(double)(env_node_map.size());
 
+                    // score
+                    strix_aut::node_id_t succ = env_node_map.size();
 
-                    // if not a buttom
-                    if (!sym_spec.dpa.isBottomState(new_dpa_state)) {
+                    // is it top ?
+                    if (sym_spec.dpa.isTopState(new_dpa_state)) {
+                        succ = top_node_ref;
+                    }
+                    // now: it is not top or buttom
+                    else {
+                        auto result = state_map.insert({ std::pair<strix_aut::product_state_t,SymState>(new_dpa_state,new_sym_state), ScoredProductState(score, succ) });
 
+                        // is it new there ? (we use the result from the insert on the unordered_map state_map)
+                        if (result.second){
+                            env_node_map.push_back(strix_aut::NODE_NONE);
+                            env_node_reachable.push_back(true);
 
-                        // score
-                        strix_aut::node_id_t succ = env_node_map.size();
+                            std::pair<strix_aut::product_state_t,SymState> new_node_state(std::move(new_dpa_state), new_sym_state);
+                            states.push_back(new_node_state);
 
-                        // is it top ?
-                        if (sym_spec.dpa.isTopState(new_dpa_state)) {
-                            succ = top_node_ref;
+                            queue_new_states.push(ScoredProductState(score, succ));
                         }
-                        // now: it is not top or buttom
                         else {
-                            auto result = state_map.insert({ std::pair<strix_aut::product_state_t,SymState>(new_dpa_state,new_sym_state), ScoredProductState(score, succ) });
+                            succ = result.first->second.ref_id;
+                        }
+                    }    
 
-                            // is it new there ? (we use the result from the insert on the unordered_map state_map)
-                            if (result.second){
-                                env_node_map.push_back(strix_aut::NODE_NONE);
-                                env_node_reachable.push_back(true);
-
-                                std::pair<strix_aut::product_state_t,SymState> new_node_state(std::move(new_dpa_state), new_sym_state);
-                                states.push_back(new_node_state);
-
-                                queue_new_states.push(ScoredProductState(score, succ));
-                            }
-                            else {
-                                succ = result.first->second.ref_id;
-                            }
-                        }    
-
-                        // now, add the edge if not loosing
-                        const strix_aut::node_id_t succ_node = env_node_map[succ];
-                        if (succ_node != strix_aut::NODE_BOTTOM) {
-                            GameEdge edge(succ, color);
-                            auto const result = sys_successors.insert({ edge, {sym_control} });
-                            if (!result.second) {
-                                result.first->second.push_back(sym_control);
-                            }
+                    // now, add the edge if not loosing
+                    const strix_aut::node_id_t succ_node = env_node_map[succ];
+                    if (succ_node != strix_aut::NODE_BOTTOM) {
+                        GameEdge edge(succ, color);
+                        auto const result = sys_successors.insert({ edge, {sym_control} });
+                        if (!result.second) {
+                            result.first->second.push_back(sym_control);
                         }
                     }
                 }

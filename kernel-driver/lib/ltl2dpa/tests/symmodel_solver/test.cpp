@@ -169,6 +169,7 @@ int main(){
             bool found = false;
             symbolic_t cnt_out;
             state_id_t cnt_next_state;
+            std::cout << "current controller state has " << cnt_state_trans[cnt_state].size() << " transitins." << std::endl;
             for(auto one_trans : cnt_state_trans[cnt_state]){
                 if(one_trans.input == mdl_state.value){
                     found = true;
