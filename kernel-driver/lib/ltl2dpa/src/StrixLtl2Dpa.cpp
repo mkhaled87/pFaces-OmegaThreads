@@ -1,4 +1,4 @@
-#include "StrixLtl2Dpa.h"
+#include "Ltl2Dpa.h"
 
 namespace strix_ltl2dpa{
 

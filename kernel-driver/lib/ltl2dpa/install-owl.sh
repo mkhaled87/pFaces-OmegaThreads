@@ -22,6 +22,7 @@ tar -zxvf $GRAALVM_FILE
 rm $GRAALVM_FILE
 sudo mv graalvm-ce-java11-20.1.0 $INSTALL_PATH/
 rm -rf graalvm-ce-java11-20.1.0
+echo "#GraalVM installed by (install-owl.sh)" >> $PROFILE_FILE
 echo "PATH=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH:\$PATH" >> $PROFILE_FILE
 echo "JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH" >> $PROFILE_FILE
 java --version

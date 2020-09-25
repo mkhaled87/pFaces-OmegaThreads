@@ -19,7 +19,7 @@
 // we may replace it with another simpler function or extract their
 // hash range
 #include <boost/functional/hash.hpp>
-#include "StrixLtl2Dpa.h"
+#include "Ltl2Dpa.h"
 
 struct Edge {
     strix_aut::node_id_t successor;
@@ -295,7 +295,7 @@ public:
         const strix_aut::node_id_t top_node_ref = env_node_map.size();
         env_node_map.push_back(strix_aut::NODE_TOP);
         env_node_reachable.push_back(true);
-        std::pair<strix_aut::product_state_t,SymState> top_node_state({}, SymState(SYM_STATE_TYPE::DUMMY));
+        std::pair<strix_aut::product_state_t,SymState> top_node_state({}, SymState(SYM_STATE_TYPE::DUMMY, symControlProblem.get_n_states()));
         states.push_back(top_node_state);
 
         // add the initial state
@@ -457,6 +457,9 @@ public:
             n_sys_edges += cur_env_node_n_sys_edges;
             n_sys_nodes += cur_n_sys_nodes;
             n_env_nodes++;
+
+            print_info();
+            std::cout << "------------------------------\n";
         }
 
         // some tests

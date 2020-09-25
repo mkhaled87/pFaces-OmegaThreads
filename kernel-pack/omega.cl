@@ -1,16 +1,35 @@
 /*
 * omega.cl
 *
-*  date    : 01.08.2020
+*  date    : 19.08.2020
 *  author  : M. Khaled
 */
 
-#define CFG_MSG @pfaces-configValueString:"project_name"
-#define PARAM_MSG @@param_message@@
+/* some defines needed later */
+#define concrete_t @@concrete_t_name@@
+#define symbolic_t @@symbolic_t_name@@
+#define FLAT_TYPE symbolic_t
+#define FLAT_TYPE_SIZE 1
+#define flat_t FLAT_TYPE
 
+// load some values from the config file
+#define ssDim @pfaces-configValue:"system.states.dimension"
+#define ssQnt @pfaces-configValue:"system.states.quantizers"
+#define ssLb @pfaces-configValue:"system.states.lower_bound"
+#define ssUb @pfaces-configValue:"system.states.upper_bound"
+#define isDim @pfaces-configValue:"system.controls.dimension"
+#define isQnt @pfaces-configValue:"system.controls.quantizers"
+#define isLb @pfaces-configValue:"system.controls.lower_bound"
+#define isUb @pfaces-configValue:"system.controls.upper_bound"
 
-kernel void exampleKernelFunction(global char* data_in){
-    printf("Hello World from the device side!\n");
-    printf("The value of the config item (config_message) is: %s\n", CFG_MSG);
-    printf("The value of the kernel param (param_message) is: %s\n", PARAM_MSG);
-}
+/* pfaces things */
+#include "pfaces.cl"
+
+/* utility functions */
+@pfaces-include:"omega_utils.cl"
+
+/* kernel functions for identifying the artomic propositions */
+@pfaces-include:"omega_aps.cl"
+
+/* a kernel function for constructing the symbolic model */
+@pfaces-include:"omega_symmodel.cl"

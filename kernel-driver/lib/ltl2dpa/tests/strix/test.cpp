@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "StrixLtl2Dpa.h"
+#include "Ltl2Dpa.h"
 #include "pgame.h"
 #include "pgsolver.h"
 #include "machine.h"

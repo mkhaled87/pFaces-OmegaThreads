@@ -1,0 +1,3 @@
+/Users/mk/Workspace/GitLab/pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa/tests/dpa_explorer/build/CMakeFiles/rebuild_cache.dir
+/Users/mk/Workspace/GitLab/pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa/tests/dpa_explorer/build/CMakeFiles/edit_cache.dir
+/Users/mk/Workspace/GitLab/pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa/tests/dpa_explorer/build/CMakeFiles/test.dir

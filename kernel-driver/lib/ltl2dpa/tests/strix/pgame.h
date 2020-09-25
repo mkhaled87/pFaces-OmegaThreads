@@ -20,7 +20,7 @@
 // hash range
 #include <boost/functional/hash.hpp>
 
-#include "StrixLtl2Dpa.h"
+#include "Ltl2Dpa.h"
 
 struct Edge {
     strix_aut::node_id_t successor;

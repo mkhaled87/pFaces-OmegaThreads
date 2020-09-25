@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "SymLtlSpec.h"
-#include "StrixLtl2Dpa.h"
+#include "Ltl2Dpa.h"
 #include "pgame.h"
 #include "pgsolver.h"
 #include "machine.h"
@@ -15,7 +15,7 @@ void PrintStringVector(std::vector<std::string> vec){
 
 int main(){
 
-    size_t verbosity = 5;
+    size_t verbosity = 6;
 
     // the symbolic details
     const size_t n_states = 17;
@@ -58,9 +58,9 @@ int main(){
     };
 
     // the symbolic control problem
-    SymControlProblem<decltype(model_posts)> symControlProblem(n_states, n_controls, x_initial, model_posts, "F(t)&G(!(a))");
+    SymControlProblem<decltype(model_posts)> symControlProblem(n_states, n_controls, x_initial, model_posts, "FG(t)&G(!(a))");
     symControlProblem.add_AP(AP_TYPE::STATE_AP, "t", {7,3});
-    symControlProblem.add_AP(AP_TYPE::STATE_AP, "a", {x_overflow,1,5,9,2});
+    symControlProblem.add_AP(AP_TYPE::STATE_AP, "a", {1,5,9,2});
 
     std::vector<std::string> inVars = symControlProblem.get_in_vars();
     std::vector<std::string> outVars = symControlProblem.get_out_vars();
@@ -116,6 +116,7 @@ int main(){
     game.constructArena(symControlProblem, verbosity);
     game.print_info();
 
+    //return 0;
 
     std::cout << "Solving the parity game ... " << std::endl << std::flush;
     PGSISolver solver = PGSISolver(game);

@@ -6,7 +6,7 @@
 #include <map>
 
 #include <pfaces-sdk.h>
-#include <StrixLtl2Dpa.h>
+#include <Ltl2Dpa.h>
 
 inline bool is_valid_sym_state(size_t n_sym_states, symbolic_t state){
     return (state < n_sym_states);
@@ -83,6 +83,8 @@ class SymLtlSpec {
     const std::string AP_ALL_STATES = std::string("s");
     const std::string AP_ALL_CONTROLS = std::string("c");  
     const size_t max_possible_APs = std::numeric_limits<strix_aut::letter_t>::digits;
+    const size_t max_possible_state_APs = max_possible_APs/2;
+    const size_t max_possible_control_APs = max_possible_APs/2;
 
     size_t n_sym_states;
     size_t n_sym_controls;
@@ -139,7 +141,10 @@ public:
     void add_state_AP(const std::string state_AP, const std::vector<symbolic_t>& sym_states){
 
         if(count_all_APs() == max_possible_APs)
-            throw std::runtime_error("SymLtlSpec::add_state_AP: Maximum number of possible APs reached !");
+            throw std::runtime_error("SymLtlSpec::add_state_AP: Maximum number of possible APs (states + controls) reached !");
+
+        if(count_state_APs() == max_possible_state_APs)
+            throw std::runtime_error("SymLtlSpec::add_state_AP: Maximum number of possible state APs reached !");
 
         if(pfacesUtils::isVectorElement(state_APs, state_AP))
             throw std::runtime_error("SymLtlSpec::add_state_AP: The provided state AP is already added.");
@@ -160,7 +165,10 @@ public:
     void add_control_AP(const std::string control_AP, const std::vector<symbolic_t>& sym_controls){
 
         if(count_all_APs() == max_possible_APs)
-            throw std::runtime_error("SymLtlSpec::add_control_AP: Maximum number of possible APs reached !");
+            throw std::runtime_error("SymLtlSpec::add_control_AP: Maximum number of possible APs (states + controls) reached !");
+
+        if(count_control_APs() == max_possible_control_APs)
+            throw std::runtime_error("SymLtlSpec::add_control_AP: Maximum number of possible contorl APs reached !");
 
         if(pfacesUtils::isVectorElement(control_APs, control_AP))
             throw std::runtime_error("SymLtlSpec::add_control_AP: The provided control AP is already added.");

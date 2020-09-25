@@ -3,12 +3,12 @@
 # compiler
 #
 CC        		= g++
-CXXFLAGS 		= -Wall -Wextra -std=c++11 -O3 -DNDEBUG -Wno-deprecated -Wno-ignored-attributes
+CXXFLAGS 		= -g -Wall -Wextra -std=c++11 -DNDEBUG -Wno-deprecated -Wno-ignored-attributes
 
 #
 # pfaces-sdk
 # 
-PFACES_SDK_INC = -I$(PFACES_SDK_ROOT)/include
+PFACES_SDK_INC = -I$(PFACES_SDK_ROOT)/include -I$(PFACES_SDK_ROOT)/include/cudd
 EXTRA_LNK=-L/usr/local/opt/openssl/lib -lcpprest -lssl -lcrypto -lboost_system -ldl -lpthread
 
 OS := $(shell uname)
@@ -25,20 +25,22 @@ endif
 #
 SUBDIRS = lib
 KERNEL_NAME = omega
-KERNEL_SRCs  = $(KERNEL_NAME).cpp
+KERNEL_OBJs  = func_implement.o func_solve_pgame.o func_construct_pgame.o func_construct_symmodel.o func_discover_u_aps.o func_discover_x_aps.o omegaImplementation.o omegaParityGames.o omegaControlProblem.o omegaDpa.o omegaUtils.o omega.o
+KERNEL_INCs = -Ilib/ltl2dpa/include -Ilib/ltl2dpa/owl/build/native-library -Ilib/ltl2dpa/owl/src/main/headers
+KERNEL_LNKs = -Llib/ltl2dpa/build -lltl2dpa -Llib/ltl2dpa/owl/build/native-library -lowl
 
 
 .PHONY: all
 	
 all: kernel_driver
 
-kernel_driver: libs
-	for src in $(KERNEL_SRCs); do \
-		$(CC) -c -o $${src}.o -fPIC $(CXXFLAGS) $(PFACES_SDK_INC) $${src}; \
-	done
-	$(CC) -shared -o combined_kernel.so $(PFACES_SDK_LNK) $(EXTRA_LNK) *.o
+kernel_driver: libs $(KERNEL_OBJs)
+	$(CC) -shared -o combined_kernel.so $(PFACES_SDK_LNK) $(EXTRA_LNK) $(KERNEL_LNKs) $(KERNEL_OBJs)
 	cp combined_kernel.so ../kernel-pack/$(KERNEL_NAME).driver
 	rm combined_kernel.so
+
+%.o: %.cpp
+	$(CC) -c -fPIC $(CXXFLAGS) $(PFACES_SDK_INC) $(KERNEL_INCs) $< -o $@
 
 libs:
 	cd lib; make; cd ..;

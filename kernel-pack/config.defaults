@@ -6,5 +6,28 @@
 # will be loaded later to the kernel.
 #-----------------------------------------------------------------------
 
+# a default name
 project_name = "unnamed";
 
+# system defaults
+system.states.dimension = "0";
+system.states.lower_bound = "";
+system.states.upper_bound = "";
+system.states.quantizers = "";
+system.states.initial_state = "";
+system.states.subsets.names = "";
+
+system.controls.dimension = "0";
+system.controls.lower_bound = "";
+system.controls.upper_bound = "";
+system.controls.quantizers = "";
+system.controls.subsets.names = "";
+
+system.dynamics.code_file = "";
+
+# specification defaults
+specifications.ltl_formula = "";
+
+# implementation defaults
+implementation.type = "mealy_machine";
+implementation.generate_controller = "false";

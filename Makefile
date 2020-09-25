@@ -7,7 +7,7 @@ all: check-pfaces-sdk
 
 clean:
 	rm -f ./kernel-pack/*.log
-	rm -f ./kernel-pack/*.render
+	rm -f ./kernel-pack/*.render*
 	rm -f ./kernel-pack/*.driver
 	rm -f ./kernel-pack/*.dll
 	rm -f ./kernel-pack/*.so
@@ -17,7 +17,7 @@ clean:
 	rm -f ./kernel-pack/*.pdb
 	rm -f ./kernel-pack/*.ipdb
 	rm -f ./kernel-pack/*.iobj
-	find . -name "*.raw" -type f -delete
+	find . -name "*.mdf" -type f -delete
 	for dir in $(SUBDIRS); do $(MAKE) clean -C $$dir $@; done
 
 check-pfaces-sdk:

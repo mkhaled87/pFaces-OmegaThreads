@@ -1,5 +1,14 @@
 #pragma once
 
+/*
+* Ltl2Dpa.h
+*
+*  date    : 10.08.2020
+*  author  : M. Khaled
+*  details : A library to construct DPAs from LTL formula using the library OWL.
+* 
+*/
+
 #include "StrixLTLParser.h"
 #include "StrixAutomaton.h"
 
