@@ -294,30 +294,29 @@ void PGame<T, L1, L2>::constructArena(){
             // for all outputs : the controls
             for (symbolic_t sym_control = 0; sym_control < sym_model.get_n_controls(); sym_control++){
 
-                // compute joint letter for automata lookup
-                strix_aut::letter_t letter = sym_spec.get_complete_clause(input_sym_state, sym_control);
+                // for all post states of the sym model
+                std::vector<SymState> new_sym_states = sym_model.get_posts(input_sym_state, sym_control);
+                for(auto new_sym_state : new_sym_states){
+                    
+                    // compute joint letter for automata lookup
+                    strix_aut::letter_t letter = sym_spec.get_complete_clause(new_sym_state, sym_control);
 
-                // a var for the new state (yes it is only one as this is a *D*PA )
-                strix_aut::product_state_t new_dpa_state(product_state_size);
+                    // a var for the new state (yes it is only one as this is a *D*PA )
+                    strix_aut::product_state_t new_dpa_state(product_state_size);
 
-                // get the next state (store in new_dpa_state)
-                const strix_aut::ColorScore cs = sym_spec.dpa.getSuccessor(states[ref_id].first, new_dpa_state, letter);         
+                    // get the next state (store in new_dpa_state)
+                    const strix_aut::ColorScore cs = sym_spec.dpa.getSuccessor(states[ref_id].first, new_dpa_state, letter);         
 
-                // get the color of this transition
-                const strix_aut::color_t color = cs.color;                               
+                    // get the color of this transition
+                    const strix_aut::color_t color = cs.color;                               
 
-                // score
-                double score = -(double)(env_node_map.size());
+                    // score
+                    double score = -(double)(env_node_map.size());
 
 
-                // if not a buttom
-                if (!sym_spec.dpa.isBottomState(new_dpa_state)) {
+                    // if not a buttom
+                    if (!sym_spec.dpa.isBottomState(new_dpa_state)) {
 
-                    // the new states of the sym model
-                    std::vector<SymState> new_sym_states = sym_model.get_posts(input_sym_state, sym_control);
-
-                    // for all post states of the sym model
-                    for(auto new_sym_state : new_sym_states){
 
                         // score
                         strix_aut::node_id_t succ = env_node_map.size();
