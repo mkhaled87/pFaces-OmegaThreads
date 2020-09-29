@@ -6,7 +6,9 @@ Design requirements are usually given in a formal language (e.g., [linear tempor
 
 **OmegaThreads** is a tool for parallel automated controller synthesis for dynamical systems to satisfy [ω-regular](https://en.wikipedia.org/wiki/Omega-regular_language) specifications given as LTL formulae.
 
-![An autonomous vehicle visiting infinitly-often two targets while avoiding an obstacle](media/LTL_vehicle.gif)
+<p align="center"> 
+    <img src="media/LTL_vehicle.gif" alt="An autonomous vehicle visiting infinitly-often two targets while avoiding an obstacle" target="_blank"/>
+</p>
 
 In a brief, **OmegaThreads** uses [OWL library](https://owl.model.in.tum.de) to construct an [ω-Automaton](https://en.wikipedia.org/wiki/Ω-automaton) with a parity acceptance condition representing the input LTL specifications.
 The given model (e.g., a system of differential equations) of the dynamical system is used to construct a [symbolic model](https://www.hyconsys.com/research.html) that abstracts the model.
@@ -154,7 +156,9 @@ $ python3 simulate.py
 
 This should start the 2d simulator and simulate the closed loop as follows:
 
-![A robot reaching-and-staying in a target while avoiding some obstacles](media/LTL_robot.gif)
+<p align="center"> 
+    <img src="media/LTL_robot.gif" alt="A robot reaching-and-staying in a target while avoiding some obstacles" target="_blank"/>
+</p>
 
 ## **Designing your own example**
 
