@@ -10,7 +10,7 @@ Design requirements are usually given in a formal language (e.g., [linear tempor
     <img src="media/LTL_vehicle.gif" alt="An autonomous vehicle visiting infinitly-often two targets while avoiding an obstacle" target="_blank"/>
 </p>
 
-In a brief, **OmegaThreads** uses [OWL library](https://owl.model.in.tum.de) to construct an [ω-Automaton](https://en.wikipedia.org/wiki/Ω-automaton) with a parity acceptance condition representing the input LTL specifications.
+In a brief, **OmegaThreads** uses [OWL library](https://owl.model.in.tum.de) to construct a deterministic [ω-Automaton](https://en.wikipedia.org/wiki/Ω-automaton) with a parity acceptance condition representing the input LTL specifications.
 The given model (e.g., a system of differential equations) of the dynamical system is used to construct a [symbolic model](https://www.hyconsys.com/research.html) that abstracts the model.
 **OmegaThreads** then builds a [parity game](https://en.wikipedia.org/wiki/Parity_game) (the model is a player and the controller is a player) using the symbolic model and the specification's Automaton.
 Finally, **OmegaThreads** solving the game playing at the controller side using a strategy iteration method.
@@ -160,110 +160,59 @@ This should start the 2d simulator and simulate the closed loop as follows:
     <img src="media/LTL_robot.gif" alt="A robot reaching-and-staying in a target while avoiding some obstacles" target="_blank"/>
 </p>
 
-## **Designing your own example**
+## **The configuration files**
 
-We recommend copying and modifying one of the provided examples to avoid syntactical mistakes. Examples are simply configuration files that asks OmegaThreads to achieve specific tasks. The next subsection will guide you understand the fields in OmegaThreads config files.
-
-### **The configuration files**
-
-Each configuration file corresponds to a case describing a stochastic system and the requirements to be used to synthesize a controller for it. Config files are plain-text files with scopes and contents (e.g., "scope_name { contents }"), where the contents is a list of ;-separated key="value" pairs. Note that values need to be enclosed with double quotes. For a better understanding of such syntax, take a quick look to this [example config file](/examples/ex_toy_safety/toy2d.cfg). 
+Each configuration file corresponds to a case describing a system and the requirements to be used to synthesize a controller for it. Config files are plain-text files with scopes and contents (e.g., "scope_name { contents }"), where the contents is a list of ;-separated key="value" pairs. Note that values need to be enclosed with double quotes. For a better understanding of such syntax, take a quick look to this [example config file](/examples/robot2d/robot.cfg).
 
 The following are all the keys that can be used in OmegaThreads config files:
 
-
 - **project_name**: a to describe the name of the project (the case) and will be used as name for output files. If not provided, this key will be set to *"empty_project"*.
 
-- **data**: describes the used data model and should be currently set to "raw". If not provided, this key will be set to *"empty_project"*.
+- **system.states.dimension**: declares the dimension (N) of the dynamical system.
 
-- **include_files**: This field is optional. It describes the a list of any additional OpenCL code files the users wish to include into the computation process. This allows users to, for example, include custom PDF functions or custom dynamics of the systems. This is what makes OmegaThreads extensible to the finest grain level.
+- **system.states.first_symbol**: declares a vector of size N describing the fist symbol in the states set of the symbolic model.
 
-- **save_transitions**: a "true" or "false" value that instructs OmegaThreads to construct and save the MDP (a.k.a., the Probabilities matrix) or ignore it and do the computation on the fly (OTF). When not provided, the default value is *"false"*.
+- **system.states.last_symbol**: declares a vector of size N describing the last symbol in the states set of symbolic model.
 
-- **save_controller**: a "true" or "false" value that instructs OmegaThreads to save the controller or not. When not provided, the default value is *"true"*.
+- **system.states.quantizers**: declares a vector of size N describing the space between each two symbols in the state set of the symbolic model.
 
-- For the scopes **states** (required), **inputs** (required), or **disturbances** (optional), the following keys must be provided:
-    - **dim**: an integer declaring the dimension.
-    - **lb**: a comma-separated list giving the top-right corner vector.
-    - **ub**: a comma-separated list giving the bottom-left corner vector.
+- **system.states.initial_state**: declares a the initial state of the system.
 
-- The scope **post_dynamics** is required and it describes the system. The following keys are used inside this scope:
-    - **xx0** to **xx21** (required): the left-hand-side of each component of the difference equation of the system.
-    - **constant_values** (optional): a single line OpenCL codes declaring constant values. The code line, or any internal lines, should end with ;.
-    - **code_before** (optional) and **code_after** (optional): two lines of OpenCL codes that will preceed or succeed the dynamics **xx0** to **xx21**.
+- **system.states.subsets.names**: declares a comma separated list of names for atomic propositions on the states set. A set with name (**ABC**) should be followed with a mapping declaration in **system.states.subsets.mapping_ABC** describing which state sets map to the atomic proposition **ABC**.
 
-- The scope **noise** is required and it describes the noise. The following keys are used inside this scope:
-    - **type**: this describes whether the noise is *"additive"* or *"multiplicative"*. When not specified, the default value is *"additive"*.
-    - **pdf_truncation**: this describes how OmegaThreads can truncate the probability density function (PDF) in order to save the memory. This can be one of the following: *"no_truncation"* (the probabilities will be recorded for all state variables below the PDF surface), *"fixed_truncation"* (the probabilities will be recorded for a fixed region of the state space around the origin and will be shifted as the PDF is shifted), or *"cutting_probability"* (the probabilities will be recorded only when they are above this value). When not specified or when the **type** is set to *"multiplicative"*, this key will be set to *"no_truncation"*.
-    - **cutting_probability**: this must be provided when **pdf_truncation** is set to *"cutting_probability"*. It is a value for the truncation of the PDF at specific probability level. Setting it to "0" is equivalent to setting **pdf_truncation** to *"no_truncation"*.
-    - **cutting_region**: this must be provided when **pdf_truncation** is set to *"fixed_truncation"*. It is a comma-separated list of lower/upper values for each component of the states.dim components. This sets explicitly the origin-centered truncation region of the PDF. 
+- **system.controls.dimension**: declares the dimension (P) of the controls of the dynamical system.
 
-    - **pdf_class**: this describes the class of the PDF. This can be any of the following values: *"normal_distribution"*, *"uniform_distribution"*, *"exponential_distribution"*, or *"custom"*. Each of the previous values may require additional configurations that we describe separately:
-    - For **pdf_class**=*"normal_distribution"*, the following keys are required:
-        - **inv_covariance_matrix**: the inverse of the covariance matrix $\Sigma$ as list of values. You can provide states.dim^2 values which refers to the complete matrix or provide states.dim values which refers to the diagonal of a diagonal covariance matrix.
-        - **det_covariance_matrix**: the determinant of the covariance matrix. This must be consistent with the covariance matrix and follows (det_covariance_matrix = det(inv(inv_covariance_matrix))). We were lazy to compute this and we ask the users to provide. Sorry !
-    - For **pdf_class**=*"uniform_distribution"*, the following keys are required:
-        - **active_region**: this is the non-zero region under the surface of the uniformly distributed PDF. It is a comma-separated list of lower/upper values for each component of the states.dim components. The amplitude of the PDF is computed automatically to be 1/volume(active_region).
-    - For **pdf_class**=*"exponential_distribution"*, the following keys are required:
-        - **decay_rate**: this is a scalar value representing the decay rate of the exponential distribution.
-    - For **pdf_class**=*"beta_distribution"*, the following keys are required:
-        - **alpha**: a scalar value for parameter alpha.
-        - **beta**: a scalar value for parameter beta.
+- **system.controls.first_symbol**: declares a vector of size P describing the fist symbol in the controls set of the symbolic model.
 
-- The scope **specs** is required and it describes the specifications to be applied to the system when synthesizing the controller. The following keys are used inside this scope:
-    - **type** (required): the targeted specifications and can have one of the following values:
-        - "safe" for safety specifications, that is finding a controller to keep the system in its state space.
-        - "reach" for reachability (or reach-avoid) specifications, that is finding a controller to reach some target set of states. There is a also a possibility of providing some set of avoid states.
-    - **hyperrect** (required): a comma-separated list of lower/upper values for each component of the states.dim components describing the safe region or the target region, for safety or reachability specifications, respectively.
-    - **avoid_hyperrect**: in case type="reach", this comma-separated list of lower/upper values for each component of the states.dim components describes an avoid set.
-    - **time_steps**: (required): the time bound $T_d$ to satisfy the specifications.
+- **system.controls.last_symbol**: declares a vector of size P describing the last symbol in the controls set of symbolic model.
 
-### **Adding a custom PDF**
-To add a custom PDF to OmegaThreads, you need to first set the **pdf_class** to *"custom"*. OmegaThreads will then expect a file *custom_pdf.cl* next to the configuration file. The file should contain the code:
+- **system.controls.quantizers**: declares a vector of size P describing the space between each two symbols in the controls set of the symbolic model.
 
-``` c
-#define CUTTING_REGION_LB {...}         // lower-left corner of the truncation region.
-#define CUTTING_REGION_UB {...}         // upper-right corner of the truncation region.
-#define CUTTING_REGION_WIDTHS {...}     // widths (number of quantization steps) in each
-                                        // dimension inside the truncation region.
-#define NUM_REACH_STATES ...            // total number of quantized states in the truncation region.
+- **system.controls.subsets.names**: declares a comma separated list of names for atomic propositions on the controls set. A set with name (**ABC**) should be followed with a mapping declaration in **system.controls.subsets.mapping_ABC** describing which control sets map to the atomic proposition **ABC**.
 
-// The custom PDF
-custom_pdf(const concrete_t* x, const concrete_t* Mu){
-    return ... ;                        // should compute and return the PDF(x) value 
-                                        // when the PDF is shifted to Mu.
-}
+- **system.dynamics.code_file**: the relative-path/name of OpenCL file describing the dynamics of the system. The path should be relative to the config file. The OpenCL file should declare at least a function with the signature:
+
+``` C
+void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t* x, const concrete_t* u);
 ```
+
+- **specifications.ltl_formula**: the LTL formula describing the specifications to be enforced on the system. Only the atomic propositions declared in **system.states.subsets.names** and **system.controls.subsets.names** can be used.
+
+- **specifications.write_dpa**: a "true" or "false" value that instructs OmegaThreads to write/not-write the constructed parity automaton.
+
+- **implementation.implementation**: the type of controller implementation. This can currently only be "mealy_machine".
+
+- **implementation.generate_controller**: a "true" or "false" value that instructs OmegaThreads to save the controller or not.
+
 
 ## **Authors**
 
 - [**Mahmoud Khaled**](http://www.mahmoud-khaled.com)*.
-- [**Abolfazl Lavaei**](http://www.hyconsys.com/members/lavaei)*.
-- [**Sadegh Soudjani**](http://homepages.cs.ncl.ac.uk/sadegh.soudjani/).
 - [**Majid Zamani**](http://www.hyconsys.com/members/mzamani).
-
-*: Both authors have the same contribution.
-
-## **Publications**
-
-- A. Lavei, M. Khaled, S. Soudjani, M. Zamani. OmegaThreads: Parallelized Automated Controller Synthesis for Large-Scale Stochastic Systems. 32nd Conference on Computer Aided Verification (CAV), to appear, July 2020.
-- A. Lavei, M. Khaled, S. Soudjani, M. Zamani. Poster: OmegaThreads: A Parallelized Tool on Automated Controller Synthesis for Large-Scale Stochastic Systems. 23rd ACM International Conference on Hybrid Systems: Computation and Control (HSCC 2020), Sydney, Australia April 2020
-
-Please cite the tool paper as follows:
-
-    @inproceedings{OmegaThreads,
-        title = {OmegaThreads: Parallelized Automated Controller Synthesis for Large-Scale Stochastic Systems},
-        author = {Lavaei, Abolfazl and Khaled, Mahmoud and Soudjani, Sadegh and Zamani, Majid},
-        booktitle = {Proc. 32nd International Conference on Computer Aided Verification (CAV)},
-        publisher = {Springer},
-        series = {LNCS},
-        year = {2020}
-    }
-
 
 ## **License**
 
 See the [LICENSE](LICENSE) file for details
-
 
 ## Known Issues
 
