@@ -9,6 +9,8 @@ RUN apt-get -y upgrade
 # install required libs/tools
 RUN apt-get install -y wget git unzip build-essential libcpprest-dev opencl-c-headers  opencl-clhpp-headers ocl-icd-opencl-dev
 RUN apt-get install -y clinfo oclgrind
+RUN apt-get install -y cmake
+RUN apt-get install -y default-jre
 RUN apt-get install -y python3 python3-pip
 RUN pip3 install arcade
 RUN pip3 install parglare
@@ -19,4 +21,5 @@ RUN mkdir pfaces; cd pfaces; wget https://github.com/parallall/pFaces/releases/d
 
 # fetch and install OmegaThreads
 RUN git clone --depth=1 https://github.com/mkhaled87/pFaces-OmegaThreads
+RUN cd pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa; sh install-owl.sh
 RUN cd pFaces-OmegaThreads; export PFACES_SDK_ROOT=$PWD/../pfaces/pfaces-sdk/; make

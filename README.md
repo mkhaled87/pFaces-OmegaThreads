@@ -34,7 +34,7 @@ $ wget https://raw.githubusercontent.com/mkhaled87/pFaces-OmegaThreads/master/Do
 
 Build the Docker image:
 ``` bash
-$ docker build -t omega/latest.
+$ docker build -t omega/latest .
 ```    
 
 Run/enter the image's interactive shell
