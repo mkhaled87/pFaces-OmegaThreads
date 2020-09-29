@@ -37,6 +37,6 @@ rm -rf ./owl
 # Install owl/latest
 echo "Installing OWL/release-20.06.00 ..."
 git clone https://gitlab.lrz.de/i7/owl 
-git checkout tags/release-20.06.00
 cd owl
+git checkout tags/release-20.06.00
 JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH ./gradlew distZip -x javadoc -Pdisable-pandoc
