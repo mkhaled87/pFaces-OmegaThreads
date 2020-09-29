@@ -207,7 +207,7 @@ void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t*
 
 ## **Authors**
 
-- [**Mahmoud Khaled**](http://www.mahmoud-khaled.com)*.
+- [**Mahmoud Khaled**](http://www.mahmoud-khaled.com).
 - [**Majid Zamani**](http://www.hyconsys.com/members/mzamani).
 
 ## **License**
