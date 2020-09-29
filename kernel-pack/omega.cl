@@ -15,12 +15,12 @@
 // load some values from the config file
 #define ssDim @pfaces-configValue:"system.states.dimension"
 #define ssQnt @pfaces-configValue:"system.states.quantizers"
-#define ssLb @pfaces-configValue:"system.states.lower_bound"
-#define ssUb @pfaces-configValue:"system.states.upper_bound"
+#define ssLb @pfaces-configValue:"system.states.first_symbol"
+#define ssUb @pfaces-configValue:"system.states.last_symbol"
 #define isDim @pfaces-configValue:"system.controls.dimension"
 #define isQnt @pfaces-configValue:"system.controls.quantizers"
-#define isLb @pfaces-configValue:"system.controls.lower_bound"
-#define isUb @pfaces-configValue:"system.controls.upper_bound"
+#define isLb @pfaces-configValue:"system.controls.first_symbol"
+#define isUb @pfaces-configValue:"system.controls.last_symbol"
 
 /* pfaces things */
 #include "pfaces.cl"

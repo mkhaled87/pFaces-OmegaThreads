@@ -15,8 +15,8 @@ system = scope
 # system.states: holds info about the states of the model
 system.states = scope
 system.states.dimension = int
-system.states.lower_bound = string
-system.states.upper_bound = string
+system.states.first_symbol = string
+system.states.last_symbol = string
 system.states.quantizers = string
 system.states.initial_state = string
 system.states.subsets = scope
@@ -25,8 +25,8 @@ system.states.subsets.names = string
 # system.control: holds info about the controls of the model
 system.controls = scope
 system.controls.dimension = int
-system.controls.lower_bound = string
-system.controls.upper_bound = string
+system.controls.first_symbol = string
+system.controls.last_symbol = string
 system.controls.quantizers = string
 system.controls.subsets = scope
 system.controls.subsets.names = string
@@ -38,6 +38,7 @@ system.dynamics.code_file = string
 # specifications: defines the specifications need to be enforced
 specifications = scope
 specifications.ltl_formula = string
+specifications.write_dpa = boolean
 
 # specifications: holds info about the implementation of the controller
 implementation = scope

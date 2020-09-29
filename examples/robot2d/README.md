@@ -2,8 +2,9 @@
 
 requires Python3
 
-1- Install python arcade if not installed:
+1- Install python arcade and parglare if not installed:
 pip3 install arcade
+pip3 install parglare
 
 2- Generate the controller:
 sh solve.sh

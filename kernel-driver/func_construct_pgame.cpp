@@ -137,11 +137,21 @@ namespace pFacesOmegaKernels {
 
         // create the specs wrapper
         std::string ltl_formula = m_spCfg->readConfigValueString("specifications.ltl_formula");
+		bool write_dpa = m_spCfg->readConfigValueBool("specifications.write_dpa");
         pSymSpec = std::make_shared<SymSpec<L_x_func_t, L_u_func_t>>(x_aps, u_aps, ltl_formula, L_x, L_u);
 		std::cout << "The DPA has " << pSymSpec->count_DPA_states() << " states" << std::endl;
 
         // create the sym-model wrapper
         pSymModel = std::make_shared<SymModel<post_func_t>>(x_symbols, u_symbols, x_initial, get_sym_posts);
+
+		if(write_dpa){
+			std::string dpa_file = 
+				pfacesFileIO::getFileDirectoryPath(m_spCfg->getConfigFilePath()) + 
+				m_spCfg->readConfigValueString("project_name") + 
+				std::string(".dpa");
+
+			pSymSpec->dpa.writeToFile(dpa_file);
+		}
 
 		// create the parity game
 		pParityGame = std::make_shared<PGame<post_func_t, L_x_func_t, L_u_func_t>>(*pSymSpec, *pSymModel);

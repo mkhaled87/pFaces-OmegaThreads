@@ -21,12 +21,49 @@ namespace pFacesOmegaKernels{
 		// load values from the config file
 		x_dim = m_spCfg->readConfigValueInt("system.states.dimension");
 		u_dim = m_spCfg->readConfigValueInt("system.controls.dimension");
-		x_lb = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.states.lower_bound"));
-		x_ub = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.states.upper_bound"));
+		x_lb = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.states.first_symbol"));
+		x_ub = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.states.last_symbol"));
 		x_qs = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.states.quantizers"));
-		u_lb = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.controls.lower_bound"));
-		u_ub = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.controls.upper_bound"));
+		u_lb = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.controls.first_symbol"));
+		u_ub = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.controls.last_symbol"));
 		u_qs = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.controls.quantizers"));
+
+
+		// some checks
+		if(x_lb.size() != x_dim || x_ub.size() != x_dim || x_qs.size() != x_dim)
+			throw std::runtime_error(
+					std::string("Invalid number of elements in states.first_symbol, states.last_symbol or states.quantizers.")
+				);
+		if(u_lb.size() != u_dim || u_ub.size() != u_dim || u_qs.size() != u_dim)
+			throw std::runtime_error(
+					std::string("Invalid number of elements in controls.first_symbol, controls.last_symbol or controls.quantizers.")
+				);				
+		for (size_t i=0; i<x_dim; i++){
+			if(x_ub[i] < x_lb[i])
+				throw std::runtime_error(
+					std::string("The provided states.first_symbol (for index=") + std::to_string(i) +
+					std::string(") should be less than the states.last_symbol.")
+				);
+
+			if(x_qs[i] > (x_ub[i] - x_lb[i]) || x_qs[i] < 0.0)
+				throw std::runtime_error(
+					std::string("The provided states.quantizers (for index=") + std::to_string(i) +
+					std::string(") is not valid: should be positive and less than the width between first and last symbols.")
+				);
+		}
+		for (size_t i=0; i<u_dim; i++){
+			if(u_ub[i] < u_lb[i])
+				throw std::runtime_error(
+					std::string("The provided controls.first_symbol (for index=") + std::to_string(i) +
+					std::string(") should be less than the controls.last_symbol.")
+				);
+
+			if(u_qs[i] > (u_ub[i] - u_lb[i]) || u_qs[i] < 0.0)
+				throw std::runtime_error(
+					std::string("The provided controls.quantizers (for index=") + std::to_string(i) +
+					std::string(") is not valid: should be positive and less than the width between first and last symbols.")
+				);				
+		}
 
 
 		// x symbols
@@ -41,29 +78,44 @@ namespace pFacesOmegaKernels{
 		for(size_t i=0; i<u_widths.size(); i++)
 			u_symbols *= u_widths[i];
 
-		/*
-		std::vector<concrete_t> ss_zero(x_dim, 0.0);
-		std::vector<concrete_t> is_zero(u_dim, 0.0);
 
-		x_symbols = pfacesBigInt::getPrimitiveValue(
-			pfacesFlatSpace::getFlatWidthFromConcreteSpace(
-				x_dim, x_qs, x_lb, x_ub, ss_zero, x_widths));
+		// compare against expected upper bounds
+		bool x_ub_updated = false;
+		for (size_t i=0; i<x_dim; i++){
+			concrete_t x_ub_i_expected = x_lb[i] + (x_widths[i]-1)*x_qs[i];
+			if(x_ub_i_expected != x_ub[i]){
+				x_ub_updated = true;
+				x_ub[i] = x_ub_i_expected;
+			}
+		}
+		if(x_ub_updated)
+			pfacesTerminal::showWarnMessage(
+				std::string("The states.lasts_symbol is not compliant with controls.quantizers and is modified to: ") +
+				pfacesUtils::vector2string(x_ub)
+			);
+		bool u_ub_updated = false;
+		for (size_t i=0; i<u_dim; i++){
+			concrete_t u_ub_i_expected = u_lb[i] + (u_widths[i]-1)*u_qs[i];
+			if(u_ub_i_expected != u_ub[i]){
+				u_ub_updated = true;
+				u_ub[i] = u_ub_i_expected;
+			}
+		}
+		if(u_ub_updated)
+			pfacesTerminal::showWarnMessage(
+				std::string("The controls.lasts_symbol is not compliant with controls.quantizers and is modified to: ") +
+				pfacesUtils::vector2string(u_ub)
+			);	
 
-		u_symbols = pfacesBigInt::getPrimitiveValue(
-			pfacesFlatSpace::getFlatWidthFromConcreteSpace(
-				u_dim, u_qs, u_lb, u_ub, is_zero, u_widths));
-		*/
-
+		// xu symbols
 		xu_symbols = x_symbols * u_symbols;	
 
-
-		std::cout << "Universal X-space (" << x_dim << "d) has " << x_symbols << " symbols: ";
+		// print info
+		std::cout << "X-space (" << x_dim << "d) has " << x_symbols << " symbols: ";
 		pfacesUtils::PrintVector(x_widths, 'x');
-
-		std::cout << "Universal U-space (" << u_dim << "d) has " << u_symbols << " symbols: ";
+		std::cout << "U-space (" << u_dim << "d) has " << u_symbols << " symbols: ";
 		pfacesUtils::PrintVector(u_widths, 'x');
-
-		std::cout << "Universal XU-space has " << xu_symbols << " symbols." << std::endl;
+		std::cout << "XU-space has " << xu_symbols << " symbols." << std::endl;
 
 
 		// check and prepare the dynamics code file

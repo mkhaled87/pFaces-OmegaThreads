@@ -11,15 +11,15 @@ project_name = "unnamed";
 
 # system defaults
 system.states.dimension = "0";
-system.states.lower_bound = "";
-system.states.upper_bound = "";
+system.states.first_symbol = "";
+system.states.last_symbol = "";
 system.states.quantizers = "";
 system.states.initial_state = "";
 system.states.subsets.names = "";
 
 system.controls.dimension = "0";
-system.controls.lower_bound = "";
-system.controls.upper_bound = "";
+system.controls.first_symbol = "";
+system.controls.last_symbol = "";
 system.controls.quantizers = "";
 system.controls.subsets.names = "";
 
@@ -27,6 +27,7 @@ system.dynamics.code_file = "";
 
 # specification defaults
 specifications.ltl_formula = "";
+specifications.write_dpa = "false";
 
 # implementation defaults
 implementation.type = "mealy_machine";

@@ -119,7 +119,8 @@ namespace pFacesOmegaKernels {
 		for (std::string ap : u_aps_temp){
 
 			std::string hyperrects_line = m_spCfg->readConfigValueString(
-				std::string("system.controls.subsets.mapping_") + ap
+				std::string("system.controls.subsets.mapping_") + 
+				pfacesUtils::strTrim(ap)
 			);
 
 			char ap_idx = u_aps.size();
@@ -129,7 +130,7 @@ namespace pFacesOmegaKernels {
 				u_aps_subsets_map.push_back(ap_idx);
 			}
 
-			u_aps.push_back(ap);
+			u_aps.push_back(pfacesUtils::strTrim(ap));
 		}
 
 		// fill the func info

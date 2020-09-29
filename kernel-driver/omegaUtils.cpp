@@ -105,16 +105,11 @@ namespace pFacesOmegaKernels{
         const std::vector<concrete_t>& x_lb, 
         const std::vector<symbolic_t>& x_widths) {
         
-        std::cout << "OmegaUtils::Conc2Flat::x_widths: " << x_widths[0] << ", " << x_widths[1] << ", " << x_widths[2] << std::endl;
-
-        std::cout << "OmegaUtils::Conc2Flat::conc: " << x_conc[0] << ", " << x_conc[1] << ", " << x_conc[2] << std::endl;
 
         std::vector<symbolic_t> x_sym(x_eta.size());
         for (size_t i = 0; i<x_eta.size(); i++) {
             x_sym[i] = (x_conc[i] - x_lb[i] + x_eta[i]/2.0)/x_eta[i];
         }
-
-        std::cout << "OmegaUtils::Conc2Flat::sym: " << x_sym[0] << ", " << x_sym[1] << ", " << x_sym[2] << std::endl;
         
         symbolic_t fltTmpVolume;
         symbolic_t fltTmp;
@@ -128,8 +123,6 @@ namespace pFacesOmegaKernels{
             fltTmp *= fltTmpVolume;
             x_flat += fltTmp;
         }
-
-        std::cout << "OmegaUtils::Conc2Flat::x_flat: " << x_flat << std::endl;
 
         return x_flat;
     }

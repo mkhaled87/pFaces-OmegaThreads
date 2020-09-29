@@ -35,8 +35,9 @@ namespace pFacesOmegaKernels{
 template <typename Container>
 struct container_hash {
     std::size_t operator()(Container const& c) const {
-        auto seed = boost::hash_range(c.first.cbegin(), c.first.cend());
-        boost::hash_combine(seed, c.second.value);
+        auto seed = boost::hash_range(std::get<0>(c).cbegin(), std::get<0>(c).cend());
+        boost::hash_combine(seed, std::get<1>(c).value);
+        boost::hash_combine(seed, std::get<2>(c));
         return seed;
     }
 };
@@ -96,6 +97,10 @@ public:
     Container& container() { return this->c; }
 };
 typedef PQ<ScoredProductState, std::deque<ScoredProductState>, ScoredProductStateComparator> state_queue;
+
+
+// a type for Environment state:  (DPA state, Model state, control input)
+typedef std::tuple<strix_aut::product_state_t, SymState, symbolic_t> env_state_t;
 
 
 // ------------------------------------------
@@ -182,20 +187,19 @@ template<class T, class L1, class L2>
 void PGame<T, L1, L2>::constructArena(){
 
     // get initial state of the Spec-DPA-tree
-    const strix_aut::product_state_t initial_state = sym_spec.dpa.getInitialState();
+    const strix_aut::product_state_t dpa_initial_state = sym_spec.dpa.getInitialState();
 
-    product_state_size = initial_state.size();
+    product_state_size = dpa_initial_state.size();
 
     // the states
-    std::vector<std::pair<strix_aut::product_state_t, SymState>> states;
+    std::vector<env_state_t> states;
     states.reserve(RESERVE);
 
     // map from product states in queue to scores and reference ids
-    std::unordered_map<std::pair<strix_aut::product_state_t, SymState>, ScoredProductState, container_hash<std::pair<strix_aut::product_state_t, SymState>> > state_map;  
+    std::unordered_map<env_state_t, ScoredProductState, container_hash<env_state_t> > state_map;  
 
     // queues for new states
     state_queue queue_new_states;
-
 
     // cache for system nodes
     auto sys_node_hash = [this](const strix_aut::node_id_t sys_node) {
@@ -240,7 +244,7 @@ void PGame<T, L1, L2>::constructArena(){
     const strix_aut::node_id_t top_node_ref = env_node_map.size();
     env_node_map.push_back(strix_aut::NODE_TOP);
     env_node_reachable.push_back(true);
-    std::pair<strix_aut::product_state_t,SymState> top_node_state({}, sym_model.get_dummy_state());
+    env_state_t top_node_state = std::make_tuple(strix_aut::product_state_t(), sym_model.get_dummy_state(), 0);
     states.push_back(top_node_state);
 
     // add the initial state
@@ -250,9 +254,9 @@ void PGame<T, L1, L2>::constructArena(){
     env_node_map.push_back(strix_aut::NODE_NONE);
     env_node_reachable.push_back(true);  
     ScoredProductState initial(1.0, initial_node_ref);
-    state_map.insert({ std::pair<strix_aut::product_state_t,SymState>(initial_state, sym_model.get_initial_state()), ScoredProductState(initial) });
+    state_map.insert({ std::make_tuple(dpa_initial_state, sym_model.get_dummy_state(), 0), ScoredProductState(initial) });
     queue_new_states.push(initial);
-    std::pair<strix_aut::product_state_t,SymState> initial_node_state(std::move(initial_state), sym_model.get_initial_state());
+    env_state_t initial_node_state = std::make_tuple(std::move(dpa_initial_state), sym_model.get_dummy_state(), 0);
     states.push_back(initial_node_state);              
 
     // the exploration loop : keep exploring till no more new states
@@ -277,9 +281,23 @@ void PGame<T, L1, L2>::constructArena(){
         std::map<strix_aut::node_id_t, std::vector<symbolic_t>> env_successors;
 
 
-        // for all inputs : symbolic states
-        std::vector<symbolic_t> possible_env_sym_states = {states[ref_id].second.value};
-        for (symbolic_t sym_state : possible_env_sym_states){
+        // collect next model states to be used for making the env edges
+        std::vector<symbolic_t> env_sym_states;
+        if(sym_model.is_dummy_state(std::get<1>(states[ref_id]))){
+            env_sym_states = {sym_model.get_initial_state().value};
+        }
+        else {
+            symbolic_t sym_model_state = std::get<1>(states[ref_id]).value;
+            symbolic_t sym_control_inp = std::get<2>(states[ref_id]);
+
+            std::vector<SymState> mdl_posts = sym_model.get_posts(sym_model.construct_state(sym_model_state), sym_control_inp);
+            for (SymState mdl_post : mdl_posts){
+                env_sym_states.push_back(mdl_post.value);
+            }
+        }
+
+        // for all inputs (env edges): symbolic states
+        for (symbolic_t sym_state : env_sym_states){
 
             // the state of the sym model
             SymState current_sym_state = sym_model.construct_state(sym_state);
@@ -289,44 +307,29 @@ void PGame<T, L1, L2>::constructArena(){
             std::map<GameEdge, std::vector<symbolic_t>> sys_successors;
             strix_aut::edge_id_t cur_sys_node_n_sys_edges = 0;
 
-            // for all outputs : the controls
+            // for all outputs (system edges): the controls
             for (symbolic_t sym_control = 0; sym_control < sym_model.get_n_controls(); sym_control++){
 
-                std::vector<SymState> new_sym_states = sym_model.get_posts(current_sym_state, sym_control);
+                // now er can compute joint letter for automata lookup
+                strix_aut::letter_t letter = sym_spec.get_complete_clause(current_sym_state, sym_control);
 
-                // a check to see if any post is BUTTOM or OVERFLOW
-                bool one_post_is_BUTTOM_or_OVERFLOW = false;
-                for(auto new_sym_state : new_sym_states){
-                    strix_aut::letter_t letter = sym_spec.get_complete_clause(new_sym_state, sym_control);
-                    strix_aut::product_state_t new_dpa_state(product_state_size);
-                    const strix_aut::ColorScore cs = sym_spec.dpa.getSuccessor(states[ref_id].first, new_dpa_state, letter);
-                    
-                    if (sym_spec.dpa.isBottomState(new_dpa_state) || new_sym_state.type == SymState::SYM_STATE_TYPE::OVERFLOW_STATE)
-                        one_post_is_BUTTOM_or_OVERFLOW = true;
-                }
-                if(one_post_is_BUTTOM_or_OVERFLOW)
-                    continue;
+                // a var for the new state (yes it is only one as this is a *D*PA )
+                strix_aut::product_state_t new_dpa_state(product_state_size);
 
-                // for all post states of the sym model
-                for(auto new_sym_state : new_sym_states){
-                    
-                    // compute joint letter for automata lookup
-                    strix_aut::letter_t letter = sym_spec.get_complete_clause(new_sym_state, sym_control);
+                // get the next state (store in new_dpa_state)
+                const strix_aut::ColorScore cs = sym_spec.dpa.getSuccessor(std::get<0>(states[ref_id]), new_dpa_state, letter);         
 
-                    // a var for the new state (yes it is only one as this is a *D*PA )
-                    strix_aut::product_state_t new_dpa_state(product_state_size);
+                // get the color of this transition
+                const strix_aut::color_t color = cs.color;                               
 
-                    // get the next state (store in new_dpa_state)
-                    const strix_aut::ColorScore cs = sym_spec.dpa.getSuccessor(states[ref_id].first, new_dpa_state, letter);         
+                // score
+                double score = -(double)(env_node_map.size());
 
-                    // get the color of this transition
-                    const strix_aut::color_t color = cs.color;                               
+                // score
+                strix_aut::node_id_t succ = env_node_map.size();
 
-                    // score
-                    double score = -(double)(env_node_map.size());
-
-                    // score
-                    strix_aut::node_id_t succ = env_node_map.size();
+                // skip buttom states
+                if (!sym_spec.dpa.isBottomState(new_dpa_state)) {
 
                     // is it top ?
                     if (sym_spec.dpa.isTopState(new_dpa_state)) {
@@ -334,19 +337,20 @@ void PGame<T, L1, L2>::constructArena(){
                     }
                     // now: it is not top or buttom
                     else {
-                        auto result = state_map.insert({ std::pair<strix_aut::product_state_t,SymState>(new_dpa_state,new_sym_state), ScoredProductState(score, succ) });
+                        auto result = state_map.insert({ std::make_tuple(new_dpa_state,current_sym_state, sym_control), ScoredProductState(score, succ) });
 
                         // is it new there ? (we use the result from the insert on the unordered_map state_map)
                         if (result.second){
                             env_node_map.push_back(strix_aut::NODE_NONE);
                             env_node_reachable.push_back(true);
 
-                            std::pair<strix_aut::product_state_t,SymState> new_node_state(std::move(new_dpa_state), new_sym_state);
+                            env_state_t new_node_state = std::make_tuple(std::move(new_dpa_state), current_sym_state, sym_control);
                             states.push_back(new_node_state);
 
                             queue_new_states.push(ScoredProductState(score, succ));
                         }
                         else {
+                            // change ???
                             succ = result.first->second.ref_id;
                         }
                     }    
@@ -361,6 +365,7 @@ void PGame<T, L1, L2>::constructArena(){
                         }
                     }
                 }
+
 
             }
 
