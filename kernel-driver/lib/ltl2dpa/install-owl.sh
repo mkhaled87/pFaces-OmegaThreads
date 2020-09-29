@@ -35,7 +35,8 @@ $INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH/gu install native-image
 rm -rf ./owl
 
 # Install owl/latest
-echo "Installing OWL/latest-master ..."
+echo "Installing OWL/release-20.06.00 ..."
 git clone https://gitlab.lrz.de/i7/owl 
+git checkout tags/release-20.06.00
 cd owl
 JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH ./gradlew distZip -x javadoc -Pdisable-pandoc
