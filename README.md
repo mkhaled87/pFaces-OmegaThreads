@@ -59,9 +59,7 @@ Now you can test one of the examples of OmegaThreads. Navigate to, for example, 
 /# oclgrind pfaces -CG -d 1 -k omega@../../kernel-pack -cfg robot.cfg
 ```
 
-Simulating the example using the provided Python interface requires you have an X11 server running ourside Docker to catch/render the GUI information.
-See [this tutorial](http://wiki.ros.org/docker/Tutorials/GUI) for help.
-Now, run the following command to launch the simulation: 
+Simulating the example using the provided Python interface requires you have an X server running (X11 in windows or XQuartz in MacOS) ouفside Docker to catch/render the GUI information. Now, run the following command to launch the simulation: 
 ``` bash
 /# export DISPLAY=MY_IP_ADDRESS:0
 /# python3 simulate.py
