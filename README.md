@@ -36,7 +36,10 @@ Build the Docker image:
 ``` bash
 $ docker build -t omega/latest .
 ```    
-The Docker image building process will take arrpximatly 15 minutes. Once done, run/enter the image's interactive shell
+The Docker image building process will take arrpximatly 15 minutes. 
+During the build, you may recieve some red-colored messages.
+They are not errors, unless you receieve an excplicit red-colored error message.
+Once done, run/enter the image's interactive shell
 ``` bash
 $ docker run -it -v ~/docker_shared:/docker_shared omega/latest
 ```    
@@ -50,7 +53,7 @@ In the Docker image, OmegaThreas sis located in the director **pFaces-OmegaThrea
 
 In the Docker image, we installed Oclgrind to simulate an OpenCL platform/device that utilizes all the CPU cores using threads. Unless you will be passing-through your device (e.g., a GPU), you MUST preceed any pFaces command with oclgrind. For example, to check available devices using Oclgrind/pFaces, run:
 ``` bash
-/# oclgrind pfaces -CGH -l
+/# oclgrind pfaces -CG -l
 ```
 
 Now you can test one of the examples of OmegaThreads. Navigate to, for example, the robot exammple and launch it using oclgrind:
@@ -62,8 +65,9 @@ Now you can test one of the examples of OmegaThreads. Navigate to, for example, 
 In case you need to move the controller to the host for simulation,  copy it as follows to the shared folder (we copy the simulation scripts as well):
 ``` bash
 /# cp robot.mdf /docker_shared/
+/# cp robot.png /docker_shared/
 /# cp simulate.py /docker_shared/
-/# cp ../../interface/python/*.pu /docker_shared/
+/# cp ../../interface/python/*.py /docker_shared/
 ```
 
 Now, without closing the running docker container, start a new terminal on the host and simulate the controller (make sure Python 3.6+, Arcade and Parglare are installed before running this command and refer to Python's requirements below for more info):
