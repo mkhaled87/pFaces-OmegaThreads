@@ -8,7 +8,8 @@
 // a shared function to compute current x from the thread index
 // here, we assuume that the first thread is for first x and
 // the last thread is the last element in X
-inline void get_concrete_x(const symbolic_t thread_idx, concrete_t* x){
+void get_concrete_x(const symbolic_t thread_idx, concrete_t* x);
+void get_concrete_x(const symbolic_t thread_idx, concrete_t* x){
 	__private concrete_t sseta[ssDim] = {ssQnt};
 	__private concrete_t sslb[ssDim]  = {ssLb};
 	__private concrete_t ssub[ssDim]  = {ssUb};	
@@ -21,7 +22,8 @@ inline void get_concrete_x(const symbolic_t thread_idx, concrete_t* x){
 // a shared function to compute current u from the thread index
 // here, we assuume that the first thread is for first u and
 // the last thread is the last element in U
-inline void get_concrete_u(const symbolic_t thread_idx, concrete_t* u){
+void get_concrete_u(const symbolic_t thread_idx, concrete_t* u);
+void get_concrete_u(const symbolic_t thread_idx, concrete_t* u){
 	__private concrete_t iseta[isDim] = {isQnt};
 	__private concrete_t islb[isDim]  = {isLb};
 	__private concrete_t isub[isDim]  = {isUb};	
