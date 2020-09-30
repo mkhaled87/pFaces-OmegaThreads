@@ -14,7 +14,7 @@ RUN apt-get -qq update \
 
 # install required libs/tools
 RUN apt-get -qq install -y wget git unzip build-essential libcpprest-dev opencl-c-headers  opencl-clhpp-headers ocl-icd-opencl-dev clinfo oclgrind cmake python3 python3-pip mesa-utils freeglut3-dev
-RUN pip3 install arcade parglare glu
+RUN pip3 install arcade parglare dataclasses glu
 
 # install pfaces
 RUN mkdir pfaces \
