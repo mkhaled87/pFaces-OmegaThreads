@@ -41,7 +41,9 @@ The Docker image building process will take arrpximatly 15 minutes. Once done, r
 $ docker run -it omega/latest
 ```    
 
-Now you can use OmegaThreads. It is located in the director **pFaces-OmegaThreads** and you can navigate to it as follows:
+Now OmegaThreads is installed and we will test it now with a simmple example.
+In case you need to know more about OmegaThreads, we advise you to read the **Getting Started** section below.
+In the Docker image, OmegaThreas sis located in the director **pFaces-OmegaThreads** and you can navigate to it as follows:
 ``` bash
 $ cd pFaces-OmegaThreads
 ```
