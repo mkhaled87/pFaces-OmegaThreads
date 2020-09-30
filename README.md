@@ -104,7 +104,7 @@ If you are using Windows, you will have to manually install OWL. Please refer to
 
 #### Python
 
-If you like to access the generated controller file using Python or simulate the closed-loop behavior using the provided 2d simulator, you need to have Python 3.5+ installed and both arcade and parglare packages. To install the required packages, run:
+If you like to access the generated controller file using Python or simulate the closed-loop behavior using the provided 2d simulator, you need to have Python 3.6+ installed and both arcade and parglare packages. To install the required packages, run:
 
 ``` bash
 $ pip3 install arcade
