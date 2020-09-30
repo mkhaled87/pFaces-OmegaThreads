@@ -18,7 +18,7 @@ include_directories(${JNI_INCLUDE_DIRS} "./owl/build/native-library/" "./owl/src
 link_directories("./owl/build/native-library/")
 
 # add pFaces sdk to be able to use cudd from there
-include_directories("$ENV{PFACES_SDK_ROOT}/../lib/cudd/")
+include_directories("$ENV{PFACES_SDK_ROOT}/include/cudd/")
 link_directories("$ENV{PFACES_SDK_ROOT}/lib")
 
 # Add the source file to a libraray
