@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <bitset>
 #include <cmath>
+#include <cassert>
 
 #include "StrixAutomaton.h"
 
