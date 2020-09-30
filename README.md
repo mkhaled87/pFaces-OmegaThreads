@@ -8,6 +8,7 @@ Design requirements are usually given in a formal language (e.g., [linear tempor
 
 <p align="center"> 
     <img src="media/LTL_vehicle.gif" alt="An autonomous vehicle visiting infinitly-often two targets while avoiding an obstacle" target="_blank"/>
+    <br />
     Fig. 1: The Python-Arcade-based 2d-simulator prrovided by OmegaThreads.
 </p>
 
