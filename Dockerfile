@@ -32,15 +32,15 @@ ENV PATH=/opt/graalvm-ce-java11-20.1.0/bin/:$PATH
 ENV JAVA_HOME=/opt/graalvm-ce-java11-20.1.0/
 RUN gu install native-image
 
-
 # install OWL and OmegaThreads
 RUN git clone --depth=1 https://github.com/mkhaled87/pFaces-OmegaThreads \
 	&& cd /pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa \
 	&& git clone https://gitlab.lrz.de/i7/owl \
+	&& git checkout tags/release-20.06.00 \
 	&& cd owl \
 	&& ./gradlew clean \
-	&& ./gradlew distZip -x javadoc -Pdisable-pandoc
-	
+	&& ./gradlew distZip -x javadoc -Pdisable-pandoc	
+RUN cp /pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa/owl/build/native-library/libowl.so /usr/lib/
 RUN cd /pFaces-OmegaThreads/ \
 	&& export PFACES_SDK_ROOT=$PWD/../pfaces/pfaces-sdk/ \
 	&& make
