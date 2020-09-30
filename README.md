@@ -36,20 +36,32 @@ Build the Docker image:
 ``` bash
 $ docker build -t omega/latest .
 ```    
-
-Run/enter the image's interactive shell
+The Docker image building process will take arrpximatly 15 minutes. Once done, run/enter the image's interactive shell
 ``` bash
 $ docker run -it omega/latest
 ```    
 
-Now you can use OmegaThreads. It is located in the director **OmegaThreads** and you can navigate to it as follows:
+Now you can use OmegaThreads. It is located in the director **pFaces-OmegaThreads** and you can navigate to it as follows:
 ``` bash
-$ cd OmegaThreads
+$ cd pFaces-OmegaThreads
 ```
 
 In the Docker image, we installed Oclgrind to simulate an OpenCL platform/device that utilizes all the CPU cores using threads. Unless you will be passing-through your device (e.g., a GPU), you MUST preceed any pFaces command with oclgrind. For example, to check available devices using Oclgrind/pFaces, run:
 ``` bash
 $ oclgrind pfaces -CGH -l
+```
+
+Now you can test one of the examples of OmegaThreads. Navigate to, for example, the robot exammple and launch it using oclgrind:
+``` bash
+$ cd examples/robot2d
+$ oclgrind pfaces -CG -d 1 -k omega@../../kernel-pack -cfg robot.cfg
+```
+
+Simulating the example using the provided Python interface requires you have an X11 server running ourside Docker to catch/render the GUI information.
+See [this tutorial](http://wiki.ros.org/docker/Tutorials/GUI) for help.
+Now, run the following command to launch the simulation: 
+``` bash
+$ python3 simulate.py
 ```
 
 ## **Installation using Source Code**
