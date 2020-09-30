@@ -27,8 +27,11 @@ SUBDIRS = lib
 KERNEL_NAME = omega
 KERNEL_OBJs  = func_implement.o func_solve_pgame.o func_construct_pgame.o func_construct_symmodel.o func_discover_u_aps.o func_discover_x_aps.o omegaImplementation.o omegaParityGames.o omegaControlProblem.o omegaDpa.o omegaUtils.o omega.o
 KERNEL_INCs = -Ilib/ltl2dpa/include -Ilib/ltl2dpa/owl/build/native-library -Ilib/ltl2dpa/owl/src/main/headers
+ifeq ($(OS),Darwin)
 KERNEL_LNKs = -Llib/ltl2dpa/build -lltl2dpa -Llib/ltl2dpa/owl/build/native-library -lowl
-
+else
+KERNEL_LNKs = -Llib/ltl2dpa/build -Wl,--whole-archive -lltl2dpa -Wl,--no-whole-archive -Llib/ltl2dpa/owl/build/native-library -Wl,--whole-archive -lowl -Wl,--no-whole-archive
+endif
 
 .PHONY: all
 	
