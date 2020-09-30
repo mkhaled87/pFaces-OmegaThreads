@@ -36,7 +36,7 @@ echo "PATH: "
 echo $PATH
 echo "JAVA_HOME: "
 echo $JAVA_HOME
-java --version
+JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH java --version
 
 # install GraalVM Native-Image
 echo "Installing GraalVM-20.1.0 Native-Image ..."
