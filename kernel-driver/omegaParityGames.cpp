@@ -9,6 +9,7 @@
 
 #include "omegaParityGames.h"
 
+#include <iomanip>
 #include <map>
 #include <queue>
 #include <memory>
