@@ -3,6 +3,7 @@ project(StrixAutomataLibC)
 
 # compile for C++11
 set(CMAKE_CXX_STANDARD 17)
+add_definitions("-fPIC")
 
 # Declare rquired stuff
 #find_package(JNI REQUIRED)
