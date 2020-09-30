@@ -17,7 +17,7 @@ else
     HOME_PATH=
 fi
 GRAALVM_URL=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/$GRAALVM_FILE
-wget $GRAALVM_URL
+wget -q $GRAALVM_URL
 tar -zxvf $GRAALVM_FILE
 rm $GRAALVM_FILE
 sudo mv graalvm-ce-java11-20.1.0 $INSTALL_PATH/
