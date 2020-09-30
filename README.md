@@ -38,7 +38,7 @@ $ docker build -t omega/latest .
 ```    
 The Docker image building process will take arrpximatly 15 minutes. Once done, run/enter the image's interactive shell
 ``` bash
-$ docker run -it omega/latest
+$ docker run -it -v ~/docker_shared:/docker_shared omega/latest
 ```    
 
 Now OmegaThreads is installed and we will test it now with a simmple example.
@@ -59,12 +59,18 @@ Now you can test one of the examples of OmegaThreads. Navigate to, for example, 
 /# oclgrind pfaces -CG -d 1 -k omega@../../kernel-pack -cfg robot.cfg
 ```
 
-Simulating the example using the provided Python interface requires you have an X server running (X11 in windows or XQuartz in MacOS) outside Docker to catch/render the GUI information. Now, run the following command to launch the simulation: 
+In case you need to move the controller to the host for simulation,  copy it as follows to the shared folder (we copy the simulation scripts as well):
 ``` bash
-/# export DISPLAY=MY_IP_ADDRESS:0
-/# python3 simulate.py
+/# cp robot.mdf /docker_shared/
+/# cp simulate.py /docker_shared/
+/# cp ../../interface/python/*.pu /docker_shared/
 ```
-where MY_IP_ADDRESS is your local IP address (not 127.0.0.1).
+
+Now, without closing the running docker container, start a new terminal on the host and simulate the controller (make sure Python 3.6+, Arcade and Parglare are installed before running this command and refer to Python's requirements below for more info):
+``` bash
+$ cd ~/docker_shared
+$ python3 simulate.py
+```    
 
 ## **Installation using Source Code**
 
