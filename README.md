@@ -8,6 +8,7 @@ Design requirements are usually given in a formal language (e.g., [linear tempor
 
 <p align="center"> 
     <img src="media/LTL_vehicle.gif" alt="An autonomous vehicle visiting infinitly-often two targets while avoiding an obstacle" target="_blank"/>
+    Fig. 1: The Python-Arcade-based 2d-simulator prrovided by OmegaThreads.
 </p>
 
 In a brief, **OmegaThreads** uses [OWL library](https://owl.model.in.tum.de) to construct a deterministic [ω-Automaton](https://en.wikipedia.org/wiki/Ω-automaton) with a parity acceptance condition representing the input LTL specifications.
