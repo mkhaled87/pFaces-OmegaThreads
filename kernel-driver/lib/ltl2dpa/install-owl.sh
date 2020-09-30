@@ -36,6 +36,9 @@ cat $PROFILE_FILE
 echo "Installing GraalVM-20.1.0 Native-Image ..."
 sudo $INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH/gu install native-image
 
+echo "INSTALL_PATH contents: "
+ls -all $INSTALL_PATH/
+
 echo "GraalVM contents: "
 ls -all $INSTALL_PATH/graalvm-ce-java11-20.1.0/
 
