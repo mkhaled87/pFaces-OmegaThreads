@@ -1,5 +1,6 @@
 # iamge
 FROM ubuntu:18.04
+MAINTAINER Mahmoud Khaled eng.mk@msn.com
 
 # set time/language
 ENV TZ=Europe/Kiev
