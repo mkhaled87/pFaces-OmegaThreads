@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # install GraalVM
-if [[ "$OSTYPE" == "darwin"* ]]; then
+if [ "$OSTYPE" == "darwin"* ]; then
     echo "Installing GraalVM-20.1.0 for MacOS ..."
     GRAALVM_FILE=graalvm-ce-java11-darwin-amd64-20.1.0.tar.gz
     PROFILE_FILE=~/.zshrc 
