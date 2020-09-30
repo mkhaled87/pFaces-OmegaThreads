@@ -29,7 +29,7 @@ Download the Dockerfile:
 ``` bash
 $ mkdir OmegaThreads
 $ cd OmegaThreads
-$ wget https://raw.githubusercontent.com/mkhaled87/pFaces-OmegaThreads/master/Dockerfile
+$ curl https://raw.githubusercontent.com/mkhaled87/pFaces-OmegaThreads/master/Dockerfile -o Dockerfile
 ```    
 
 Build the Docker image:
