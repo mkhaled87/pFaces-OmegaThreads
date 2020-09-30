@@ -22,6 +22,7 @@ In **OmegaThreads**, scalable parallel algorithms are designed to construct symb
 
 ## **Installation using Docker**
 Here, we assume you will be using a Linux or MacOS machine. Commands will be slightly different on Windows if you use Windows PowerShell.
+We tested this on Linux, on MacOs and on Windows using WSL.
 
 First, make sure to configure Docker to use all of the resources available (e.g., all CPU cores). Otherwise, OmegaThreads will run slower than expected. Also, in case you are using a GPU, make sure to pass-through the GPU in Docker. See this [guide](https://docs.docker.com/config/containers/resource_constraints/).
 
@@ -43,8 +44,9 @@ Once done, run/enter the image's interactive shell
 ``` bash
 $ docker run -it -v ~/docker_shared:/docker_shared omega/latest
 ```    
+Note that by the previous command, we mad a pipe between host and the container (this part: *-v ~/docker_shared:/docker_shared*) which will later allow us to move files (e.g., the synthesized controller) from the container to the host.
 
-Now OmegaThreads is installed and we will test it now with a simmple example.
+Now OmegaThreads is installed and we will test it with a simmple example.
 In case you need to know more about OmegaThreads, we advise you to read the **Getting Started** section below.
 In the Docker image, OmegaThreas sis located in the director **pFaces-OmegaThreads** and you can navigate to it as follows:
 ``` bash
