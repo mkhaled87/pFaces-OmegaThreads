@@ -35,8 +35,7 @@ RUN gu install native-image
 # install OWL (release-20.06.00) and OmegaThreads (latest)
 RUN git clone --depth=1 https://github.com/mkhaled87/pFaces-OmegaThreads \
 	&& cd /pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa \
-	&& git clone https://gitlab.lrz.de/i7/owl \
-	&& git checkout tags/release-20.06.00 \
+	&& git clone --depth 1 --branch release-20.06.00 https://gitlab.lrz.de/i7/owl \
 	&& cd owl \
 	&& ./gradlew clean \
 	&& ./gradlew distZip -x javadoc -Pdisable-pandoc	
