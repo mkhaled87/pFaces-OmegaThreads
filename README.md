@@ -9,10 +9,10 @@ Design requirements are usually given in a formal language (e.g., [linear tempor
 <p align="center"> 
     <img src="media/LTL_vehicle.gif" alt="An autonomous vehicle visiting infinitly-often two targets while avoiding an obstacle" target="_blank"/>
     <br />
-    <p style="width:500px;">
+    <p style="width: 400px;">
         Fig. 1: The Python-Arcade-based 2d-simulator prrovided by OmegaThreads.
         This simulation is recorded from the <a href="/examples/vehicle3d/">Autonomous Vehicle Example</a>.
-        The vehicle is supposed to infinitely-often visit the two targets (target1) and (target2) while not crashing in (avoids).        
+        The vehicle is supposed to infinitely-often visit the two targets (target1) and (target2) while not crashing in (avoids). 
     </p>
 </p>
 
