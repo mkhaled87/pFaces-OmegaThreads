@@ -22,7 +22,7 @@ RUN mkdir pfaces \
 	&& unzip pFaces-1.1.0-Ubuntu18.04.zip
 RUN cd /pfaces && sh install.sh
 
-## Install GraalVM 20.1
+## Install GraalVM (20.1 AMD64)
 RUN wget -q https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/graalvm-ce-java11-linux-amd64-20.1.0.tar.gz \
     && echo '18f2dc19652c66ccd5bd54198e282db645ea894d67357bf5e4121a9392fc9394 graalvm-ce-java11-linux-amd64-20.1.0.tar.gz' | sha256sum --check \
     && tar -zxvf graalvm-ce-java11-linux-amd64-20.1.0.tar.gz \
@@ -32,7 +32,7 @@ ENV PATH=/opt/graalvm-ce-java11-20.1.0/bin/:$PATH
 ENV JAVA_HOME=/opt/graalvm-ce-java11-20.1.0/
 RUN gu install native-image
 
-# install OWL and OmegaThreads
+# install OWL (release-20.06.00) and OmegaThreads (latest)
 RUN git clone --depth=1 https://github.com/mkhaled87/pFaces-OmegaThreads \
 	&& cd /pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa \
 	&& git clone https://gitlab.lrz.de/i7/owl \
