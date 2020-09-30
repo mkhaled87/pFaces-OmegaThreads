@@ -63,8 +63,10 @@ Simulating the example using the provided Python interface requires you have an 
 See [this tutorial](http://wiki.ros.org/docker/Tutorials/GUI) for help.
 Now, run the following command to launch the simulation: 
 ``` bash
+$ export DISPLAY=MY_IP_ADDRESS:0
 $ python3 simulate.py
 ```
+where MY_IP_ADDRESS is your local IP address (not 127.0.0.1).
 
 ## **Installation using Source Code**
 
