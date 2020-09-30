@@ -34,6 +34,9 @@ echo "PATH=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH:\$PATH" >> $PROFILE_
 echo "JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH" >> $PROFILE_FILE
 java --version
 
+echo "PROFILE FILE:"
+cat $PROFILE_FILE
+
 # install GraalVM Native-Image
 echo "Installing GraalVM-20.1.0 Native-Image ..."
 sudo $INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH/gu install native-image
