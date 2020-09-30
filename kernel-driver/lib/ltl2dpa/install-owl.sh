@@ -16,6 +16,13 @@ else
     BIN_PATH=bin
     HOME_PATH=
 fi
+echo "INSTALL_PATH="
+echo $INSTALL_PATH
+echo "BIN_PATH="
+echo $BIN_PATH
+echo "HOME_PATH="
+echo $HOME_PATH
+
 GRAALVM_URL=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/$GRAALVM_FILE
 wget -q $GRAALVM_URL
 tar -zxvf $GRAALVM_FILE
