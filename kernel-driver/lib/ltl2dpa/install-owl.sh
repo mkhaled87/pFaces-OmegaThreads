@@ -25,7 +25,7 @@ echo $HOME_PATH
 
 GRAALVM_URL=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/$GRAALVM_FILE
 wget -q $GRAALVM_URL
-tar -zxvf $GRAALVM_FILE
+tar -zxvf $GRAALVM_FILE 2>/dev/null
 rm $GRAALVM_FILE
 sudo mv graalvm-ce-java11-20.1.0 $INSTALL_PATH/
 rm -rf graalvm-ce-java11-20.1.0
@@ -40,6 +40,12 @@ cat $PROFILE_FILE
 # install GraalVM Native-Image
 echo "Installing GraalVM-20.1.0 Native-Image ..."
 sudo $INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH/gu install native-image
+
+echo "GraalVM contents: "
+ls -all $INSTALL_PATH/graalvm-ce-java11-20.1.0/
+
+echo "GraalVM/BIN contents: "
+ls -all $INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH/
 
 # remove old owl
 rm -rf ./owl
