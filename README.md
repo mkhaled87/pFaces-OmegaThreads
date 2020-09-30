@@ -45,26 +45,26 @@ Now OmegaThreads is installed and we will test it now with a simmple example.
 In case you need to know more about OmegaThreads, we advise you to read the **Getting Started** section below.
 In the Docker image, OmegaThreas sis located in the director **pFaces-OmegaThreads** and you can navigate to it as follows:
 ``` bash
-$ cd pFaces-OmegaThreads
+/# cd pFaces-OmegaThreads
 ```
 
 In the Docker image, we installed Oclgrind to simulate an OpenCL platform/device that utilizes all the CPU cores using threads. Unless you will be passing-through your device (e.g., a GPU), you MUST preceed any pFaces command with oclgrind. For example, to check available devices using Oclgrind/pFaces, run:
 ``` bash
-$ oclgrind pfaces -CGH -l
+/# oclgrind pfaces -CGH -l
 ```
 
 Now you can test one of the examples of OmegaThreads. Navigate to, for example, the robot exammple and launch it using oclgrind:
 ``` bash
-$ cd examples/robot2d
-$ oclgrind pfaces -CG -d 1 -k omega@../../kernel-pack -cfg robot.cfg
+/# cd examples/robot2d
+/# oclgrind pfaces -CG -d 1 -k omega@../../kernel-pack -cfg robot.cfg
 ```
 
 Simulating the example using the provided Python interface requires you have an X11 server running ourside Docker to catch/render the GUI information.
 See [this tutorial](http://wiki.ros.org/docker/Tutorials/GUI) for help.
 Now, run the following command to launch the simulation: 
 ``` bash
-$ export DISPLAY=MY_IP_ADDRESS:0
-$ python3 simulate.py
+/# export DISPLAY=MY_IP_ADDRESS:0
+/# python3 simulate.py
 ```
 where MY_IP_ADDRESS is your local IP address (not 127.0.0.1).
 
