@@ -80,7 +80,15 @@ Now, without closing the running docker container, start a new terminal on the h
 ``` bash
 $ cd ~/docker_shared
 $ python3 simulate.py
-```    
+```
+
+This should start the 2d simulator and simulate the closed loop as follows:
+
+<p align="center"> 
+    <img src="media/LTL_robot.gif" alt="A robot reaching-and-staying in a target while avoiding some obstacles" target="_blank"/>
+    <br />
+    A simulation recorded from the <BR /><a href="/examples/robot2d/">Robot Example</a>.
+</p>
 
 ## **Installation using Source Code**
 
@@ -184,11 +192,7 @@ Once the controller is synthesized, it is saved to an (.mdf) file. You can now u
 $ python3 simulate.py
 ```
 
-This should start the 2d simulator and simulate the closed loop as follows:
-
-<p align="center"> 
-    <img src="media/LTL_robot.gif" alt="A robot reaching-and-staying in a target while avoiding some obstacles" target="_blank"/>
-</p>
+This should start the 2d simulator and simulate the closed loop as depicted in Fig. 2.
 
 ## **The configuration files**
 
