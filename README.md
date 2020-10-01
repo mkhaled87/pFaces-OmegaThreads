@@ -106,7 +106,7 @@ where **pfaces** calls pFaces launcher as installed in your machine. This should
 
 #### OWL Library
 
-OWL library is used to construct a parity Automaton from the input LTL specifications. if you are using Linux or MacOs, we automated the installation of OWL using the a script. Run the following command to install OWL and its requirements (mainly a JDK supporting Java 11 and GraalVM):
+OWL library is used to construct a parity Automaton from the input LTL specifications. if you are using Linux or MacOs, we automated the installation of OWL using the a script. Run the following command to install OWL and its requirements (mainly GraalVM 20.1):
 
 ``` bash
 $ sh kernel-driver/lib/ltl2dpa/install-owl.sh
