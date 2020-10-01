@@ -8,9 +8,6 @@
 /* some defines needed later */
 #define concrete_t @@concrete_t_name@@
 #define symbolic_t @@symbolic_t_name@@
-#define FLAT_TYPE symbolic_t
-#define FLAT_TYPE_SIZE 1
-#define flat_t FLAT_TYPE
 
 // load some values from the config file
 #define ssDim @pfaces-configValue:"system.states.dimension"
