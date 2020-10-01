@@ -79,7 +79,7 @@ void get_concrete_u(const symbolic_t u_flat, concrete_t* u_conc){
 		
 		u_sym[i] = fltCurrent; 
 		
-		fltCurrent = fltCurrent % fltVolume;
+		fltCurrent = fltCurrent * fltVolume;
 		fltIntial = fltIntial - fltCurrent;
 	}
 
