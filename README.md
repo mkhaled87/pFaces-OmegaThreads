@@ -87,7 +87,7 @@ This should start the 2d simulator and simulate the closed loop as follows:
 <p align="center"> 
     <img src="media/LTL_robot.gif" alt="A robot reaching-and-staying in a target while avoiding some obstacles" target="_blank"/>
     <br />
-    A simulation recorded from the <BR /><a href="/examples/robot2d/">Robot Example</a>.
+    Fig. 2: A simulation recorded from the <a href="/examples/robot2d/">Robot Example</a>.
 </p>
 
 ## **Installation using Source Code**
