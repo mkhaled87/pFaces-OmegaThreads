@@ -9,7 +9,7 @@ Design requirements are usually given in a formal language (e.g., [linear tempor
 <p align="center"> 
     <img src="media/LTL_vehicle.gif" alt="An autonomous vehicle visiting infinitly-often two targets while avoiding an obstacle" target="_blank"/>
     <br />
-    Fig. 1: The Python-Arcade-based 2d-simulator <BR />prrovided by OmegaThreads. 
+    Fig. 1: The Python-Arcade-based 2d-simulator <BR />provided by OmegaThreads. 
     This simulation is recorded from the <BR /><a href="/examples/vehicle3d/">Autonomous Vehicle Example</a>.
     The vehicle is supposed to infinitely-often <BR />visit the two targets (target1) and (target2) while not crashing in (avoids). <BR /><BR />
 </p>
@@ -26,7 +26,7 @@ In **OmegaThreads**, scalable parallel algorithms are designed to construct symb
 
 ## **Installation using Docker**
 Here, we assume you will be using a Linux or MacOS machine. Commands will be slightly different on Windows if you use Windows PowerShell.
-We tested this on Ubuntu Linux 18.04, on MacOs 10.15.7 and onn Windows 10 x46.
+We tested this on Ubuntu Linux 18.04, on MacOs 10.15.7 and on Windows 10 x46.
 
 First, make sure you have docker installed (see Docker installation guide for: [MacOS](https://docs.docker.com/docker-for-mac/install/), [Ubuntu Linux](https://docs.docker.com/engine/install/ubuntu/) or [Windows](https://docs.docker.com/docker-for-windows/install/)). Also, make sure to [configure Docker to use sufficient resources](https://docs.docker.com/config/containers/resource_constraints/) (e.g., enough CPU cores). Otherwise, OmegaThreads will run slower. In case you are using a GPU, make sure to expose the GPU to Docker.
 
@@ -41,23 +41,23 @@ Build the Docker image:
 ``` bash
 $ docker build -t omega/latest .
 ```    
-The Docker image building process will take arrpximatly 15 minutes. 
+The Docker image building process will take proximately 15 minutes. 
 During the build, you may recieve some red-colored messages.
-They are not errors, unless you receieve an excplicit red-colored error message.
+They are not errors, unless you recieve an explicit red-colored error message.
 Once done, run/enter the image's interactive shell
 ``` bash
 $ docker run -it -v ~/docker_shared:/docker_shared omega/latest
 ```    
-Note that by the previous command, we mad a pipe between host and the container (this part: *-v ~/docker_shared:/docker_shared*) which will later allow us to move files (e.g., the synthesized controller) from the container to the host.
+Note that by the previous command, we made a pipe between host and the container (this part: *-v ~/docker_shared:/docker_shared*) which will later allow us to move files (e.g., the synthesized controller) from the container to the host.
 
-Now OmegaThreads is installed and we will test it with a simmple example.
+Now OmegaThreads is installed and we will test it with a simple example.
 In case you need to know more about OmegaThreads, we advise you to read the **Getting Started** section below.
 In the Docker image, OmegaThreas sis located in the director **pFaces-OmegaThreads** and you can navigate to it as follows:
 ``` bash
 /# cd pFaces-OmegaThreads
 ```
 
-In the Docker image, we installed Oclgrind to simulate an OpenCL platform/device that utilizes all the CPU cores using threads. Unless you will be passing-through your device (e.g., a GPU), you MUST preceed any pFaces command with oclgrind. For example, to check available devices using Oclgrind/pFaces, run:
+In the Docker image, we installed Oclgrind to simulate an OpenCL platform/device that utilizes all the CPU cores using threads. Unless you will be exposing your device (e.g., a GPU) to Docker, pFaces commands **MUST** be preceded with oclgrind. For example, to check available devices using Oclgrind/pFaces, run:
 ``` bash
 /# oclgrind pfaces -CG -l
 ```
@@ -88,7 +88,7 @@ $ python3 simulate.py
 
 #### pFaces
 
-You first need to have have [pFaces](http://www.parallall.com/pfaces) installed and working. Test the installation of pFaces and make sure it recognizes the parallel hardware in your machine by running the following command:
+You first need to have [pFaces](http://www.parallall.com/pfaces) installed and working. Test the installation of pFaces and make sure it recognizes the parallel hardware in your machine by running the following command:
 
 ``` bash
 $ pfaces -CGH -l
