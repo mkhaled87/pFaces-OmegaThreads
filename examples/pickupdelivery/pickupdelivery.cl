@@ -63,7 +63,9 @@ void model_post(
     // change the battery level
     char is_charging = (x[0] >= 6.5f && x[0] <= 8.5f) && (x[1] >= 3.5f && x[1] <= 4.5f);
     if (is_charging){
-        post_x_lb[2] = x[2] + 1.0;
+        post_x_lb[2] = x[2] + 20.0f;
+        if (post_x_lb[2] > 99.0)
+            post_x_lb[2] = 99.0;
     }
     else {
         post_x_lb[2] = x[2] - 1.0;
