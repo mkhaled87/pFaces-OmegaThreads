@@ -8,7 +8,6 @@ from OmegaInterface import Quantizer
 from OmegaInterface import RungeKuttaSolver
 
 # insert interace folder of pFaces
-pfaces_interface_path = sys.path.insert(1, os.environ['PFACES_SDK_ROOT'] + "../interface/python")
 from ConfigReader import ConfigReader
 
 def list2str(lnList):
@@ -81,7 +80,7 @@ COLORS = [
 
 class Omega2dSimulator(arcade.Window):
 
-    def __init__(self, width, height, title, sys_dynamics_func, sampling_period, config_file, controller_file, model_image, model_image_scale ):
+    def __init__(self, width, height, title, sys_dynamics_func, sampling_period, config_file, controller_file, model_image, model_image_scale, visualize_3rd_dim = True, use_ODE = True, skip_aps = []):
         super().__init__(width, height, "Omega2dSimulator: " + title)
 
         # local storage
@@ -89,6 +88,9 @@ class Omega2dSimulator(arcade.Window):
         self.SCREEN_HEIGHT = height
         self.step_time = sampling_period
         self.sys_dynamics = sys_dynamics_func
+        self.skip_aps = skip_aps
+        self.use_ODE = use_ODE
+        self.visualize_3rd_dim = visualize_3rd_dim
 
         # create the controller object
         self.controller = Controller(controller_file)
@@ -123,7 +125,8 @@ class Omega2dSimulator(arcade.Window):
         # create a quantizer and an ode solver
         self.qnt_x = Quantizer(self.x_lb, self.x_eta, self.x_ub)
         self.qnt_u = Quantizer(self.u_lb, self.u_eta, self.u_ub)
-        self.ode = RungeKuttaSolver(self.sys_dynamics, 5)
+        if self.use_ODE:
+            self.ode = RungeKuttaSolver(self.sys_dynamics, 5)
 
         # configs for the arena
         self.ZERO_BASE_X = 50
@@ -143,13 +146,22 @@ class Omega2dSimulator(arcade.Window):
         state_arena = self.translate_sys_to_arena(self.x_0)
         self.system.center_x = state_arena[0]
         self.system.center_y = state_arena[1]
-        self.system.angle =  state_arena[2]
+        if len(self.x_lb) == 3 and self.visualize_3rd_dim:
+            self.system.angle =  state_arena[2]
 
         # others: subsets
         self.subset_names = self.config_reader.get_value_string("system.states.subsets.names").replace(" ","").split(",")
         self.subset_HRs = []
         for subset_name in self.subset_names:
+            skip = False
+            for skip_ap in self.skip_aps:
+                if skip_ap == subset_name:
+                    skip = True
+            if skip:
+                continue
             subset_str = self.config_reader.get_value_string("system.states.subsets.mapping_" + subset_name)
+            if subset_str  == '':
+                continue
             HRs = str2hyperrects(subset_str)
             HRs_modified = []
             for HR in HRs:
@@ -188,13 +200,16 @@ class Omega2dSimulator(arcade.Window):
         pass
 
     def draw_arena(self):
-        # Draw the bounds
-        arcade.draw_rectangle_filled(self.ZERO_BASE_X + self.ARENA_WIDTH/2, self.ZERO_BASE_Y + self.ARENA_HIGHT/2, self.ARENA_WIDTH + self.X_GRID, self.ARENA_HIGHT + self.Y_GRID, arcade.color.DARK_GRAY)
-        arcade.draw_rectangle_outline(self.ZERO_BASE_X + self.ARENA_WIDTH/2, self.ZERO_BASE_Y + self.ARENA_HIGHT/2, self.ARENA_WIDTH + self.X_GRID, self.ARENA_HIGHT + self.Y_GRID, arcade.color.BLACK)
-
-        # subsets
+        
+        # Draw the background
+        arcade.draw_rectangle_filled(self.ZERO_BASE_X + self.ARENA_WIDTH/2, self.ZERO_BASE_Y + self.ARENA_HIGHT/2, self.ARENA_WIDTH + self.X_GRID, self.ARENA_HIGHT + self.Y_GRID, arcade.color.LIGHT_GRAY)
+        
+        # Draw the subsets
         self.draw_subsets()
-
+        
+        # Draw the bounds
+        arcade.draw_rectangle_outline(self.ZERO_BASE_X + self.ARENA_WIDTH/2, self.ZERO_BASE_Y + self.ARENA_HIGHT/2, self.ARENA_WIDTH + self.X_GRID, self.ARENA_HIGHT + self.Y_GRID, arcade.color.BLACK)
+       
         # draw grid
         num_x_lines = int(self.ARENA_WIDTH/self.X_GRID) + 1
         for i in range(1,num_x_lines):
@@ -255,14 +270,19 @@ class Omega2dSimulator(arcade.Window):
             self.sys_status = "moving"
 
         # solve the ode for one delta
-        self.sys_state = self.ode.RK4(self.sys_state, self.last_action, self.avg_delta)
+        if self.use_ODE:
+            self.sys_state = self.ode.RK4(self.sys_state, self.last_action, self.avg_delta)
+        else:
+            if self.sub_steps == 0:
+                self.sys_state = self.sys_dynamics(self.sys_state, self.last_action)
         self.sub_steps += 1
 
         # set state
         state_arena = self.translate_sys_to_arena(self.sys_state)
         self.system.center_x = state_arena[0]
         self.system.center_y = state_arena[1]
-        self.system.angle =  state_arena[2]
+        if len(self.sys_state) == 3 and self.visualize_3rd_dim:
+            self.system.angle =  state_arena[2]
 
         # if number of delta_steps_in_tau is reached, time to stop
         # and wait for new input
