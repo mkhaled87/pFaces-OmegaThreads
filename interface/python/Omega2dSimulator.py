@@ -8,6 +8,8 @@ from OmegaInterface import Quantizer
 from OmegaInterface import RungeKuttaSolver
 
 # insert interace folder of pFaces
+if os.environ['PFACES_SDK_ROOT'] is not None:
+    pfaces_interface_path = sys.path.insert(1, os.environ['PFACES_SDK_ROOT'] + "../interface/python")
 from ConfigReader import ConfigReader
 
 def list2str(lnList):
