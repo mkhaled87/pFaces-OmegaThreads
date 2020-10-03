@@ -104,7 +104,7 @@ The exaple you just ran corresponds to the problem of controller synthesis for a
 The drone in suppost to infinitly-often visit some pickup stations.
 Once reaching a pickup station (pickup1 or pickup2), the dron should finish a delivery task by reaching the corresponding delivery stateion (delivery1 or delivery2).
 During the continous operation, the drone should never hit any of the obstacles.
-If the battery. of the robot goes into a low-battery state, it should go to the charging station to charge.
+If the battery of the drone goes into a low-battery state, it should go to the charging station to charge.
 In case you like to know more about OmegaThreads, we advise you to start reading the **Getting Started** section below.
 
 ## **Building and running OmegaThreads using Source Code**
@@ -178,13 +178,13 @@ $ make
 
 Navigate to any of the examples in the directory [/examples](/examples). Within each example, one or more .cfg files are provided. Config files tells OmegaThreads about the system under consideration and the requirements it should consider when designing a controller for the system.
 
-Say you navigated to the example in [/examples/robot2d](/examples/robot2d) and you want to launch OmegaThreads with the config file [robot.cfg](/examples/robot2d/robot.cfg), then run the following command from any terminal located in the example folder:
+Say you navigated to the example in [/examples/pickupdelivery](/examples/pickupdelivery) and you want to launch OmegaThreads with the config file [pickupdelivery.cfg](/examples/pickupdelivery/pickupdelivery.cfg), then run the following command from any terminal located in the example folder:
 
 ``` bash
-$ pfaces -CGH -d 1 -k omega@../../kernel-pack -cfg robot.cfg -p
+$ pfaces -CGH -d 1 -k omega@../../kernel-pack -cfg pickupdelivery.cfg -p
 ```
 
-where **pfaces** calls pFaces launcher, "-CGH -d 1" asks pFaces to run OmegaThreads in the first device of all available devices, "-k omega@../../kernel-pack" tells pFaces about OmegaThreads and where it is located, "-cfg robot.cfg" asks pFaces to hand the configuration file to OmegaThreads, and "-p" asks pFaces to collect profiling information. Make sure to replace each / with \ in case you are using Windows command line.
+where **pfaces** calls pFaces launcher, "-CGH -d 1" asks pFaces to run OmegaThreads in the first device of all available devices, "-k omega@../../kernel-pack" tells pFaces about OmegaThreads and where it is located, "-cfg pickupdelivery.cfg" asks pFaces to hand the configuration file to OmegaThreads, and "-p" asks pFaces to collect profiling information. Make sure to replace each / with \ in case you are using Windows command line.
 
 For this example, you may also directly use the script **solve.sh** instead of writing the complete pFaces command:
 
