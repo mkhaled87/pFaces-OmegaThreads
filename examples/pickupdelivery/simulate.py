@@ -31,7 +31,7 @@ def model_dynamics(x,u):
     if is_charging:        
         battery += 20.0
         if battery > 99.0:
-            battery = 99.0;        
+            battery = 99.0    
     else:
         battery -= 1.0
     
