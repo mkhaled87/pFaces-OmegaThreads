@@ -35,7 +35,7 @@ $ cd OmegaThreads
 $ curl https://raw.githubusercontent.com/mkhaled87/pFaces-OmegaThreads/master/Dockerfile -o Dockerfile
 ```    
 
-Build the Docker image:
+Build the Docker image (don't forget the DOT at the end):
 ``` bash
 $ docker build -t omega/latest .
 ```    
@@ -66,7 +66,7 @@ Now you can test one of the examples of OmegaThreads. Navigate to, for example, 
 /# oclgrind pfaces -CG -d 1 -k omega@../../kernel-pack -cfg robot.cfg
 ```
 
-In case you need to move the controller to the host for simulation,  copy it as follows to the shared folder (we copy the simulation scripts as well):
+In case you need to move the controller to the host for simulation,  copy it as follows to the shared folder (we copy some simulation scripts and example-related files as well):
 ``` bash
 /# cp robot.mdf /docker_shared/
 /# cp robot.png /docker_shared/
