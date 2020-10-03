@@ -24,9 +24,9 @@ In **OmegaThreads**, scalable parallel algorithms are designed to construct symb
 
 ## **Installing and running OmegaThreads using Docker**
 Here, we assume you will be using a Linux or MacOS machine. Commands will be slightly different on Windows if you use Windows PowerShell.
-We tested this on Ubuntu Linux 18.04, on MacOs 10.15.7 and on Windows 10 x46.
+We tested OmegaThreads on Docker using Ubuntu Linux 18.04, MacOs 10.15.7 and Windows 10 x46.
 
-First, make sure you have docker installed (see Docker installation guide for: [MacOS](https://docs.docker.com/docker-for-mac/install/), [Ubuntu Linux](https://docs.docker.com/engine/install/ubuntu/) or [Windows](https://docs.docker.com/docker-for-windows/install/)). Also, make sure to [configure Docker to use sufficient resources](https://docs.docker.com/config/containers/resource_constraints/) (e.g., enough CPU cores). Otherwise, OmegaThreads will run slower. In case you are using a GPU, make sure to expose the GPU to Docker.
+First, make sure you have docker installed (see Docker installation guide for: [MacOS](https://docs.docker.com/docker-for-mac/install/), [Ubuntu Linux](https://docs.docker.com/engine/install/ubuntu/) or [Windows](https://docs.docker.com/docker-for-windows/install/)). Also, make sure to [configure Docker to use sufficient resources](https://docs.docker.com/config/containers/resource_constraints/) (e.g., enough CPU cores). Otherwise, OmegaThreads will run slower than expected.
 
 Download the Dockerfile:
 ``` bash
@@ -35,46 +35,58 @@ $ cd OmegaThreads
 $ curl https://raw.githubusercontent.com/mkhaled87/pFaces-OmegaThreads/master/Dockerfile -o Dockerfile
 ```    
 
-Build the Docker image (don't forget the DOT at the end):
+Build the Docker container (don't forget the DOT at the end):
 ``` bash
 $ docker build -t omega/latest .
 ```    
-The Docker image building process will take proximately 15 minutes. 
+The building process will take proximately 15 minutes. 
 During the build, you may recieve some red-colored messages.
-They are not errors, unless you recieve an explicit red-colored error message.
-Once done, run/enter the image's interactive shell
+They do not indicate errors, unless you recieve an explicit red-colored error message.
+Once done, run/enter the image's interactive shell:
+
 ``` bash
 $ docker run -it -v ~/docker_shared:/docker_shared omega/latest
-```    
+```
+
 Note that by the previous command, we made a pipe between host and the container (this part: *-v ~/docker_shared:/docker_shared*) which will later allow us to move files (e.g., the synthesized controller) from the container to the host.
 
 Now OmegaThreads is installed and we will test it with a simple example.
-In case you need to know more about OmegaThreads, we advise you to read the **Getting Started** section below.
-In the Docker image, OmegaThreas sis located in the director **pFaces-OmegaThreads** and you can navigate to it as follows:
+In the Docker image, OmegaThreas is located in the director **pFaces-OmegaThreads**.
+Navigate to it as follows:
+
 ``` bash
 /# cd pFaces-OmegaThreads
 ```
 
-In the Docker image, we installed Oclgrind to simulate an OpenCL platform/device that utilizes all the CPU cores using threads. Unless you will be exposing your device (e.g., a GPU) to Docker, pFaces commands **MUST** be preceded with oclgrind. For example, to check available devices using Oclgrind/pFaces, run:
+In the Docker image, we installed Oclgrind to simulate an OpenCL platform/device that utilizes all the CPU cores using threads. 
+As we use Oclgrind inside Docker, pFaces commands **MUST** be preceded with the command: oclgrind. 
+For example, to check available devices using Oclgrind and pFaces, run:
+
 ``` bash
 /# oclgrind pfaces -CG -l
 ```
 
-Now you can test one of the examples of OmegaThreads. Navigate to, for example, the robot exammple and launch it using oclgrind:
-``` bash
-/# cd examples/robot2d
-/# oclgrind pfaces -CG -d 1 -k omega@../../kernel-pack -cfg robot.cfg
-```
+Now, run the pickup-delivery drone exammple and launch it using oclgrind:
 
-In case you need to move the controller to the host for simulation,  copy it as follows to the shared folder (we copy some simulation scripts and example-related files as well):
 ``` bash
-/# cp robot.mdf /docker_shared/
-/# cp robot.png /docker_shared/
+/# cd examples/pickupdelivery
+/# oclgrind pfaces -CG -d 1 -k omega@../../kernel-pack -cfg pickupdelivery.cfg
+```
+This should take some time (up to 5 minutes), during which pFaces constructs a symbolic model of the system, a parity game and solves it.
+Now, move the controller to the host for simulatio.
+Copy it as follows to the shared folder (we copy some simulation scripts and example-related files as well):
+
+``` bash
+/# cp pickupdelivery.cfg /docker_shared/
+/# cp pickupdelivery.mdf /docker_shared/
+/# cp drone.png /docker_shared/
 /# cp simulate.py /docker_shared/
 /# cp ../../interface/python/*.py /docker_shared/
+/# cp $PFACES_SDK_ROOT/../interface/python/*.* /docker_shared/
 ```
 
-Now, without closing the running docker container, start a new terminal on the host and simulate the controller (make sure Python 3.6+, Arcade and Parglare are installed before running this command and refer to Python's requirements below for more info):
+Now, without closing the running docker container, start a new terminal on the host and simulate the controller (make sure Python 3.6+, Arcade and Parglare are installed before running this command and refer to Python's requirements below for a small installation guide):
+
 ``` bash
 $ cd ~/docker_shared
 $ python3 simulate.py
@@ -83,10 +95,17 @@ $ python3 simulate.py
 This should start the 2d simulator and simulate the closed loop as follows:
 
 <p align="center"> 
-    <img src="media/LTL_robot.gif" alt="A robot reaching-and-staying in a target while avoiding some obstacles" target="_blank"/>
+    <img src="media/pickupdelivery.gif" alt="A pickup-delivery drone infinitly-often achiving pickup and delivery." target="_blank"/>
     <br />
-    Fig. 2: A simulation recorded from the <a href="/examples/robot2d/">Robot Example</a>.
+    Fig. 2: A simulation recorded from the <a href="/examples/pickupdelivery/">Pickup-Delivery Drone</a>.
 </p>
+
+The exaple you just ran corresponds to the problem of controller synthesis for a Pickup-Delivery drone.
+The drone in suppost to infinitly-often visit some pickup stations.
+Once reaching a pickup station (pickup1 or pickup2), the dron should finish a delivery task by reaching the corresponding delivery stateion (delivery1 or delivery2).
+During the continous operation, the drone should never hit any of the obstacles.
+If the battery. of the robot goes into a low-battery state, it should go to the charging station to charge.
+In case you like to know more about OmegaThreads, we advise you to start reading the **Getting Started** section below.
 
 ## **Building and running OmegaThreads using Source Code**
 
