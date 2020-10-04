@@ -104,7 +104,7 @@ class Controller:
                 self.machine_state = trans.get_next_state()
                 return trans.get_output_values()
 
-        raise Exception('Failed to find a control action !')
+        raise Exception('Failed to find a control action for x=' + str(model_state) + '!')
 
 # s class to represnet quantizers
 class Quantizer:

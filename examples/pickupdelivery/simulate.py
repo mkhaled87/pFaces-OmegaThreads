@@ -6,7 +6,6 @@ import math
 sys.path.insert(1, '../../interface/python')
 from Omega2dSimulator import Omega2dSimulator
 
-
 # system dynamics
 def model_dynamics(x,u):
     pos_x = x[0]

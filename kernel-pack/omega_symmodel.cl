@@ -42,6 +42,12 @@ __kernel void construct_symmodel(__global xu_posts_t* xu_posts_bags){
 	get_concrete_u(thread_idx_u, u);
 	model_post(post_x_lb, post_x_ub, x, u);
 
+	/*
+	if(thread_idx_x == 0 && thread_idx_u == 8){
+		printf("For (17511,0), Posts = [%f,%f,%f]x[%f,%f,%f]",post_x_lb[0],post_x_lb[1],post_x_lb[2],post_x_ub[0],post_x_ub[1],post_x_ub[2]);
+	}
+	*/
+
 	for (unsigned int i = 0; i<ssDim; i++) {
 		xu_posts_bags[flat_thread_idx].cnc_dest_states_lb[i] = post_x_lb[i];
 		xu_posts_bags[flat_thread_idx].cnc_dest_states_ub[i] = post_x_ub[i];
