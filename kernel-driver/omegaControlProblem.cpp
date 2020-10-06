@@ -226,6 +226,21 @@ SymSpec<L1, L2>::SymSpec(
 }
 
 template<class L1, class L2>
+SymSpec<L1, L2>::SymSpec(
+        const std::string& _dpa_file,
+        L1& _L_x,
+        L2& _L_u):
+    L_x(_L_x),
+    L_u(_L_u),
+    dpa(TotalDPA(_dpa_file)){
+
+    // fill local data
+    add_ltl_formula(dpa.getLtlFormula());
+    add_state_APs(dpa.getInVars());
+    add_control_APs(dpa.getOutVars());
+}
+
+template<class L1, class L2>
 void SymSpec<L1, L2>::add_ltl_formula(std::string _ltl_spec){
     ltl_spec = _ltl_spec;
 }

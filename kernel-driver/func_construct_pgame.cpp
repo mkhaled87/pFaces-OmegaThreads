@@ -137,9 +137,20 @@ namespace pFacesOmegaKernels {
 
         // create the specs wrapper
         std::string ltl_formula = m_spCfg->readConfigValueString("specifications.ltl_formula");
+		std::string dpa_file = m_spCfg->readConfigValueString("specifications.dpa_file");
 		bool write_dpa = m_spCfg->readConfigValueBool("specifications.write_dpa");
-        pSymSpec = std::make_shared<SymSpec<L_x_func_t, L_u_func_t>>(x_aps, u_aps, ltl_formula, L_x, L_u);
-		std::cout << "The DPA has " << pSymSpec->count_DPA_states() << " states" << std::endl;
+
+		if(!dpa_file.empty() && !ltl_formula.empty())
+			throw std::runtime_error("pFacesOmega::init_construct_pgame: you have to provide either dpa_file or ltl_formula as specification but not both at the same time.");
+
+		if(!ltl_formula.empty())
+        	pSymSpec = std::make_shared<SymSpec<L_x_func_t, L_u_func_t>>(x_aps, u_aps, ltl_formula, L_x, L_u);
+		else if(!dpa_file.empty())
+			pSymSpec = std::make_shared<SymSpec<L_x_func_t, L_u_func_t>>(dpa_file, L_x, L_u);			
+		else
+			throw std::runtime_error("pFacesOmega::init_construct_pgame: no valid specification is provided in the config file.");
+
+		std::cout << "The DPA has " << pSymSpec->count_DPA_states() << " states" << std::endl;			
 
         // create the sym-model wrapper
         pSymModel = std::make_shared<SymModel<post_func_t>>(x_symbols, u_symbols, x_initial, get_sym_posts);

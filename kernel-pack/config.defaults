@@ -27,6 +27,7 @@ system.dynamics.code_file = "";
 
 # specification defaults
 specifications.ltl_formula = "";
+specifications.dpa_file = "";
 specifications.write_dpa = "false";
 
 # implementation defaults

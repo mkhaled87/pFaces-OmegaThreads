@@ -35,6 +35,15 @@
                 "examples/vehicle3d/vehicle.cfg"
             ],
             "cwd": "${workspaceFolder}"
+        }, 
+        {
+            "name": "Python Robot Simulate",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/robot2d/sim.py",
+            "cwd": "${workspaceFolder}/examples/robot2d/",
+            "console": "integratedTerminal"
         }
+
     ]
 }

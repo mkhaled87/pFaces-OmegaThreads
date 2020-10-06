@@ -173,6 +173,15 @@ atomic_proposition_status_t TotalDPA::getVariableStatus(int variable){
 size_t TotalDPA::getStatesCount() const {
     return states.size();
 }
+std::vector<std::string> TotalDPA::getInVars(){
+    return inVars;
+}
+std::vector<std::string> TotalDPA::getOutVars(){
+    return outVars;
+}
+std::string TotalDPA::getLtlFormula(){
+    return ltl_formula;
+}
 
 strix_aut::ColorScore TotalDPA::getSuccessor(const strix_aut::product_state_t& state, strix_aut::product_state_t& successor, const strix_aut::letter_t& io_letter){
 

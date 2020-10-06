@@ -104,6 +104,7 @@ class Omega2dSimulator(arcade.Window):
         self.load_configs(config_file)
         self.sys_state = self.x_0
         self.last_action = [0.0]*len(self.x_lb)
+        self.last_action_symbol = -1
 
         # prepare for simulation
         self.sys_status = "stopped"
@@ -131,15 +132,15 @@ class Omega2dSimulator(arcade.Window):
             self.ode = RungeKuttaSolver(self.sys_dynamics, 5)
 
         # configs for the arena
-        self.ZERO_BASE_X = 50
-        self.ZERO_BASE_Y = 50
-        self.PADDING = 50
+        self.PADDING = 40
+        self.ZERO_BASE_X = self.PADDING
+        self.ZERO_BASE_Y = self.PADDING
         self.X_GRID = (self.SCREEN_WIDTH-2*self.PADDING)/self.qnt_x.get_widths()[0]
         self.Y_GRID = (self.SCREEN_HEIGHT-2*self.PADDING)/self.qnt_x.get_widths()[1]
         self.ARENA_WIDTH = (self.qnt_x.get_widths()[0])*self.X_GRID
         self.ARENA_HIGHT = (self.qnt_x.get_widths()[1])*self.Y_GRID
-        self.X_SCALE_FACTOR = self.ARENA_WIDTH/(self.x_ub[0] - self.x_lb[0])
-        self.Y_SCALE_FACTOR = self.ARENA_HIGHT/(self.x_ub[1] - self.x_lb[1])
+        self.X_SCALE_FACTOR = self.ARENA_WIDTH/(self.x_ub[0] - self.x_lb[0] + self.x_eta[0])
+        self.Y_SCALE_FACTOR = self.ARENA_HIGHT/(self.x_ub[1] - self.x_lb[1] + self.x_eta[1])
         self.Z_SCALE_FACTOR = 180.0/math.pi # from rad to deg   
         self.arena_mdl_lb = self.translate_sys_to_arena(self.x_lb)
         self.arena_mdl_ub = self.translate_sys_to_arena(self.x_ub)     
@@ -204,24 +205,21 @@ class Omega2dSimulator(arcade.Window):
     def draw_arena(self):
         
         # Draw the background
-        arcade.draw_rectangle_filled(self.ZERO_BASE_X + self.ARENA_WIDTH/2, self.ZERO_BASE_Y + self.ARENA_HIGHT/2, self.ARENA_WIDTH + self.X_GRID, self.ARENA_HIGHT + self.Y_GRID, arcade.color.LIGHT_GRAY)
+        arcade.draw_rectangle_filled(self.ZERO_BASE_X + self.ARENA_WIDTH/2, self.ZERO_BASE_Y + self.ARENA_HIGHT/2, self.ARENA_WIDTH, self.ARENA_HIGHT, arcade.color.LIGHT_GRAY)
         
         # Draw the subsets
         self.draw_subsets()
         
-        # Draw the bounds
-        arcade.draw_rectangle_outline(self.ZERO_BASE_X + self.ARENA_WIDTH/2, self.ZERO_BASE_Y + self.ARENA_HIGHT/2, self.ARENA_WIDTH + self.X_GRID, self.ARENA_HIGHT + self.Y_GRID, arcade.color.BLACK)
-       
         # draw grid
-        num_x_lines = int(self.ARENA_WIDTH/self.X_GRID) + 1
-        for i in range(1,num_x_lines):
-            arcade.draw_line(self.ZERO_BASE_X+i*self.X_GRID - self.X_GRID/2, self.ZERO_BASE_Y - self.Y_GRID/2, self.ZERO_BASE_X+i*self.X_GRID - self.X_GRID/2, self.ZERO_BASE_Y+self.ARENA_HIGHT + self.Y_GRID/2, arcade.color.BLACK)        
-        num_y_lines = int(self.ARENA_HIGHT/self.Y_GRID) + 1
-        for i in range(1,num_y_lines):
-            arcade.draw_line(self.ZERO_BASE_X - self.X_GRID/2, self.ZERO_BASE_Y+i*self.Y_GRID - self.Y_GRID/2, self.ZERO_BASE_X+self.ARENA_WIDTH + self.X_GRID/2, self.ZERO_BASE_Y+i*self.Y_GRID - self.Y_GRID/2, arcade.color.BLACK)        
+        num_x_lines = self.qnt_x.get_widths()[0] + 1
+        for i in range(num_x_lines):
+            arcade.draw_line(self.ZERO_BASE_X+i*self.X_GRID, self.ZERO_BASE_Y, self.ZERO_BASE_X+i*self.X_GRID, self.ZERO_BASE_Y+self.ARENA_HIGHT, arcade.color.BLACK)
+        num_y_lines = self.qnt_x.get_widths()[1] + 1
+        for i in range(num_y_lines):
+            arcade.draw_line(self.ZERO_BASE_X, self.ZERO_BASE_Y+i*self.Y_GRID, self.ZERO_BASE_X+self.ARENA_WIDTH, self.ZERO_BASE_Y+i*self.Y_GRID, arcade.color.BLACK)        
 
         # info
-        arcade.draw_text("Spec.: " + self.specs_formula, self.ZERO_BASE_X - self.X_GRID/2, self.ZERO_BASE_Y + self.ARENA_HIGHT + + self.Y_GRID/2 + 3, arcade.color.BLACK, 14)
+        arcade.draw_text("Spec.: " + self.specs_formula, self.ZERO_BASE_X, self.ZERO_BASE_Y + self.ARENA_HIGHT + 15, arcade.color.BLACK, 12)
         
         # draw lb/ub markers
         arcade.draw_rectangle_filled(self.arena_mdl_lb[0], self.arena_mdl_lb[1], 5, 5, arcade.color.BLUE)
@@ -240,8 +238,14 @@ class Omega2dSimulator(arcade.Window):
         txt += " | Time (sec.): " + str(round(self.time_elapsed))
         txt += " | FPS: " + str(round(1/self.avg_delta))
         txt += "\nCurrent: x_" + str(self.get_current_symbol()) + " = (" + list2str(self.sys_state) + ")"
-        txt += " | Current action: (" + list2str(self.last_action) + ")"
-        arcade.draw_text(txt, self.ZERO_BASE_X - self.X_GRID/2, self.ZERO_BASE_Y - 45, arcade.color.BLACK, 10)
+        txt += " | Current action: "
+        
+        if self.last_action_symbol == -1:
+            txt += "not_issued"
+        else:
+            txt += "u_" + str(self.last_action_symbol) + " (" + list2str(self.last_action) + ")"
+
+        arcade.draw_text(txt, self.ZERO_BASE_X, self.ZERO_BASE_Y - 35, arcade.color.BLACK, 10)
 
     def on_draw(self):
         arcade.start_render()
@@ -250,8 +254,8 @@ class Omega2dSimulator(arcade.Window):
         self.print_info()
 
     def translate_sys_to_arena(self, state):
-        arena_x = self.ZERO_BASE_X + (state[0] - self.x_lb[0])*self.X_SCALE_FACTOR
-        arena_y = self.ZERO_BASE_Y + (state[1] - self.x_lb[1])*self.Y_SCALE_FACTOR
+        arena_x = self.ZERO_BASE_X + (state[0] - self.x_lb[0] + self.x_eta[0]/2)*self.X_SCALE_FACTOR
+        arena_y = self.ZERO_BASE_Y + (state[1] - self.x_lb[1] + self.x_eta[1]/2)*self.Y_SCALE_FACTOR
         if len(state) == 3:
             arena_t = state[2]*self.Z_SCALE_FACTOR
             return [arena_x, arena_y, arena_t]
@@ -261,12 +265,9 @@ class Omega2dSimulator(arcade.Window):
     def update_system(self):
         if self.sys_status == "stopped":
             sym_state = self.get_current_symbol()
-            #print("controller got: " + str(sym_state) + " = " + list2str(self.sys_state))
             actions_list = self.controller.get_control_actions(sym_state)
-            #print("controller sent: " + str(actions_list[0]))
-            self.last_action = self.qnt_u.flat_to_conc(actions_list[0])
-            #print("u_to_apply: " + list2str(self.last_action))
-            #self.last_action = [1.0, 0.0]
+            self.last_action_symbol = actions_list[0]
+            self.last_action = self.qnt_u.flat_to_conc(self.last_action_symbol)
             self.sub_steps = 0
             self.steps_in_tau = self.step_time/self.avg_delta
             self.sys_status = "moving"

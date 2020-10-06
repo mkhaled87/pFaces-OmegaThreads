@@ -38,7 +38,7 @@ def model_dynamics(x,u):
 
 def main():
     simulator = Omega2dSimulator(
-        600,                    				# screen width
+        800,                    				# screen width
         400,                    				# screen hight
         "Pickup-Delivery Drone Example",      	# screen title
         model_dynamics,         				# dynamics function of the model

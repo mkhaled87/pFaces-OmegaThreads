@@ -80,6 +80,9 @@ public:
     strix_aut::color_t getMaxColor();
     atomic_proposition_status_t getVariableStatus(int variable);
     size_t getStatesCount() const;
+    std::vector<std::string> getInVars();
+    std::vector<std::string> getOutVars();
+    std::string getLtlFormula();
 
     // get the successor DPA state (yes it is only one sucessor as it is a (D)PA)
     strix_aut::ColorScore getSuccessor(const strix_aut::product_state_t& state, strix_aut::product_state_t& successor, const strix_aut::letter_t& io_letter);

@@ -38,6 +38,7 @@ system.dynamics.code_file = string
 # specifications: defines the specifications need to be enforced
 specifications = scope
 specifications.ltl_formula = string
+specifications.dpa_file = string
 specifications.write_dpa = boolean
 
 # specifications: holds info about the implementation of the controller

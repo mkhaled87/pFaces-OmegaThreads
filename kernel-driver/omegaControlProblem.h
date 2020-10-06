@@ -154,11 +154,15 @@ public:
     // a total DPA to represent the low-level spec
     TotalDPA dpa;
 
-    // a constructor
+    // constructors
     SymSpec(
         const std::vector<std::string>& _state_APs, 
         const std::vector<std::string>& _control_APs, 
         const std::string& _ltl_formula,
+        L1& _L_x,
+        L2& _L_u);
+    SymSpec(
+        const std::string& _dpa_file,
         L1& _L_x,
         L2& _L_u);
 
