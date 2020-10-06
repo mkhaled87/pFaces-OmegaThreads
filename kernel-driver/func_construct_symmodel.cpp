@@ -51,8 +51,20 @@ namespace pFacesOmegaKernels {
 		size_struct_xu_posts = 2 * x_dim * sizeof(concrete_t);
 
 		// get the initial state
-		auto x_conc_initial = pfacesUtils::sStr2Vector<concrete_t>(m_spCfg->readConfigValueString("system.states.initial_state"));
-		x_initial = OmegaUtils::Conc2Flat(x_conc_initial, x_qs, x_lb, x_widths);
+		auto initial_hrs = OmegaUtils::extractHyperrects(m_spCfg->readConfigValueString("system.states.initial_set"), x_dim);
+		if(initial_hrs.size() != 1)
+			throw std::runtime_error("pFacesOmega::init_construct_symmodel: initial_set should have exactly one hyper-rectangle.");
+		initial_states = OmegaUtils::GetSymbolsInHyperrect(initial_hrs[0], x_qs, x_lb, x_widths);
+		
+#ifdef TEST_FUNCTION		
+		std::string initial_states_info = "";
+		initial_states_info += std::string("SymModel has ") + std::to_string(initial_states.size())  + std::string(" initial states:");
+		for (symbolic_t x : initial_states)
+			initial_states_info += std::string(" x_") + std::to_string(x);
+		pfacesTerminal::showInfoMessage(
+            std::string("init_construct_symmodel: " + initial_states_info)
+        );
+#endif
 
 		// fill the func info
     	func_info_construct_symmodel = 

@@ -82,7 +82,7 @@ COLORS = [
 
 class Omega2dSimulator(arcade.Window):
 
-    def __init__(self, width, height, title, sys_dynamics_func, sampling_period, config_file, controller_file, model_image, model_image_scale, visualize_3rd_dim = True, use_ODE = True, skip_aps = []):
+    def __init__(self, width, height, title, sys_dynamics_func, initial_state, sampling_period, config_file, controller_file, model_image, model_image_scale, visualize_3rd_dim = True, use_ODE = True, skip_aps = []):
         super().__init__(width, height, "Omega2dSimulator: " + title)
 
         # local storage
@@ -93,6 +93,8 @@ class Omega2dSimulator(arcade.Window):
         self.skip_aps = skip_aps
         self.use_ODE = use_ODE
         self.visualize_3rd_dim = visualize_3rd_dim
+        self.x_0 = initial_state
+        self.sys_state = self.x_0
 
         # create the controller object
         self.controller = Controller(controller_file)
@@ -102,7 +104,6 @@ class Omega2dSimulator(arcade.Window):
 
         # load the configurations
         self.load_configs(config_file)
-        self.sys_state = self.x_0
         self.last_action = [0.0]*len(self.x_lb)
         self.last_action_symbol = -1
 
@@ -119,7 +120,6 @@ class Omega2dSimulator(arcade.Window):
         self.x_lb = str2list(self.config_reader.get_value_string("system.states.first_symbol"))
         self.x_ub = str2list(self.config_reader.get_value_string("system.states.last_symbol"))
         self.x_eta = str2list(self.config_reader.get_value_string("system.states.quantizers"))
-        self.x_0 = str2list(self.config_reader.get_value_string("system.states.initial_state"))
         self.u_lb = str2list(self.config_reader.get_value_string("system.controls.first_symbol"))
         self.u_ub = str2list(self.config_reader.get_value_string("system.controls.last_symbol"))
         self.u_eta = str2list(self.config_reader.get_value_string("system.controls.quantizers"))

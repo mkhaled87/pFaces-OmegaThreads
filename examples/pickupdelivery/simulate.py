@@ -37,11 +37,12 @@ def model_dynamics(x,u):
     return [pos_x, pos_y, battery]
 
 def main():
-    simulator = Omega2dSimulator(
-        800,                    				# screen width
+    Omega2dSimulator(
+        600,                    				# screen width
         400,                    				# screen hight
         "Pickup-Delivery Drone Example",      	# screen title
         model_dynamics,         				# dynamics function of the model
+        [7.0,5.0,99.0],                         # initial state for the simulation
         0.1,        				            # sampling period to be used in computing the next states
         "pickupdelivery.cfg",          			# the config file oof the problem
         "pickupdelivery.mdf",          			# the controller file of the problem
@@ -50,9 +51,7 @@ def main():
         False,                                  # simulate dimension 3
         False,                                  # is model_dynamics ODE ?
         ["lowbattery", "fullbattery"]           # APs to skip from drawing
-    )
-
-    simulator.start()
+    ).start()
 
 if __name__ == "__main__":
     main()

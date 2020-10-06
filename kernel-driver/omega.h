@@ -11,7 +11,7 @@
 #include "omegaImplementation.h"
 #include "omegaUtils.h"
 
-// uncomment this re exclude the unit test functions
+// comment this to exclude the test functions
 #define TEST_FUNCTION
 
 namespace pFacesOmegaKernels {
@@ -100,7 +100,7 @@ namespace pFacesOmegaKernels {
 		
 		// some vars/funcs for: construct_symmodel (see func_construct_symmodel.cpp for implementation)
 		size_t size_struct_xu_posts;
-		symbolic_t x_initial;
+		std::vector<symbolic_t> initial_states;
 		func_info func_info_construct_symmodel;
 		void init_construct_symmodel();
 		void add_func_construct_symmodel(std::vector<std::shared_ptr<pfacesInstruction>>& instrList, const cl::Device& targetDevice);

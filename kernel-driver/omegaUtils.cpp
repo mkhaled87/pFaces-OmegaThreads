@@ -127,6 +127,70 @@ namespace pFacesOmegaKernels{
         return x_flat;
     }
 
+    std::vector<symbolic_t> OmegaUtils::GetSymbolsInHyperrect(
+        const hyperrect& hr,
+        const std::vector<concrete_t>& x_eta, 
+        const std::vector<concrete_t>& x_lb,
+        const std::vector<symbolic_t>& x_widths){
+
+        size_t ssDim = x_eta.size();
+        std::vector<symbolic_t> sym_lb = OmegaUtils::Conc2Symbolic(hr.first, x_eta, x_lb);
+		std::vector<symbolic_t> sym_ub = OmegaUtils::Conc2Symbolic(hr.second, x_eta, x_lb);
+		symbolic_t n_rect_symbols = 1;
+        std::vector<symbolic_t> dim_posts_count(ssDim);
+        std::vector<symbolic_t> postcell(ssDim);
+        std::vector<symbolic_t> first_cell_in_dim(ssDim);
+		for (unsigned int j = 0; j<ssDim; j++) {
+			/* compute width per dimension */
+			dim_posts_count[j] = sym_ub[j] - sym_lb[j] + 1;
+
+			/* update number of posts */
+			n_rect_symbols *= dim_posts_count[j];
+
+			/* initialize postcell */
+			postcell[j] = 0;
+
+            /* first cell in dim */
+            if (j == 0)
+                first_cell_in_dim[j] = 1;
+            else {
+                first_cell_in_dim[j] = first_cell_in_dim[j - 1] * x_widths[j - 1];
+            }            
+		}		
+
+		// collect posts
+		std::vector<symbolic_t> ret;
+		for (size_t p = 0; p < n_rect_symbols; p++)
+		{
+			/* compute the symbolic index of the post from its flat index */
+			size_t post_x_flat = 0;
+			for (size_t i = 0; i<ssDim; i++)
+				post_x_flat += (sym_lb[i] + postcell[i])* first_cell_in_dim[i];
+
+			ret.push_back(post_x_flat);
+
+			// prepare the counters for other posts
+			postcell[0]++;
+			for (size_t i = 0; i<ssDim - 1; i++) {
+				if (postcell[i] == dim_posts_count[i]) {
+					postcell[i] = 0;
+					postcell[i + 1]++;
+				}
+			}
+		}
+
+        return ret;
+    }
+
+
+
+
+
+
+
+
+
+
     // override istream to use if fot reading an OWL enum type for statuses from files
     std::istream& operator >> (std::istream& i, atomic_proposition_status_t& status){
         int value;

@@ -153,7 +153,7 @@ namespace pFacesOmegaKernels {
 		std::cout << "The DPA has " << pSymSpec->count_DPA_states() << " states" << std::endl;			
 
         // create the sym-model wrapper
-        pSymModel = std::make_shared<SymModel<post_func_t>>(x_symbols, u_symbols, x_initial, get_sym_posts);
+        pSymModel = std::make_shared<SymModel<post_func_t>>(x_symbols, u_symbols, initial_states, get_sym_posts);
 
 		if(write_dpa){
 			std::string dpa_file = 

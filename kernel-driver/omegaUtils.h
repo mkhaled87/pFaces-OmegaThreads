@@ -48,6 +48,12 @@ namespace pFacesOmegaKernels {
 			const std::vector<concrete_t>& lb, 
 			const std::vector<symbolic_t>& widths);
 
+		static 
+		std::vector<symbolic_t> GetSymbolsInHyperrect(
+			const hyperrect& hr,
+			const std::vector<concrete_t>& x_eta, 
+			const std::vector<concrete_t>& x_lb,
+			const std::vector<symbolic_t>& x_widths);
 
         // print a vector of anything
         template<class T>

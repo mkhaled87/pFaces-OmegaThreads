@@ -14,7 +14,7 @@ system.states.dimension = "0";
 system.states.first_symbol = "";
 system.states.last_symbol = "";
 system.states.quantizers = "";
-system.states.initial_state = "";
+system.states.initial_set = "";
 system.states.subsets.names = "";
 
 system.controls.dimension = "0";

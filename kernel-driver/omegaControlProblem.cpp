@@ -35,12 +35,19 @@ bool SymState::operator==(const SymState& anotherSymState) const {
 // class SymModel
 // ------------------------------------------
 template<class F>
-SymModel<F>::SymModel(const size_t _n_sym_states, const size_t _n_sym_controls, const symbolic_t sym_inital_state, F& post_func)
+SymModel<F>::SymModel(const size_t _n_sym_states, const size_t _n_sym_controls, const std::vector<symbolic_t>& sym_inital_states, F& post_func)
 :n_sym_states(_n_sym_states), n_sym_controls(_n_sym_controls), 
-initial_state(SymState(SymState::SYM_STATE_TYPE::NORMAL_STATE, sym_inital_state)),
 overflow_state(SymState(SymState::SYM_STATE_TYPE::OVERFLOW_STATE, _n_sym_states)),
 dummy_state(SymState(SymState::SYM_STATE_TYPE::DUMMY_STATE, _n_sym_states+1)),
 get_sym_posts(post_func){
+
+    for (symbolic_t sym_inital_state : sym_inital_states){
+        if(!is_valid_sym_state(sym_inital_state))
+            throw std::runtime_error("SymModel::SymModel: one of the supplied initial states is not valid!");
+
+        SymState init_state = SymState(SymState::SYM_STATE_TYPE::NORMAL_STATE, sym_inital_state);
+        initial_states.push_back(init_state);
+    }
 }
 
 template<class F>
@@ -74,8 +81,8 @@ bool SymModel<F>::is_dummy_state(const SymState& state) const {
 }
 
 template<class F>
-SymState SymModel<F>::get_initial_state() const {
-    return initial_state;
+std::vector<SymState> SymModel<F>::get_initial_states() const {
+    return initial_states;
 }
 
 template<class F>
@@ -147,7 +154,12 @@ template<class F>
 void SymModel<F>::print_info(){
     std::cout << "Num states: " << n_sym_states << std::endl; 
     std::cout << "Num controls: " << n_sym_controls << std::endl; 
-    std::cout << "Initial state: " << initial_state.value << std::endl; 
+    std::cout << "Initial states: " << std::endl; 
+
+    for (SymState initial_state : initial_states)
+        std::cout << "x_" << initial_state.value << " ";
+
+    std::cout << std::endl;
     std::cout << "Transitions: " << std::endl;
 
     for(size_t x=0; x<n_sym_states; x++){

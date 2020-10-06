@@ -27,6 +27,7 @@ def main():
         600,                    # screen hight
         "2D Robot Example",     # screen title
         system_post,         	# dynamics function of the model
+        [0.5,0.5],              # initial state for the simulation
         0.5,        	        # sampling period to be used in computing the next states
         "robot.cfg",          	# the config file oof the problem
         "robot.mdf",          	# the controller file of the problem

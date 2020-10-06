@@ -63,9 +63,6 @@ class SymModel {
     size_t n_sym_states;
     size_t n_sym_controls;
 
-    // the initial state
-    SymState initial_state;
-
     // an overflow state
     SymState overflow_state;
 
@@ -74,11 +71,14 @@ class SymModel {
 
     // a function to represent the transition map
     F& get_sym_posts;
+
+    // the set of initial states
+    std::vector<SymState> initial_states;    
  
 public:
 
     // a constructor
-    SymModel(const size_t _n_sym_states, const size_t _n_sym_controls, const symbolic_t sym_inital_state, F& post_func);
+    SymModel(const size_t _n_sym_states, const size_t _n_sym_controls, const std::vector<symbolic_t>& sym_inital_states, F& post_func);
 
     // checks for states and controls
     bool is_valid_sym_state(symbolic_t state) const;
@@ -87,7 +87,7 @@ public:
     bool is_dummy_state(const SymState& state) const;     
 
     // getters
-    SymState get_initial_state() const;
+    std::vector<SymState> get_initial_states() const;
     SymState get_dummy_state() const;
     SymState get_overflow_state() const;
     size_t get_n_states();

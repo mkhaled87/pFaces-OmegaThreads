@@ -47,6 +47,7 @@ def main():
         400,                    				# screen hight
         "Pickup-Delivery Drone Example",      	# screen title
         system_post,         				    # dynamics function of the model
+        [7.0,5.0,99.0],                         # initial state for the simulation
         sampling_period,        				# sampling period to be used in computing the next states
         "pickupdelivery.cfg",          			# the config file oof the problem
         "pickupdelivery.mdf",          			# the controller file of the problem

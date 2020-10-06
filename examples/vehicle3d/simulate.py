@@ -16,19 +16,18 @@ def model_dynamics(x,u):
     return [xx_0, xx_1, xx_2]
 
 def main():
-    simulator = Omega2dSimulator(
+    Omega2dSimulator(
         600,                    # screen width
         600,                    # screen hight
         "Vehicle Example",      # screen title
         model_dynamics,         # dynamics function of the model
+        [0.5,1.5,1.5],          # initial state for the simulation
         sampling_period,        # sampling period to be used in computing the next states
         "vehicle.cfg",          # the config file oof the problem
         "vehicle.mdf",          # the controller file of the problem
         "vehicle.png",          # an image file to represent the model
         0.035                   # scale factor of the model image
-        )
-
-    simulator.start()
+    ).start()
 
 if __name__ == "__main__":
     main()

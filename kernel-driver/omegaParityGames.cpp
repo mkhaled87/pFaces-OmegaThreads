@@ -285,7 +285,10 @@ void PGame<T, L1, L2>::constructArena(){
         // collect next model states to be used for making the env edges
         std::vector<symbolic_t> env_sym_states;
         if(sym_model.is_dummy_state(std::get<1>(states[ref_id]))){
-            env_sym_states = {sym_model.get_initial_state().value};
+
+            auto initial_states = sym_model.get_initial_states();
+            for (SymState initial_state : initial_states)
+                env_sym_states.push_back(initial_state.value);
         }
         else {
             symbolic_t sym_model_state = std::get<1>(states[ref_id]).value;

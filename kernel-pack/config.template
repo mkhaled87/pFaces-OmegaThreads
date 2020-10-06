@@ -18,7 +18,7 @@ system.states.dimension = int
 system.states.first_symbol = string
 system.states.last_symbol = string
 system.states.quantizers = string
-system.states.initial_state = string
+system.states.initial_set = string
 system.states.subsets = scope
 system.states.subsets.names = string
 
