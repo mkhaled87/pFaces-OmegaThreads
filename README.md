@@ -257,12 +257,3 @@ void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t*
 
 - **implementation.generate_controller**: a "true" or "false" value that instructs OmegaThreads to save the controller or not.
 
-
-## **Authors**
-
-- [**Mahmoud Khaled**](http://www.mahmoud-khaled.com).
-- [**Majid Zamani**](http://www.hyconsys.com/members/mzamani).
-
-## **License**
-
-See the [LICENSE](LICENSE) file for details
