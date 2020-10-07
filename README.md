@@ -15,7 +15,7 @@ Design requirements are usually given in a formal language (e.g., [linear tempor
 In a brief, **OmegaThreads** uses [OWL library](https://owl.model.in.tum.de) to construct a deterministic [ω-Automaton](https://en.wikipedia.org/wiki/Ω-automaton) with a parity acceptance condition representing the input LTL specifications.
 The given model (e.g., a system of differential equations) of the dynamical system is used to construct a [symbolic model](https://www.hyconsys.com/research.html) that abstracts the model.
 **OmegaThreads** then builds a [parity game](https://en.wikipedia.org/wiki/Parity_game) (the model is a player and the controller is a player) using the symbolic model and the specification's Automaton.
-Finally, **OmegaThreads** solving the game playing at the controller side using a strategy iteration method.
+Finally, **OmegaThreads** solving the game playing at the controller side using the strategy iteration solver from [Strix](https://strix.model.in.tum.de).
 Winning the game results in a closed-loop controller that is guaranteed to enforce the given specification on the dynamical system.
 **OmegaThreads** generates the synthesized controller as a [Mealy machine](https://en.wikipedia.org/wiki/Mealy_machine).
 
