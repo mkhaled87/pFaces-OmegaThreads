@@ -195,7 +195,7 @@ class Omega2dSimulator(arcade.Window):
                 width = ub[0] - lb[0]
                 hight = ub[1] - lb[1]
                 arcade.draw_rectangle_filled(lb[0] + width/2, lb[1] + hight/2, width, hight, COLORS[idx % len(COLORS)])
-                arcade.draw_text(self.subset_names[idx], lb[0] + 5, lb[1] + 5, arcade.color.BLACK, 12)
+                arcade.draw_text(self.subset_names[idx], lb[0] + 5, lb[1] + 5, arcade.color.BLACK, 16)
 
             idx += 1
             
@@ -224,8 +224,8 @@ class Omega2dSimulator(arcade.Window):
         # draw lb/ub markers
         arcade.draw_rectangle_filled(self.arena_mdl_lb[0], self.arena_mdl_lb[1], 5, 5, arcade.color.BLUE)
         arcade.draw_rectangle_filled(self.arena_mdl_ub[0], self.arena_mdl_ub[1], 5, 5, arcade.color.BLUE)
-        arcade.draw_text("x_first", self.arena_mdl_lb[0] - 15, self.arena_mdl_lb[1] - 17, arcade.color.BLACK, 10)
-        arcade.draw_text("x_last", self.arena_mdl_ub[0] - 15, self.arena_mdl_ub[1] - 17, arcade.color.BLACK, 10)
+        arcade.draw_text("x_first", self.arena_mdl_lb[0] - 15, self.arena_mdl_lb[1] - 17, arcade.color.BLACK, 14)
+        arcade.draw_text("x_last", self.arena_mdl_ub[0] - 15, self.arena_mdl_ub[1] - 17, arcade.color.BLACK, 14)
 
     def start(self):
         arcade.run()
@@ -237,8 +237,8 @@ class Omega2dSimulator(arcade.Window):
         txt  = "Status: " + self.sys_status
         txt += " | Time (sec.): " + str(round(self.time_elapsed))
         txt += " | FPS: " + str(round(1/self.avg_delta))
-        txt += "\nCurrent: x_" + str(self.get_current_symbol()) + " = (" + list2str(self.sys_state) + ")"
-        txt += " | Current action: "
+        txt += "\nState: x_" + str(self.get_current_symbol()) + " = (" + list2str(self.sys_state) + ")"
+        txt += " | Control action: "
         
         if self.last_action_symbol == -1:
             txt += "not_issued"

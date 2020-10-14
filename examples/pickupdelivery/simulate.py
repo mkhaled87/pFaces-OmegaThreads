@@ -38,8 +38,8 @@ def model_dynamics(x,u):
 
 def main():
     Omega2dSimulator(
-        600,                    				# screen width
-        400,                    				# screen hight
+        1200,                    				# screen width
+        600,                    				# screen hight
         "Pickup-Delivery Drone Example",      	# screen title
         model_dynamics,         				# dynamics function of the model
         [7.0,5.0,99.0],                         # initial state for the simulation
@@ -47,7 +47,7 @@ def main():
         "pickupdelivery.cfg",          			# the config file oof the problem
         "pickupdelivery.mdf",          			# the controller file of the problem
         "drone.png",          				    # an image file to represent the model
-        0.07,                       			# scale factor of the model image
+        0.1,                       			# scale factor of the model image
         False,                                  # simulate dimension 3
         False,                                  # is model_dynamics ODE ?
         ["lowbattery", "fullbattery"]           # APs to skip from drawing
