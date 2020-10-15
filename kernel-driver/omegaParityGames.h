@@ -50,7 +50,7 @@ template<class T, class L1, class L2>
 class PGame{
 
     // a suitable number for reserving initial items in the vectors
-    static constexpr size_t RESERVE = 4096;    
+    static constexpr size_t RESERVE = 4194304;    
 
     // a link to the DPA-tree-struct
     SymSpec<L1,L2>& sym_spec;

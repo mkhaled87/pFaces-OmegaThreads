@@ -98,11 +98,14 @@ class Controller:
         self.machine_state = 0
 
     def get_control_actions(self, model_state):
+        old_state = self.machine_state
         current_transitions = self.machine.get_state_stansitions(self.machine_state)
         for trans in current_transitions:
             if trans.get_input_value() == model_state:
                 self.machine_state = trans.get_next_state()
-                return trans.get_output_values()
+                ret = trans.get_output_values()
+                print('Controller: q: ' + str(old_state) + ', x_in: ' + str(model_state) + ', u_out: ' + str(ret) + ', q_post: ' + str(self.machine_state))
+                return ret 
 
         raise Exception('Failed to find a control action for x=' + str(model_state) + '!')
 

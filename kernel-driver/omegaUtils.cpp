@@ -183,14 +183,6 @@ namespace pFacesOmegaKernels{
     }
 
 
-
-
-
-
-
-
-
-
     // override istream to use if fot reading an OWL enum type for statuses from files
     std::istream& operator >> (std::istream& i, atomic_proposition_status_t& status){
         int value;

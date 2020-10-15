@@ -150,7 +150,13 @@ namespace pFacesOmegaKernels {
 		else
 			throw std::runtime_error("pFacesOmega::init_construct_pgame: no valid specification is provided in the config file.");
 
-		std::cout << "The DPA has " << pSymSpec->count_DPA_states() << " states" << std::endl;			
+#ifdef TEST_FUNCTION		
+        pfacesTerminal::showInfoMessage(
+            std::string("The DPA has ") + 
+			std::to_string(pSymSpec->count_DPA_states()) +
+            std::string(" states. ")
+        );
+#endif
 
         // create the sym-model wrapper
         pSymModel = std::make_shared<SymModel<post_func_t>>(x_symbols, u_symbols, initial_states, get_sym_posts);
@@ -173,6 +179,17 @@ namespace pFacesOmegaKernels {
 		(void)pPackedParallelProgram;
 		static pFacesOmega* pKernel = (pFacesOmega*)pPackedKernel;
 		pKernel->pParityGame->constructArena();
+
+#ifdef TEST_FUNCTION		
+        pfacesTerminal::showInfoMessage(
+            std::string("construct_pgame: The PGame has ") + 
+			std::to_string(pKernel->pParityGame->get_n_env_nodes()) + std::string(" model nodes, ") +
+			std::to_string(pKernel->pParityGame->get_n_env_edges()) + std::string(" model edges, ") +
+			std::to_string(pKernel->pParityGame->get_n_sys_nodes()) + std::string(" controller nodes, and ") +
+			std::to_string(pKernel->pParityGame->get_n_sys_edges()) + std::string(" controller edges.")
+        );
+#endif
+
 		return 0;
 	}
 

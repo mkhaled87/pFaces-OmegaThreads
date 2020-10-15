@@ -3,7 +3,7 @@
 # compiler
 #
 CC        		= g++
-CXXFLAGS 		= -g -Wall -Wextra -std=c++11 -DNDEBUG -Wno-deprecated -Wno-ignored-attributes
+CXXFLAGS 		= -Wall -Wextra -std=c++11 -Wno-deprecated -Wno-ignored-attributes -O3
 
 #
 # pfaces-sdk
