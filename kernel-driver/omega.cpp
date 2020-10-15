@@ -90,7 +90,7 @@ namespace pFacesOmegaKernels{
 		}
 		if(x_ub_updated)
 			pfacesTerminal::showWarnMessage(
-				std::string("The states.lasts_symbol is not compliant with controls.quantizers and is modified to: ") +
+				std::string("The states.lasts_symbol is not compliant with states.quantizers and is modified to: ") +
 				pfacesUtils::vector2string(x_ub)
 			);
 		bool u_ub_updated = false;
