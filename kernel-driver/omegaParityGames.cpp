@@ -17,6 +17,20 @@
 #include <unordered_set>
 #include <boost/functional/hash.hpp>
 
+// unlock this to revert back to the serial version extracted from STRIX (i.e., no OpenMP)
+#define USE_PFACES_PARALLEL
+
+// some background and a history (16.10.2020):
+// the older implementation in STRIX did not guard the (change) variable used in the solver
+// i do not remember if OpenMP will identify this and implement a lock if needed or not.
+// so, i made  this flag to experiment with an implementation that does not even need a lock
+// assuming this operations on (change) is all write only.
+// I finally decided to go for std::atomic as a lock.
+// note that std::atomic will resolve to a spinlock (instruction-level) or buslock (CPU level)
+// if possible which in this case will minimize the overhead. using std::mutex (threads API 
+// level, e.e., pthreads) on such a POD (plain old data) type will cause a great overhead.
+#define PFACES_PARALLEL_LOCK_SHARED
+
 
 // this poor hasher must stay outside of namespace due to
 // a known gcc bug !
@@ -721,13 +735,28 @@ template<class T, class L1, class L2>
 template <strix_aut::Player P>
 void PGSISolver<T, L1, L2>::update_nodes(){
 
+#ifndef USE_PFACES_PARALLEL
     for (strix_aut::node_id_t i = 0; i < this->n_env_nodes; i++) {
         if (this->arena.getEnvWinner(i) == strix_aut::Player::UNKNOWN_PLAYER && env_distances[i * this->n_colors] == P*DISTANCE_INFINITY) {
             // node won by current player
             this->arena.setEnvWinner(i, P);
         }
     }
+#endif    
+#ifdef USE_PFACES_PARALLEL    
+    /* parallelized */
+    pfacesUtils::threaded_for(this->n_env_nodes, [this](size_t start, size_t end) {
+        for (strix_aut::node_id_t i = start; i < end; i++) {
+            if (this->arena.getEnvWinner(i) == strix_aut::Player::UNKNOWN_PLAYER && this->env_distances[i * this->n_colors] == P*DISTANCE_INFINITY) {
+                // node won by current player
+                this->arena.setEnvWinner(i, P);
+            }
+        }
+    });
+#endif
 
+
+#ifndef USE_PFACES_PARALLEL
     for (strix_aut::node_id_t i = 0; i < this->n_sys_nodes; i++) {
         if (this->arena.getSysWinner(i) == strix_aut::Player::UNKNOWN_PLAYER && sys_distances[i * this->n_colors] == P*DISTANCE_INFINITY) {
             // node won by current player
@@ -749,12 +778,43 @@ void PGSISolver<T, L1, L2>::update_nodes(){
             }
         }
     }
+#endif
+#ifdef USE_PFACES_PARALLEL
+    /* parallelized */
+    pfacesUtils::threaded_for(this->n_sys_nodes, [this](size_t start, size_t end) {
+        for (strix_aut::node_id_t i = start; i < end; i++) {
+            if (this->arena.getSysWinner(i) == strix_aut::Player::UNKNOWN_PLAYER && this->sys_distances[i * this->n_colors] == P*DISTANCE_INFINITY) {
+                // node won by current player
+                this->arena.setSysWinner(i, P);
+                if (P == strix_aut::SYS_PLAYER) {
+                    // need to deactivate non-winning edges for non-deterministic strategy
+                    for (strix_aut::edge_id_t j = this->arena.getSysSuccsBegin(i); j != this->arena.getSysSuccsEnd(i); j++) {
+                        if (this->sys_successors[j]) {
+                            auto edge = this->arena.getSysEdge(j);
+                            if (
+                                    edge.successor < this->n_env_nodes &&
+                                    this->arena.getEnvWinner(edge.successor) == strix_aut::Player::UNKNOWN_PLAYER &&
+                                    this->env_distances[edge.successor * this->n_colors] < DISTANCE_INFINITY
+                            ) {
+                                this->sys_successors[j] = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
+#endif
+
+
     this->winner = this->arena.getEnvWinner(this->arena.get_initial_node());
 }
 
 template<class T, class L1, class L2>
 template <strix_aut::Player P>
 void PGSISolver<T, L1, L2>::bellman_ford_init(){
+
+#ifndef USE_PFACES_PARALLEL
     for (strix_aut::node_id_t i = 0; i < this->n_sys_nodes; i++) {
         if (this->arena.getSysWinner(i) == P || (P == strix_aut::ENV_PLAYER && this->arena.getSysWinner(i) == strix_aut::Player::UNKNOWN_PLAYER)) {
             this->sys_distances[i * this->n_colors] = P*DISTANCE_INFINITY;
@@ -766,6 +826,25 @@ void PGSISolver<T, L1, L2>::bellman_ford_init(){
             }
         }
     }
+#endif
+#ifdef USE_PFACES_PARALLEL
+    /* parallelized */
+    pfacesUtils::threaded_for(this->n_sys_nodes, [this](size_t start, size_t end) {
+        for (strix_aut::node_id_t i = start; i < end; i++) {
+            if (this->arena.getSysWinner(i) == P || (P == strix_aut::ENV_PLAYER && this->arena.getSysWinner(i) == strix_aut::Player::UNKNOWN_PLAYER)) {
+                this->sys_distances[i * this->n_colors] = P*DISTANCE_INFINITY;
+            }
+            else {
+                const dist_id_t k = i * this->n_colors;
+                for (dist_id_t l = k; l < k + this->n_colors; l++) {
+                    this->sys_distances[l] = 0;
+                }
+            }
+        }
+    });
+#endif
+
+#ifndef USE_PFACES_PARALLEL
     for (strix_aut::node_id_t i = 0; i < this->n_env_nodes; i++) {
         if (this->arena.getEnvWinner(i) == P || (P == strix_aut::SYS_PLAYER && this->arena.getEnvWinner(i) == strix_aut::Player::UNKNOWN_PLAYER)) {
             this->env_distances[i * this->n_colors] = P*DISTANCE_INFINITY;
@@ -776,7 +855,24 @@ void PGSISolver<T, L1, L2>::bellman_ford_init(){
                this->env_distances[l] = 0;
             }
         }
-    }
+    }    
+#endif
+#ifdef USE_PFACES_PARALLEL    
+    /* parallelized */
+    pfacesUtils::threaded_for(this->n_env_nodes, [this](size_t start, size_t end) {
+        for (strix_aut::node_id_t i = start; i < end; i++) {
+            if (this->arena.getEnvWinner(i) == P || (P == strix_aut::SYS_PLAYER && this->arena.getEnvWinner(i) == strix_aut::Player::UNKNOWN_PLAYER)) {
+                this->env_distances[i * this->n_colors] = P*DISTANCE_INFINITY;
+            }
+            else {
+                const dist_id_t k = i * this->n_colors;
+                for (dist_id_t l = k; l < k + this->n_colors; l++) {
+                this->env_distances[l] = 0;
+                }
+            }
+        }
+    });
+#endif
 }
 
 template<class T, class L1, class L2>
@@ -809,8 +905,18 @@ void PGSISolver<T, L1, L2>::bellman_ford(){
 template<class T, class L1, class L2>
 template <strix_aut::Player P>
 bool PGSISolver<T, L1, L2>::bellman_ford_sys_iteration(){
+
+#ifndef USE_PFACES_PARALLEL    
     bool change = false;
+#else
+    #ifdef PFACES_PARALLEL_LOCK_SHARED
+        std::atomic<bool> change(false);
+    #else
+        bool change = false;
+    #endif
+#endif
     
+#ifndef USE_PFACES_PARALLEL
     for (strix_aut::node_id_t i = 0; i < this->n_sys_nodes; i++) {
         if (this->arena.getSysWinner(i) == strix_aut::Player::UNKNOWN_PLAYER) {
             const dist_id_t k = i * this->n_colors;
@@ -882,14 +988,101 @@ bool PGSISolver<T, L1, L2>::bellman_ford_sys_iteration(){
             }
         }
     }
+#endif
+#ifdef USE_PFACES_PARALLEL
+    /* parallelized */
+    pfacesUtils::threaded_for(this->n_sys_nodes, [this, &change](size_t start, size_t end) {
+        for (strix_aut::node_id_t i = start; i < end; i++) {
+            if (this->arena.getSysWinner(i) == strix_aut::Player::UNKNOWN_PLAYER) {
+                const dist_id_t k = i * this->n_colors;
+                if (P == strix_aut::SYS_PLAYER) {
+                    // need to compare against 0 for non-deterministic strategies
+                    for (dist_id_t l = k; l < k + this->n_colors; l++) {
+                        this->sys_distances[l] = 0;
+                    }
+                }
+
+                for (strix_aut::edge_id_t j = this->arena.getSysSuccsBegin(i); j != this->arena.getSysSuccsEnd(i); j++) {
+                    if (P == strix_aut::ENV_PLAYER || this->sys_successors[j]) {
+                        auto edge = this->arena.getSysEdge(j);
+                        dist_id_t m = edge.successor * this->n_colors;
+
+                        if (edge.successor == strix_aut::NODE_BOTTOM) {
+                            continue;
+                        }
+                        else if (edge.successor == strix_aut::NODE_TOP) {
+                            if (this->sys_distances[k] != DISTANCE_INFINITY) {
+                                change = true;
+                                this->sys_distances[k] = DISTANCE_INFINITY;
+                            }
+                            break;
+                        }
+                        else if (edge.successor < this->n_env_nodes) {
+                            if (this->env_distances[m] == DISTANCE_INFINITY) {
+                                if (this->sys_distances[k] != DISTANCE_INFINITY) {
+                                    change = true;
+                                    this->sys_distances[k] = DISTANCE_INFINITY;
+                                }
+                                break;
+                            }
+                            else if (this->env_distances[m] == DISTANCE_MINUS_INFINITY) {
+                                // skip successor
+                                continue;
+                            }
+                        }
+                        // successor distance is finite, may not yet be explored
+                        bool local_change = false;
+
+                        const strix_aut::color_t cur_color = this->color_map[edge.color];
+                        const distance_t cur_color_change = color_distance_delta(cur_color);
+                        this->sys_distances[k + cur_color] -= cur_color_change;
+
+                        for (dist_id_t l = k; l < k + this->n_colors; l++, m++) {
+                            const distance_t d = this->sys_distances[l];
+                            distance_t d_succ;
+                            if (edge.successor < this->n_env_nodes) {
+                                d_succ = this->env_distances[m];
+                            }
+                            else {
+                                d_succ = 0;
+                            }
+                            if (local_change || d_succ > d) {
+                                this->sys_distances[l] = d_succ;
+                                local_change = true;
+                            }
+                            else if (d_succ != d) {
+                                break;
+                            }
+                        }
+                        this->sys_distances[k + cur_color] += cur_color_change;
+
+                        if (local_change) {
+                            change = true;
+                        }
+                    }
+                }
+            }
+        }
+    });
+#endif
     return change;
 }
 
 template<class T, class L1, class L2>
 template <strix_aut::Player P>
 bool PGSISolver<T, L1, L2>::bellman_ford_env_iteration(){
+
+#ifndef USE_PFACES_PARALLEL    
     bool change = false;
+#else
+    #ifdef PFACES_PARALLEL_LOCK_SHARED
+        std::atomic<bool> change(false);
+    #else
+        bool change = false;
+    #endif
+#endif
     
+#ifndef USE_PFACES_PARALLEL
     for (strix_aut::node_id_t i = 0; i < this->n_env_nodes; i++) {
         if (this->arena.getEnvWinner(i) == strix_aut::Player::UNKNOWN_PLAYER) {
             if (P == strix_aut::SYS_PLAYER) {
@@ -931,14 +1124,72 @@ bool PGSISolver<T, L1, L2>::bellman_ford_env_iteration(){
                 }
             }
         }
-    }
+    }    
+#endif
+#ifdef USE_PFACES_PARALLEL
+    /* parallelized */
+    pfacesUtils::threaded_for(this->n_env_nodes, [this, &change](size_t start, size_t end) {
+        for (strix_aut::node_id_t i = start; i < end; i++) {
+            if (this->arena.getEnvWinner(i) == strix_aut::Player::UNKNOWN_PLAYER) {
+                if (P == strix_aut::SYS_PLAYER) {
+                    for (strix_aut::edge_id_t j = this->arena.getEnvSuccsBegin(i); j != this->arena.getEnvSuccsEnd(i); j++) {
+
+                        const strix_aut::node_id_t successor = this->arena.getEnvEdge(j);
+                        dist_id_t m = successor * this->n_colors;
+
+                        if (this->sys_distances[m] < DISTANCE_INFINITY) {
+                            bool local_change = false;
+
+                            const dist_id_t k = i * this->n_colors;
+                            for (dist_id_t l = k; l < k + this->n_colors; l++, m++) {
+                                const distance_t d = this->env_distances[l];
+                                const distance_t d_succ = this->sys_distances[m];
+                                if (local_change || d_succ < d) {
+                                    this->env_distances[l] = d_succ;
+                                    local_change = true;
+                                }
+                                else if (d_succ != d) {
+                                    break;
+                                }
+                            }
+                            if (local_change) {
+                                change = true;
+                            }
+                        }
+                    }
+                }
+                else {
+                    const strix_aut::edge_id_t j = this->env_successors[i];
+                    if (j != strix_aut::EDGE_BOTTOM) {
+                        const strix_aut::edge_id_t successor = this->arena.getEnvEdge(j);
+                        dist_id_t m = successor * this->n_colors;
+                        const dist_id_t k = i * this->n_colors;
+                        for (dist_id_t l = k; l < k + this->n_colors; l++, m++) {
+                            this->env_distances[l] = this->sys_distances[m];
+                        }
+                    }
+                }
+            }
+        }
+    });
+#endif
     return change;
 }
 
 template<class T, class L1, class L2>
 bool PGSISolver<T, L1, L2>::strategy_improvement_SYS_PLAYER(){
-    bool change = false;
 
+#ifndef USE_PFACES_PARALLEL    
+    bool change = false;
+#else
+    #ifdef PFACES_PARALLEL_LOCK_SHARED
+        std::atomic<bool> change(false);
+    #else
+        bool change = false;
+    #endif
+#endif
+
+#ifndef USE_PFACES_PARALLEL
     for (strix_aut::node_id_t i = 0; i < this->n_sys_nodes; i++) {
         const dist_id_t k = i * this->n_colors;
         if (this->arena.getSysWinner(i) == strix_aut::Player::UNKNOWN_PLAYER && this->sys_distances[k] < DISTANCE_INFINITY) {
@@ -981,13 +1232,71 @@ bool PGSISolver<T, L1, L2>::strategy_improvement_SYS_PLAYER(){
             }
         }
     }
+#endif
+#ifdef USE_PFACES_PARALLEL    
+    /* parallelized */
+    pfacesUtils::threaded_for(this->n_sys_nodes, [this, &change](size_t start, size_t end) {
+        for (strix_aut::node_id_t i = start; i < end; i++) {
+            const dist_id_t k = i * this->n_colors;
+            if (this->arena.getSysWinner(i) == strix_aut::Player::UNKNOWN_PLAYER && this->sys_distances[k] < DISTANCE_INFINITY) {
+                for (strix_aut::edge_id_t j = this->arena.getSysSuccsBegin(i); j != this->arena.getSysSuccsEnd(i); j++) {
+                    this->sys_successors[j] = false;
+                    auto edge = this->arena.getSysEdge(j);
+
+                    if (edge.successor == strix_aut::NODE_TOP) {
+                        this->sys_successors[j] = true;
+                        change = true;
+                    }
+                    else if (edge.successor < this->n_env_nodes && this->arena.getEnvWinner(edge.successor) != strix_aut::ENV_PLAYER) {
+                        bool improvement = true;
+                        dist_id_t m = edge.successor * this->n_colors;
+
+                        const strix_aut::color_t cur_color = this->color_map[edge.color];
+                        const distance_t cur_color_change = color_distance_delta(cur_color);
+                        this->sys_distances[k + cur_color] -= cur_color_change;
+
+                        for (dist_id_t l = k; l < k + this->n_colors; l++, m++) {
+                            const distance_t d = this->sys_distances[l];
+                            const distance_t d_succ = this->env_distances[m];
+                            if (d_succ > d) {
+                                // strict improvement
+                                change = true;
+                                break;
+                            }
+                            else if (d_succ != d) {
+                                improvement = false;
+                                break;
+                            }
+                        }
+
+                        this->sys_distances[k + cur_color] += cur_color_change;
+
+                        if (improvement) {
+                            this->sys_successors[j] = true;
+                        }
+                    }
+                }
+            }
+        }
+    });
+#endif    
     return change;
 }
 
 template<class T, class L1, class L2>
 bool PGSISolver<T, L1, L2>::strategy_improvement_ENV_PLAYER(){
-    bool change = false;
 
+#ifndef USE_PFACES_PARALLEL    
+    bool change = false;
+#else
+    #ifdef PFACES_PARALLEL_LOCK_SHARED
+        std::atomic<bool> change(false);
+    #else
+        bool change = false;
+    #endif
+#endif
+
+#ifndef USE_PFACES_PARALLEL
     for (strix_aut::node_id_t i = 0; i < this->n_env_nodes; i++) {
         const dist_id_t k = i * this->n_colors;
         if (this->arena.getEnvWinner(i) == strix_aut::Player::UNKNOWN_PLAYER && this->env_distances[k] > DISTANCE_MINUS_INFINITY) {
@@ -1022,7 +1331,49 @@ bool PGSISolver<T, L1, L2>::strategy_improvement_ENV_PLAYER(){
                 }
             }
         }
-    }
+    }    
+#endif
+#ifdef USE_PFACES_PARALLEL    
+    /* parallelized */
+    pfacesUtils::threaded_for(this->n_env_nodes, [this, &change](size_t start, size_t end) {
+        for (strix_aut::node_id_t i = start; i < end; i++) {
+            const dist_id_t k = i * this->n_colors;
+            if (this->arena.getEnvWinner(i) == strix_aut::Player::UNKNOWN_PLAYER && this->env_distances[k] > DISTANCE_MINUS_INFINITY) {
+                for (strix_aut::edge_id_t j = this->arena.getEnvSuccsBegin(i); j != this->arena.getEnvSuccsEnd(i); j++) {
+                    const strix_aut::node_id_t successor = this->arena.getEnvEdge(j);
+                    if (this->arena.getSysWinner(successor) != strix_aut::SYS_PLAYER) {
+                        bool improvement = false;
+                        dist_id_t m = successor * this->n_colors;
+                        if (this->sys_distances[m] == DISTANCE_MINUS_INFINITY) {
+                            improvement = true;
+                        }
+                        else {
+                            for (dist_id_t l = k; l < k + this->n_colors; l++, m++) {
+                                const distance_t d = this->env_distances[l];
+                                const distance_t d_succ = this->sys_distances[m];
+                                if (d_succ < d) {
+                                    // strict improvement
+                                    improvement = true;
+                                    break;
+                                }
+                                else if (d_succ != d) {
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (improvement) {
+                            change = true;
+                            this->env_successors[i] = j;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    });
+#endif    
+
     return change;
 }
 
