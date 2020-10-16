@@ -2,6 +2,7 @@ import arcade
 import math
 import sys
 import os
+import random
 
 from OmegaInterface import Controller
 from OmegaInterface import Quantizer
@@ -82,32 +83,34 @@ COLORS = [
 
 class Omega2dSimulator(arcade.Window):
 
-    def __init__(self, width, height, title, sys_dynamics_func, initial_state, sampling_period, config_file, controller_file, model_image, model_image_scale, visualize_3rd_dim = True, use_ODE = True, skip_aps = []):
-        super().__init__(width, height, "Omega2dSimulator: " + title)
+    def __init__(self, sys_dynamics_func, config_file):
 
-        # local storage
-        self.SCREEN_WIDTH = width
-        self.SCREEN_HEIGHT = height
-        self.step_time = sampling_period
+        # local storage of sys dynamics
         self.sys_dynamics = sys_dynamics_func
-        self.skip_aps = skip_aps
-        self.use_ODE = use_ODE
-        self.visualize_3rd_dim = visualize_3rd_dim
-        self.x_0 = initial_state
-        self.sys_state = self.x_0
-
-        # create the controller object
-        self.controller = Controller(controller_file)
-
-        # crete the system sprite
-        self.system = arcade.Sprite(model_image, model_image_scale)
 
         # load the configurations
         self.load_configs(config_file)
+
+        # create the controller object
+        self.controller = Controller(self.controller_file)        
+
+        # initialize the arcade thing
+        super().__init__(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, "Omega2dSimulator: " + self.title)
+        
+        # crete the system sprite
+        self.system = arcade.Sprite(self.model_image, self.model_image_scale)
         self.last_action = [0.0]*len(self.x_lb)
         self.last_action_symbol = -1
 
+        # set system's initial state in arrena
+        x_0_arena = self.translate_sys_to_arena(self.x_0)
+        self.system.center_x = x_0_arena[0]
+        self.system.center_y = x_0_arena[1]
+        if len(self.x_lb) == 3 and self.visualize_3rd_dim:
+            self.system.angle =  x_0_arena[2]
+
         # prepare for simulation
+        self.sys_state = self.x_0
         self.sys_status = "stopped"
         self.initial_delay = 100
         self.time_elapsed = 0.0
@@ -124,6 +127,33 @@ class Omega2dSimulator(arcade.Window):
         self.u_ub = str2list(self.config_reader.get_value_string("system.controls.last_symbol"))
         self.u_eta = str2list(self.config_reader.get_value_string("system.controls.quantizers"))
         self.specs_formula = self.config_reader.get_value_string("specifications.ltl_formula")
+        self.X_initial = self.config_reader.get_value_string("system.states.initial_set")
+        self.X_initial_HR = str2hyperrects(self.X_initial)[0]
+
+        self.SCREEN_WIDTH = int(self.config_reader.get_value_string("simulation.window_width"))
+        self.SCREEN_HEIGHT = int(self.config_reader.get_value_string("simulation.window_height"))
+        self.title = self.config_reader.get_value_string("simulation.widow_title")
+        self.step_time = float(self.config_reader.get_value_string("simulation.step_time"))
+        self.skip_aps = self.config_reader.get_value_string("simulation.skip_APs").replace(" ", "").split(",")
+        self.use_ODE = ( "true" == self.config_reader.get_value_string("simulation.use_ode"))
+        self.visualize_3rd_dim = ( "true" == self.config_reader.get_value_string("simulation.visualize_3rdDim"))
+        self.model_image = self.config_reader.get_value_string("simulation.system_image")
+        self.model_image_scale = float(self.config_reader.get_value_string("simulation.system_image_scale"))
+        self.controller_file = self.config_reader.get_value_string("simulation.controller_file")
+
+        self.x_0_str = self.config_reader.get_value_string("simulation.initial_state")
+        if self.x_0_str == "center":
+            self.x_0 = []
+            for i in range(len(self.x_lb)):
+                c = (self.X_initial_HR.get_lb()[i] + self.X_initial_HR.get_ub()[i])/2.0
+                self.x_0.append(c)
+        elif self.x_0_str == "random":
+            self.x_0 = []
+            for i in range(len(self.x_lb)):
+                r = random.uniform(self.X_initial_HR.get_lb()[i], self.X_initial_HR.get_ub()[i])
+                self.x_0.append(r)
+        else:
+            self.x_0 = str2list(self.x_0_str)
 
         # create a quantizer and an ode solver
         self.qnt_x = Quantizer(self.x_lb, self.x_eta, self.x_ub)
@@ -145,12 +175,6 @@ class Omega2dSimulator(arcade.Window):
         self.arena_mdl_lb = self.translate_sys_to_arena(self.x_lb)
         self.arena_mdl_ub = self.translate_sys_to_arena(self.x_ub)     
 
-        # set system's initial state
-        state_arena = self.translate_sys_to_arena(self.x_0)
-        self.system.center_x = state_arena[0]
-        self.system.center_y = state_arena[1]
-        if len(self.x_lb) == 3 and self.visualize_3rd_dim:
-            self.system.angle =  state_arena[2]
 
         # others: subsets
         self.subset_names = self.config_reader.get_value_string("system.states.subsets.names").replace(" ","").split(",")

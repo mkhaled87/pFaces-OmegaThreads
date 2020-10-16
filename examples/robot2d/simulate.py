@@ -21,21 +21,10 @@ def system_post(x,u):
         pass
     return next_x
 
-def main():
-    Omega2dSimulator(
-        600,                    # screen width
-        600,                    # screen hight
-        "2D Robot Example",     # screen title
-        system_post,         	# dynamics function of the model
-        [0.5,1.5],              # initial state for the simulation
-        0.5,        	        # sampling period to be used in computing the next states
-        "robot.cfg",          	# the config file oof the problem
-        "robot.mdf",          	# the controller file of the problem
-        "robot.png",          	# an image file to represent the model
-        0.04,                   # scale factor of the model image
-        False,                  # simulate dimension 3 ?
-        False,                  # is model_dynamics ODE ?
-    ).start()
 
 if __name__ == "__main__":
-    main()
+    Omega2dSimulator(
+        system_post,         	# dynamics function of the model
+        "robot.cfg",          	# the config file oof the problem
+    ).start()
+    

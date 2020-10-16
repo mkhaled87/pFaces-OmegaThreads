@@ -41,22 +41,8 @@ def system_post(x,u):
     return [unicycle_post[0], unicycle_post[1], battery_level]
 
 
-def main():
-    Omega2dSimulator(
-        600,                    				# screen width
-        400,                    				# screen hight
-        "Pickup-Delivery Drone Example",      	# screen title
-        system_post,         				    # dynamics function of the model
-        [7.0,5.0,99.0],                         # initial state for the simulation
-        sampling_period,        				# sampling period to be used in computing the next states
-        "pickupdelivery.cfg",          			# the config file oof the problem
-        "pickupdelivery.mdf",          			# the controller file of the problem
-        "drone.png",          				    # an image file to represent the model
-        0.07,                       			# scale factor of the model image
-        False,                                  # simulate dimension 3 ?
-        False,                                  # is model_dynamics ODE ?
-        ["lowbattery", "fullbattery"]           # APs to skip from drawing
-    ).start()
-
 if __name__ == "__main__":
-    main()
+    Omega2dSimulator(
+        system_post,         				    # dynamics function of the model
+        "pickupdelivery.cfg",          			# the config file oof the problem
+    ).start()

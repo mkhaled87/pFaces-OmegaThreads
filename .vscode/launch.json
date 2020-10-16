@@ -37,11 +37,11 @@
             "cwd": "${workspaceFolder}"
         }, 
         {
-            "name": "Python Robot Simulate",
+            "name": "Python Vehicle Simulate",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/examples/robot2d/sim.py",
-            "cwd": "${workspaceFolder}/examples/robot2d/",
+            "program": "${workspaceFolder}/examples/vehicle3d/simulate.py",
+            "cwd": "${workspaceFolder}/examples/vehicle3d/",
             "console": "integratedTerminal"
         }
 

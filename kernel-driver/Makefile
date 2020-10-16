@@ -4,6 +4,7 @@
 #
 CC        		= g++
 CXXFLAGS 		= -Wall -Wextra -std=c++11 -Wno-deprecated -Wno-ignored-attributes -O3
+#CXXFLAGS 		= -g -Wall -Wextra -std=c++11 -Wno-deprecated -Wno-ignored-attributes
 
 #
 # pfaces-sdk
