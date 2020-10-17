@@ -56,17 +56,5 @@ void model_post(
     // the robot is deterministic
     post_x_ub[0] = post_x_lb[0];
     post_x_ub[1] = post_x_lb[1];
-
-    //debug
-    /*
-    if(x[0] == 0.0f && x[1] == 0.0f && u[0] == 0.0f){
-        printf("Q = %f, %f\n", Q[0], Q[1]);
-        printf("x = %f, %f\n", x[0], x[1]);
-        printf("u = %f\n", u[0]);
-        printf("trunc_u = %d\n", sym_u);
-        printf("xx_lb = %f, %f\n", post_x_lb[0], post_x_lb[1]);
-        printf("xx_ub = %f, %f\n", post_x_ub[0], post_x_ub[1]);
-    }
-    */
 }
 

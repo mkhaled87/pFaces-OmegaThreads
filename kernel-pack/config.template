@@ -35,6 +35,9 @@ system.controls.subsets.names = string
 system.dynamics = scope
 system.dynamics.code_file = string
 
+# general for system
+system.write_symmodel = boolean
+
 # specifications: defines the specifications need to be enforced
 specifications = scope
 specifications.ltl_formula = string

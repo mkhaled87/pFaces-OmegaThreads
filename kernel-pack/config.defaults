@@ -24,6 +24,7 @@ system.controls.quantizers = "";
 system.controls.subsets.names = "";
 
 system.dynamics.code_file = "";
+system.write_symmodel = "false";
 
 # specification defaults
 specifications.ltl_formula = "";

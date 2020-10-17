@@ -32,7 +32,7 @@ namespace pFacesOmegaKernels {
                 throw std::runtime_error(
                     std::string("test_construct_symmodel: XU element ") +
                     std::to_string((size_t)(i/num_cons_in_struct)) +
-                    std::string(" has element in struct xu_posts lefft unwritten.")
+                    std::string(" has element in struct xu_posts left unwritten.")
                 );
             }
 		}
@@ -43,7 +43,44 @@ namespace pFacesOmegaKernels {
 		return 0;
 	}
 #endif
-    
+
+	/* a host-side funcion to dump the symbolic model */
+	size_t write_symmodel(void* pPackedKernel, void* pPackedParallelProgram){
+		static pfacesParallelProgram*  pParallelProgram = (pfacesParallelProgram*)pPackedParallelProgram;
+		static pFacesOmega* pKernel = (pFacesOmega*)pPackedKernel;
+
+        size_t buff0Idx = pKernel->getBufferIndex(construct_symmodel_func_name, construct_symmodel_arg_names[0], pKernel->memReport);
+		static concrete_t* pData	= (concrete_t*)pParallelProgram->m_dataPool[buff0Idx].first;
+
+		std::stringstream ss_symmoodel;
+		size_t num_cons_in_struct = pKernel->size_struct_xu_posts / sizeof(concrete_t);
+		for (size_t x_flat = 0; x_flat < pKernel->x_symbols; x_flat++){
+			for (size_t u_flat = 0; u_flat < pKernel->u_symbols; u_flat++){
+				size_t xu_flat = u_flat + x_flat*pKernel->u_symbols;
+				ss_symmoodel << "[x_" << x_flat << "," << "u_" << u_flat << "] => ";
+
+				for (size_t i=0; i<pKernel->x_dim; i++){
+					concrete_t post_i_lb = pData[xu_flat*num_cons_in_struct + i];
+					concrete_t post_i_ub = pData[xu_flat*num_cons_in_struct + i + pKernel->x_dim];
+
+					ss_symmoodel << "[" << post_i_lb << "," << post_i_ub << "]";
+					if(i <  (pKernel->x_dim-1))
+						ss_symmoodel << "x";
+				}
+
+				ss_symmoodel << std::endl;
+			}	
+		}
+
+		std::string target_file = 
+            pfacesFileIO::getFileDirectoryPath(pParallelProgram->m_spCfgReader->getConfigFilePath()) + 
+            pParallelProgram->m_spCfgReader->readConfigValueString("project_name") + 
+            std::string(".symmodel");
+
+		pfacesFileIO::writeTextToFile(target_file, ss_symmoodel.str(), false);
+		return 0;
+	}
+	
 	/* to init the function */
 	void pFacesOmega::init_construct_symmodel(){
 
@@ -114,6 +151,26 @@ namespace pFacesOmegaKernels {
 		instr_hostTest->setAsHostFunction(test_construct_symmodel, "test_construct_symmodel");
 		instrList.push_back(instr_hostTest);
 #endif
+
+		/* dump symbolic model ? */
+		bool write_symmoodel = m_spCfg->readConfigValueBool("system.write_symmodel");
+		if(write_symmoodel){
+
+			/* a message */
+			std::shared_ptr<pfacesInstruction> instrMsg = std::make_shared<pfacesInstruction>();
+			instrMsg->setAsMessage("Writing the symbolic model ... ");
+			instrList.push_back(instrMsg);	
+
+			/* a sync point */
+			std::shared_ptr<pfacesInstruction> instr_BlockingSyncPoint = std::make_shared<pfacesInstruction>();
+			instr_BlockingSyncPoint->setAsBlockingSyncPoint();
+			instrList.push_back(instr_BlockingSyncPoint);			
+
+			/* host side function */
+			std::shared_ptr<pfacesInstruction> instr_writeSymModel = std::make_shared<pfacesInstruction>();
+			instr_writeSymModel->setAsHostFunction(write_symmodel, "write_symmodel");
+			instrList.push_back(instr_writeSymModel);
+		}
     }
 
 	/* to init the function memory */
