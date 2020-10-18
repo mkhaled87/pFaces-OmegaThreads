@@ -2,16 +2,19 @@ import arcade
 import math
 import sys
 import os
-import random
-
-from OmegaInterface import Controller
-from OmegaInterface import Quantizer
-from OmegaInterface import RungeKuttaSolver
 
 # insert interace folder of pFaces
 if 'PFACES_SDK_ROOT' in os.environ:
     pfaces_interface_path = sys.path.insert(1, os.environ['PFACES_SDK_ROOT'] + "../interface/python")
 from ConfigReader import ConfigReader
+
+
+from OmegaInterface import Controller
+from OmegaInterface import Quantizer
+from OmegaInterface import RungeKuttaSolver
+from OmegaInterface import HyperRect
+from OmegaInterface import str2hyperrects
+from OmegaInterface import SymbolicModel
 
 def list2str(lnList):
     length = len(lnList)
@@ -31,41 +34,6 @@ def str2list(strList):
     
     return out
 
-class HyperRect:
-    def __init__(self, lb, ub):
-        self.lb = lb
-        self.ub = ub
-
-    def get_lb(self):
-        return self.lb
-
-    def get_ub(self):
-        return self.ub
-
-    def set_lb(self, lb):
-        self.lb = lb
-
-    def set_ub(self, ub):
-        self.ub = ub
-
-
-def str2hyperrects(strHRs):
-    hyperrects =[]
-    str_HRs = strHRs.replace(" ", "")
-    str_HRs = str_HRs.split("U")
-    for str_HR in str_HRs:
-        HR_lb = []
-        HR_ub = []
-        str_Intervals = str_HR.split("x")
-        for str_Interval in str_Intervals:
-            HR_elms = str_Interval.replace("[","").replace("]","").split(",")
-            HR_lb.append(float(HR_elms[0]))
-            HR_ub.append(float(HR_elms[1]))
-
-        hr = HyperRect(HR_lb, HR_ub)
-        hyperrects.append(hr)
-
-    return hyperrects
 
 COLORS = [
     arcade.color.AMAZON, 
@@ -89,12 +57,20 @@ class Omega2dSimulator(arcade.Window):
         self.sys_dynamics = sys_dynamics_func
 
         # load the configurations
+        print('Loading the configuration from ' + config_file + ' ...')
         self.load_configs(config_file)
 
+        # create a symbolic model if needed
+        if(self.use_model_dump):
+            print('Loading the symbolic model from ' + self.model_dump_file + ' ...')
+            self.sym_model = SymbolicModel(self.model_dump_file, self.qnt_x.get_num_symbols(), self.qnt_u.get_num_symbols())
+
         # create the controller object
-        self.controller = Controller(self.controller_file)        
+        print('Loading the controller from ' + self.controller_file + ' ...')
+        self.controller = Controller(self.controller_file)
 
         # initialize the arcade thing
+        print('Initializing the Arcade simulation ...')
         super().__init__(self.SCREEN_WIDTH, self.SCREEN_HEIGHT, "Omega2dSimulator: " + self.title)
         
         # crete the system sprite
@@ -115,6 +91,7 @@ class Omega2dSimulator(arcade.Window):
         self.initial_delay = 100
         self.time_elapsed = 0.0
         self.avg_delta = 0.0
+        self.total_sim_time = 0.0
         arcade.set_background_color(arcade.color.WHITE)
 
     def load_configs(self, config_file):
@@ -135,23 +112,23 @@ class Omega2dSimulator(arcade.Window):
         self.title = self.config_reader.get_value_string("simulation.widow_title")
         self.step_time = float(self.config_reader.get_value_string("simulation.step_time"))
         self.skip_aps = self.config_reader.get_value_string("simulation.skip_APs").replace(" ", "").split(",")
-        self.use_ODE = ( "true" == self.config_reader.get_value_string("simulation.use_ode"))
         self.visualize_3rd_dim = ( "true" == self.config_reader.get_value_string("simulation.visualize_3rdDim"))
         self.model_image = self.config_reader.get_value_string("simulation.system_image")
         self.model_image_scale = float(self.config_reader.get_value_string("simulation.system_image_scale"))
         self.controller_file = self.config_reader.get_value_string("simulation.controller_file")
+        self.use_ODE = ( "true" == self.config_reader.get_value_string("simulation.use_ode"))
+
+        self.model_dump_file = self.config_reader.get_value_string("simulation.model_dump_file")
+        if(self.model_dump_file == "" or self.model_dump_file == None):
+            self.use_model_dump = False
+        else:      
+            self.use_model_dump = True
 
         self.x_0_str = self.config_reader.get_value_string("simulation.initial_state")
         if self.x_0_str == "center":
-            self.x_0 = []
-            for i in range(len(self.x_lb)):
-                c = (self.X_initial_HR.get_lb()[i] + self.X_initial_HR.get_ub()[i])/2.0
-                self.x_0.append(c)
+            self.x_0 = self.X_initial_HR.get_center_element()
         elif self.x_0_str == "random":
-            self.x_0 = []
-            for i in range(len(self.x_lb)):
-                r = random.uniform(self.X_initial_HR.get_lb()[i], self.X_initial_HR.get_ub()[i])
-                self.x_0.append(r)
+            self.x_0 = self.X_initial_HR.get_random_element()
         else:
             self.x_0 = str2list(self.x_0_str)
 
@@ -293,16 +270,40 @@ class Omega2dSimulator(arcade.Window):
             self.last_action_symbol = actions_list[0]
             self.last_action = self.qnt_u.flat_to_conc(self.last_action_symbol)
             self.sub_steps = 0
-            self.steps_in_tau = self.step_time/self.avg_delta
+            self.sys_state_step_0 = self.sys_state[:]
+            self.steps_in_tau = math.floor(self.step_time/self.avg_delta) - 1
             self.sys_status = "moving"
 
         # solve the ode for one delta
         if self.use_ODE:
-            self.sys_state = self.ode.RK4(self.sys_state, self.last_action, self.avg_delta)
+            sim_time = self.avg_delta
+            if self.sub_steps == 0:
+                self.total_sim_time = 0.0
+                left_time = self.step_time - self.steps_in_tau*self.avg_delta
+                sim_time += left_time
+
+            if self.sub_steps == self.steps_in_tau:
+                sim_time = self.step_time - self.total_sim_time
+
+            if sim_time > 0:
+                self.sys_state = self.ode.RK4(self.sys_state, self.last_action, sim_time)
+                self.total_sim_time += sim_time
         else:
             if self.sub_steps == 0:
                 self.sys_state = self.sys_dynamics(self.sys_state, self.last_action)
+
+        # increment the sub-step
         self.sub_steps += 1
+
+        # check the post state against the one stored in the model
+        if self.use_model_dump:
+            if self.last_action_symbol != -1 and self.sub_steps >= self.steps_in_tau:
+                x_flat = self.qnt_x.conc_to_flat(self.sys_state_step_0)
+                u_flat = self.last_action_symbol
+                x_post_HR = self.sym_model.get_HR(x_flat, u_flat)
+                if not x_post_HR.is_element(self.sys_state):
+                    print("Warning: Simulation is unstable because of variation in CPU load causing FPS to affect exact step-time OR the supplied dynamics does not conform with the constructed symbolic model for x_flat=" + str(x_flat) + ", u_flat=" + str(u_flat) + ". Dynamics report x_post=" + str(self.sys_state) + " which is not inside the post_HR=(lb:" + str(x_post_HR.get_lb()) + ",ub:" + str(x_post_HR.get_ub()) + "). As a repair measure, x_post will be replaced with a value inside post_HR.")
+                    self.sys_state = x_post_HR.get_center_element()
 
         # set state
         state_arena = self.translate_sys_to_arena(self.sys_state)

@@ -11,7 +11,9 @@ def model_ode(x,u):
     xx_0 = u[0]*math.cos(math.atan((math.tan(u[1])/2.0))+x[2])/math.cos(math.atan((math.tan(u[1])/2.0)))
     xx_1 = u[0]*math.sin(math.atan((math.tan(u[1])/2.0))+x[2])/math.cos(math.atan((math.tan(u[1])/2.0)))
     xx_2 = u[0]*math.tan(u[1])
-    return [xx_0, xx_1, xx_2]
+    ret = [xx_0, xx_1, xx_2]
+    #print(str(x) + ' | ' + str(u) + ' --> ' + str(ret))
+    return ret
 
 # start the simulation as main function
 if __name__ == "__main__":

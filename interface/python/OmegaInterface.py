@@ -1,4 +1,96 @@
 import math
+import random
+import numpy
+
+
+# a class to represent a hyper rectangle
+class HyperRect:
+    def __init__(self, lb, ub):
+        self.lb = lb
+        self.ub = ub
+
+    def get_lb(self):
+        return self.lb
+
+    def get_ub(self):
+        return self.ub
+
+    def set_lb(self, lb):
+        self.lb = lb
+
+    def set_ub(self, ub):
+        self.ub = ub
+
+    def is_element(self, elem):
+        found = True
+        for i in range(len(elem)):
+            if(elem[i] < self.lb[i] or elem[i] > self.ub[i]):
+                found = False
+
+        return found
+
+    def get_center_element(self):
+        ret = []
+        for i in range(len(self.lb)):
+            c = (self.lb[i] + self.ub[i])/2.0
+            ret.append(c)
+        return ret
+
+    def get_random_element(self):
+        ret = []
+        for i in range(len(self.lb)):
+            r = random.uniform(self.lb[i], self.ub[i])
+            ret.append(r)
+        return ret  
+
+def str2hyperrects(strHRs):
+    hyperrects =[]
+    str_HRs = strHRs.replace(" ", "")
+    str_HRs = str_HRs.split("U")
+    for str_HR in str_HRs:
+        HR_lb = []
+        HR_ub = []
+        str_Intervals = str_HR.split("x")
+        for str_Interval in str_Intervals:
+            HR_elms = str_Interval.replace("[","").replace("]","").split(",")
+            HR_lb.append(float(HR_elms[0]))
+            HR_ub.append(float(HR_elms[1]))
+
+        hr = HyperRect(HR_lb, HR_ub)
+        hyperrects.append(hr)
+
+    return hyperrects
+
+# a class to represent a symbolic model
+class SymbolicModel:
+    def __init__(self, filename, x_symbols, u_symbols):
+        self.filename = filename
+        self.x_symbols = x_symbols 
+        self.u_symbols = u_symbols
+        self.xu_symbols = x_symbols*u_symbols
+        self.xu_HR = [None] * self.xu_symbols
+        
+        self.load_model()
+
+    def load_model(self):
+        model_file = open(self.filename, 'r')
+        model_lines = model_file.readlines()
+        for line in model_lines:
+            head_splitted = line.split('=>')
+            xu_info = head_splitted[0].replace(" ","").replace("[","").replace("]","")
+            hr_info = head_splitted[1].replace(" ","")
+            
+            x = int(xu_info.split(',')[0].replace("x_",""))
+            u = int(xu_info.split(',')[1].replace("u_",""))
+            hr = str2hyperrects(hr_info)[0]
+
+            if(x >= self.x_symbols or u >= self.u_symbols):
+                print("SymModel.load_model:: for x=" + str(x) + "/" + str(self.x_symbols) + ", u=" + str(u) + "/"+str(self.u_symbols)+": Invalid index for line: " + line.replace("\n",""))
+
+            self.xu_HR[u + x*self.u_symbols] = hr
+
+    def get_HR(self, x, u):
+        return self.xu_HR[u + x*self.u_symbols]
 
 # a class to represent a machine transition
 class MachineTransition:
@@ -93,9 +185,10 @@ class Machine:
 # it maintains the current state of the machine and update it
 # after each request for a new control output
 class Controller:
-    def __init__(self, filename):
+    def __init__(self, filename, verbose = False):
         self.machine = Machine(filename)
         self.machine_state = 0
+        self.verbose = verbose
 
     def get_control_actions(self, model_state):
         old_state = self.machine_state
@@ -104,7 +197,8 @@ class Controller:
             if trans.get_input_value() == model_state:
                 self.machine_state = trans.get_next_state()
                 ret = trans.get_output_values()
-                print('Controller: q: ' + str(old_state) + ', x_in: ' + str(model_state) + ', u_out: ' + str(ret) + ', q_post: ' + str(self.machine_state))
+                if self.verbose:
+                    print('Controller: q: ' + str(old_state) + ', x_in: ' + str(model_state) + ', u_out: ' + str(ret) + ', q_post: ' + str(self.machine_state))
                 return ret 
 
         raise Exception('Failed to find a control action for x=' + str(model_state) + '!')
@@ -112,15 +206,17 @@ class Controller:
 # s class to represnet quantizers
 class Quantizer:
     def __init__(self, x_lb, x_eta, x_ub):
-        self.x_lb = x_lb
-        self.x_eta = x_eta
-        self.x_ub = x_ub
+        self.x_lb = numpy.float32(x_lb)
+        self.x_eta = numpy.float32(x_eta)
+        self.x_ub = numpy.float32(x_ub)
         self.x_dim = len(x_eta)
         self.x_widths = [0]*self.x_dim
+        self.num_symbols = 1
 
         for i in range(self.x_dim):
-            tmp = math.floor((x_ub[i]-x_lb[i])/x_eta[i])+1
+            tmp = numpy.floor((self.x_ub[i]-self.x_lb[i])/self.x_eta[i])+1
             self.x_widths[i]  = int(tmp)
+            self.num_symbols = self.num_symbols * self.x_widths[i]
 
     def flat_to_conc(self, flat_val):
         fltInitial = flat_val
@@ -138,19 +234,19 @@ class Quantizer:
             fltTmp = self.x_widths[i]
             fltCurrent = int(fltCurrent%fltTmp)
 
-            ret[i] = self.x_lb[i] + self.x_eta[i]*fltCurrent
+            ret[i] = float(self.x_lb[i] + self.x_eta[i]*fltCurrent)
 
             fltCurrent = fltCurrent * fltVolume
             fltInitial = fltInitial - fltCurrent
 
         return ret
 
-    def conc_to_flat(self, x_conc):
+    def conc_to_flat(self, x_c):
         x_sym = [0.0]*self.x_dim
-
+        x_conc = numpy.float32(x_c)
 
         for i in range(self.x_dim):
-            x_sym[i] = math.floor((x_conc[i] - self.x_lb[i] + self.x_eta[i]/2.0)/self.x_eta[i])
+            x_sym[i] = int(numpy.floor((x_conc[i] - self.x_lb[i] + self.x_eta[i]/numpy.float32(2.0))/self.x_eta[i]))
 
         
         x_flat = 0
@@ -168,6 +264,9 @@ class Quantizer:
 
     def get_widths(self):
         return self.x_widths
+
+    def get_num_symbols(self):
+        return self.num_symbols
 
 # a class for Runge-Kutta solver
 class RungeKuttaSolver:

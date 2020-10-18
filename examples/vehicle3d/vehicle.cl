@@ -5,25 +5,26 @@
  * Desc: This file gives description of the model dynamocs.
  *-----------------------------------------------------------------------*/
 
+// sampling period for the vehilce dynamics
 #define SAMPLING_PERIOD 0.3f
 
-// we use 2 ODEs to compute the behaviour of the model starting with
-// a cell in the quantized state represented by a centroid and radius
-// more info: https://ieeexplore.ieee.org/document/7519063
+// post dynamics (ODE)
 void post_dynamics(concrete_t* xx, const concrete_t* x, const concrete_t* u);
 void post_dynamics(concrete_t* xx, const concrete_t* x, const concrete_t* u) {
-    xx[0] = u[0]*cos(atan((float)(tan(u[1])/2.0))+x[2])/cos((float)atan((float)(tan(u[1])/2.0)));
-	xx[1] = u[0]*sin(atan((float)(tan(u[1])/2.0))+x[2])/cos((float)atan((float)(tan(u[1])/2.0)));
+    xx[0] = u[0]*cos(atan((float)(tan(u[1])/2.0f))+x[2])/cos((float)atan((float)(tan(u[1])/2.0f)));
+	xx[1] = u[0]*sin(atan((float)(tan(u[1])/2.0f))+x[2])/cos((float)atan((float)(tan(u[1])/2.0f)));
 	xx[2] = u[0]*tan(u[1]);
 }
+
+// radius dynamics (difference equation)
 void radius_dynamics(concrete_t* rr, const concrete_t* r, const concrete_t* u);
 void radius_dynamics(concrete_t* rr, const concrete_t* r, const concrete_t* u) {
-	rr[0] = r[0]+(fabs((float)(u[0]*sqrt((float)(tan(u[1])*tan(u[1])/4.0+1)))))*r[2]*(SAMPLING_PERIOD);
-    rr[1] = r[1]+(fabs((float)(u[0]*sqrt((float)(tan(u[1])*tan(u[1])/4.0+1)))))*r[2]*(SAMPLING_PERIOD);	
+	rr[0] = r[0]+(fabs((float)(u[0]*sqrt((float)(tan(u[1])*tan(u[1])/4.0f+1)))))*r[2]*(SAMPLING_PERIOD);
+    rr[1] = r[1]+(fabs((float)(u[0]*sqrt((float)(tan(u[1])*tan(u[1])/4.0f+1)))))*r[2]*(SAMPLING_PERIOD);	
 	rr[2] = r[2];
 }
 
-// Include the RUNGE-KUTTA solver from pFaces
+// include the Runge-Kutta solver from pFaces
 #include "rk4ode.cl"
 
 // the model post computes one upper point and one lower point representing
@@ -36,15 +37,15 @@ void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub, const concrete_t* 
     concrete_t rr[ssDim];
     concrete_t r[ssDim];
 
-	// initializing the radius starting values for the growth bound computation
+	// initialization
 	for (unsigned int i = 0; i<ssDim; i++)
-		r[i] = Q[i] / (concrete_t)2.0f;
+		r[i] = Q[i] / 2.0f;
 
-    // solve the ODEs
+    // solve the ODEs and compute the growth-bound
     rk4OdeSolver(xx, x, u, 'x');
     radius_dynamics(rr, r, u);
 
-	// computing the reach-set
+	// computing the over-approx of reach-set
 	for (unsigned int i = 0; i<ssDim; i++) {
 		post_x_lb[i] = xx[i] - rr[i];
 		post_x_ub[i] = xx[i] + rr[i];

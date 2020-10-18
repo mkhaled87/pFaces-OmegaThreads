@@ -18,6 +18,8 @@ clean:
 	rm -f ./kernel-pack/*.ipdb
 	rm -f ./kernel-pack/*.iobj
 	find . -name "*.mdf" -type f -delete
+	find . -name "*.dpa" -type f -delete
+	find . -name "*.symmodel" -type f -delete
 	find . -name "*.pyc" -type f -delete
 	for dir in $(SUBDIRS); do $(MAKE) clean -C $$dir $@; done
 
