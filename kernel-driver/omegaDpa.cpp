@@ -61,28 +61,49 @@ TotalDpaEdge TotalDpaEdge::parse(const std::string& str, const std::vector<strix
 // ------------------------------------------
 inline std::pair<bool, size_t> TotalDPA::is_state_in_states(const strix_aut::product_state_t& state){
 
-    size_t size = state.size();
-    size_t found_idx = 0;
-    for(auto to_compare : states){
-        
-        bool different = false;
-        for(size_t i=0; i<size; i++){
-            if(to_compare[i] != state[i]){
-                different = true;
-                break;
+    if(!dpa_state_idx_map_ready){
+        size_t size = state.size();
+        size_t found_idx = 0;
+        for(auto to_compare : states){
+            
+            bool different = false;
+            for(size_t i=0; i<size; i++){
+                if(to_compare[i] != state[i]){
+                    different = true;
+                    break;
+                }
             }
+            
+            if(!different)
+                return std::make_pair(true, found_idx);
+            
+            found_idx++;
         }
-        
-        if(!different)
-            return std::make_pair(true, found_idx);
-        
-        found_idx++;
+        return std::make_pair(false, 0);
+
+    }else{
+
+        try{
+            return std::make_pair(true, dpa_state_idx_map.at(state));
+        }
+        catch(...){
+            return std::make_pair(false, 0);
+        }
     }
-    return std::make_pair(false, 0);
+}
+
+void TotalDPA::cache_states(){
+    size_t state_idx = 0;
+    for(auto state : states){
+        dpa_state_idx_map.insert(std::make_pair(state,state_idx));
+        state_idx++;
+    }
+    dpa_state_idx_map_ready = true;
 }
 
 TotalDPA::TotalDPA(const std::string& filename){
     loadFromFile(filename);
+    cache_states();
 }
 
 TotalDPA::TotalDPA(const std::vector<std::string>& _inVars, const std::vector<std::string>& _outVars, const std::string& _ltl_formula, bool simplify_spec){
@@ -155,6 +176,7 @@ TotalDPA::TotalDPA(const std::vector<std::string>& _inVars, const std::vector<st
             state_edges[state_idx].push_back(TotalDpaEdge(io_letter, successor, cs, successor_idx));                
         }
     }
+    cache_states();
 }
 
 strix_aut::product_state_t TotalDPA::getInitialState(){

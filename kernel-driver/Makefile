@@ -43,7 +43,7 @@ kernel_driver: libs $(KERNEL_OBJs)
 	cp combined_kernel.so ../kernel-pack/$(KERNEL_NAME).driver
 	rm combined_kernel.so
 
-%.o: %.cpp
+%.o: %.cpp *.h
 	$(CC) -c -fPIC $(CXXFLAGS) $(PFACES_SDK_INC) $(KERNEL_INCs) $< -o $@
 
 libs:

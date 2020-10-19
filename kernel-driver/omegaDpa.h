@@ -65,8 +65,15 @@ class TotalDPA{
     // a private function to check
     inline std::pair<bool, size_t> is_state_in_states(const strix_aut::product_state_t& state);
 
+    // a map to cache the indeicies of DPA node for faster access
+    std::map<strix_aut::product_state_t, size_t> dpa_state_idx_map;
+    bool dpa_state_idx_map_ready = false;
+
     // constants
     const std::string err_invalid_input = "Invalid input file: ";
+
+    // caching states/indicies
+    void cache_states();
 
 public:
 
