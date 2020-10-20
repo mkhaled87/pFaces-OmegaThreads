@@ -214,13 +214,8 @@ strix_aut::ColorScore TotalDPA::getSuccessor(const strix_aut::product_state_t& s
     if(io_letter >= std::pow(2,n_io_vars))
         throw std::runtime_error("getSuccessor: Invalid IO letter supplied.");
 
-    TotalDpaEdge edge = state_edges[found_state.second][io_letter];
-
-    if(edge.letter != io_letter)
-        throw std::runtime_error("getSuccessor: Ooops something went wrong here.");
-
-    successor = edge.successor;
-    return edge.cs;
+    successor = state_edges[found_state.second][io_letter].successor;
+    return state_edges[found_state.second][io_letter].cs;
 }
 
 bool TotalDPA::isTopState(const strix_aut::product_state_t& state){
