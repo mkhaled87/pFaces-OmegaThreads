@@ -56,12 +56,6 @@ class PGame{
     SymSpec<L1,L2>& sym_spec;
     SymModel<T>& sym_model;
 
-    // input/output iterators
-    strix_aut::letter_t true_inputs_mask;
-    strix_aut::letter_t true_outputs_mask;
-    strix_aut::letter_t false_inputs_mask;
-    strix_aut::letter_t false_outputs_mask;
-
     // node/edge management
     size_t product_state_size;
     strix_aut::node_id_t initial_node;

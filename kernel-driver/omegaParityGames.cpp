@@ -144,54 +144,6 @@ parity(_sym_spec.dpa.getParity()), n_colors(_sym_spec.dpa.getMaxColor() + 1){
     // initialize the nodes/edges
     sys_succs_begin.push_back(0);
     env_succs_begin.push_back(0);
-
-    // construct masks for unused and always true or false inputs and outputs
-    true_inputs_mask = 0;
-    true_outputs_mask = 0;
-    false_inputs_mask = 0;
-    false_outputs_mask = 0;     
-
-    // check which inputs are CONS_TRUE or CONS_FALSE
-    for (strix_aut::letter_t a = 0; a < n_inputs; a++) {
-        const strix_aut::letter_t bit = ((strix_aut::letter_t)1 << a);
-        atomic_proposition_status_t status = _sym_spec.dpa.getVariableStatus(a);
-        if (status != USED) {
-            if (status == CONSTANT_TRUE) {
-                true_inputs_mask |= bit;
-            }
-            else if (status == CONSTANT_FALSE) {
-                false_inputs_mask |= bit;
-            }
-            else {
-                if (status != UNUSED){
-                    std::cerr << "Invalid status for input var (idx=" << a << "): " << status << std::endl;
-                    assert(false);
-                }
-            }
-        }
-    }        
-
-    // check which out vars are CONS_TRUE or CONS_FALSE
-    for (strix_aut::letter_t a = 0; a < n_outputs; a++) {
-        const strix_aut::letter_t bit = ((strix_aut::letter_t)1 << a);
-        const strix_aut::letter_t b = a + n_inputs;
-        atomic_proposition_status_t status = _sym_spec.dpa.getVariableStatus(b);
-        if (status != USED) {
-            if (status == CONSTANT_TRUE) {
-                true_outputs_mask |= bit;
-            }
-            else if (status == CONSTANT_FALSE) {
-                false_outputs_mask |= bit;
-            }
-            else {
-                if (status != UNUSED){
-                    std::cerr << "Invalid status for output var (idx=" << a << "): " << status << std::endl;
-                    assert(false);
-                }
-            }
-        }
-    }
-
 }
 
 template<class T, class L1, class L2>
