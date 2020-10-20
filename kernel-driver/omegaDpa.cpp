@@ -179,8 +179,8 @@ TotalDPA::TotalDPA(const std::vector<std::string>& _inVars, const std::vector<st
     cache_states();
 }
 
-strix_aut::product_state_t TotalDPA::getInitialState(){
-    return states[0];
+symbolic_t TotalDPA::getInitialState(){
+    return 0;
 }
 
 strix_aut::Parity TotalDPA::getParity(){
@@ -205,29 +205,29 @@ std::string TotalDPA::getLtlFormula(){
     return ltl_formula;
 }
 
-strix_aut::ColorScore TotalDPA::getSuccessor(const strix_aut::product_state_t& state, strix_aut::product_state_t& successor, const strix_aut::letter_t& io_letter){
+strix_aut::ColorScore TotalDPA::getSuccessor(const symbolic_t& state_idx, symbolic_t& successor_idx, const strix_aut::letter_t& io_letter){
 
-    std::pair<bool, size_t> found_state = is_state_in_states(state);
+    std::pair<bool, size_t> found_state = is_state_in_states(states[state_idx]);
     if(!found_state.first)
         throw std::runtime_error("getSuccessor: The state is not found in the list of states.");
 
     if(io_letter >= std::pow(2,n_io_vars))
         throw std::runtime_error("getSuccessor: Invalid IO letter supplied.");
 
-    successor = state_edges[found_state.second][io_letter].successor;
+    successor_idx = state_edges[found_state.second][io_letter].successor_idx;
     return state_edges[found_state.second][io_letter].cs;
 }
 
-bool TotalDPA::isTopState(const strix_aut::product_state_t& state){
-    std::pair<bool, size_t> found_state = is_state_in_states(state);
+bool TotalDPA::isTopState(const symbolic_t& state_idx){
+    std::pair<bool, size_t> found_state = is_state_in_states(states[state_idx]);
     if(!found_state.first)
         throw std::runtime_error("isTopState: The state is not found in the list of states.");
 
     return states_is_top[found_state.second];
 }
 
-bool TotalDPA::isBottomState(const strix_aut::product_state_t& state){
-    std::pair<bool, size_t> found_state = is_state_in_states(state);
+bool TotalDPA::isBottomState(const symbolic_t& state_idx){
+    std::pair<bool, size_t> found_state = is_state_in_states(states[state_idx]);
     if(!found_state.first)
         throw std::runtime_error("isBottomState: The state is not found in the list of states.");
 

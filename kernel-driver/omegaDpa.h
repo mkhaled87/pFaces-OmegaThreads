@@ -18,6 +18,7 @@
 #include <cmath>
 
 #include <Ltl2Dpa.h>
+#include <pfaces-sdk.h>
 
 namespace pFacesOmegaKernels{
 
@@ -82,7 +83,7 @@ public:
     TotalDPA(const std::vector<std::string>& _inVars, const std::vector<std::string>& _outVars, const std::string& _ltl_formula, bool simplify_spec = false);
 
     // getters
-    strix_aut::product_state_t getInitialState();
+    symbolic_t getInitialState();
     strix_aut::Parity getParity();
     strix_aut::color_t getMaxColor();
     atomic_proposition_status_t getVariableStatus(int variable);
@@ -92,11 +93,11 @@ public:
     std::string getLtlFormula();
 
     // get the successor DPA state (yes it is only one sucessor as it is a (D)PA)
-    strix_aut::ColorScore getSuccessor(const strix_aut::product_state_t& state, strix_aut::product_state_t& successor, const strix_aut::letter_t& io_letter);
+    strix_aut::ColorScore getSuccessor(const symbolic_t& state_idx, symbolic_t& successor_idx, const strix_aut::letter_t& io_letter);
 
     // is a state TOP/BUTTOM ?
-    bool isTopState(const strix_aut::product_state_t& state);
-    bool isBottomState(const strix_aut::product_state_t& state);
+    bool isTopState(const symbolic_t& state_idx);
+    bool isBottomState(const symbolic_t& state_idx);
 
     // print the DPA info
     void printInfo();

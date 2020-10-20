@@ -57,7 +57,6 @@ class PGame{
     SymModel<T>& sym_model;
 
     // node/edge management
-    size_t product_state_size;
     strix_aut::node_id_t initial_node;
     strix_aut::node_id_t initial_node_ref;
     strix_aut::node_id_t n_env_nodes;

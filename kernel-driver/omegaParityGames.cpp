@@ -50,7 +50,8 @@ namespace pFacesOmegaKernels{
 template <typename Container>
 struct container_hash {
     std::size_t operator()(Container const& c) const {
-        auto seed = boost::hash_range(std::get<0>(c).cbegin(), std::get<0>(c).cend());
+        std::size_t seed = 0;
+        boost::hash_combine(seed, std::get<0>(c));
         boost::hash_combine(seed, std::get<1>(c).value);
         boost::hash_combine(seed, std::get<2>(c));
         return seed;
@@ -115,7 +116,7 @@ typedef PQ<ScoredProductState, std::deque<ScoredProductState>, ScoredProductStat
 
 
 // a type for Environment state:  (DPA state, Model state, control input)
-typedef std::tuple<strix_aut::product_state_t, SymState, symbolic_t> env_state_t;
+typedef std::tuple<symbolic_t, SymState, symbolic_t> env_state_t;
 
 
 // ------------------------------------------
@@ -154,9 +155,7 @@ template<class T, class L1, class L2>
 void PGame<T, L1, L2>::constructArena(){
 
     // get initial state of the Spec-DPA-tree
-    const strix_aut::product_state_t dpa_initial_state = sym_spec.dpa.getInitialState();
-
-    product_state_size = dpa_initial_state.size();
+    symbolic_t dpa_initial_state = sym_spec.dpa.getInitialState();
 
     // the states
     std::vector<env_state_t> states;
@@ -211,7 +210,7 @@ void PGame<T, L1, L2>::constructArena(){
     const strix_aut::node_id_t top_node_ref = env_node_map.size();
     env_node_map.push_back(strix_aut::NODE_TOP);
     env_node_reachable.push_back(true);
-    env_state_t top_node_state = std::make_tuple(strix_aut::product_state_t(), sym_model.get_dummy_state(), 0);
+    env_state_t top_node_state = std::make_tuple(-1, sym_model.get_dummy_state(), 0);
     states.push_back(top_node_state);
 
     // add the initial state
@@ -284,7 +283,7 @@ void PGame<T, L1, L2>::constructArena(){
                 strix_aut::letter_t letter = sym_spec.get_complete_clause(current_sym_state, sym_control);
 
                 // a var for the new state (yes it is only one as this is a *D*PA )
-                strix_aut::product_state_t new_dpa_state(product_state_size);
+                symbolic_t new_dpa_state;
 
                 // get the next state (store in new_dpa_state)
                 const strix_aut::ColorScore cs = sym_spec.dpa.getSuccessor(std::get<0>(states[ref_id]), new_dpa_state, letter);         
