@@ -8,7 +8,7 @@
             "name": "Omega-Kernel [robot]",
             "type": "lldb",
             "request": "launch",
-            "program": "/Users/mk/Workspace/GitLab/pFaces/bin/pfaces",
+            "program": "${env:PFACES_SDK_ROOT}/../bin/pfaces",
             "args": [
                 "-CG",
                 "-d",
@@ -24,7 +24,7 @@
             "name": "Omega-Kernel [vehicle]",
             "type": "lldb",
             "request": "launch",
-            "program": "/Users/mk/Workspace/GitLab/pFaces/bin/pfaces",
+            "program": "${env:PFACES_SDK_ROOT}/../bin/pfaces",
             "args": [
                 "-CG",
                 "-d",
