@@ -154,6 +154,15 @@ namespace pFacesOmegaKernels {
 		else
 			throw std::runtime_error("pFacesOmega::init_construct_pgame: no valid specification is provided in the config file.");
 
+		if(write_dpa){
+			std::string dpa_file = 
+				pfacesFileIO::getFileDirectoryPath(m_spCfg->getConfigFilePath()) + 
+				m_spCfg->readConfigValueString("project_name") + 
+				std::string(".dpa");
+
+			pSymSpec->dpa.writeToFile(dpa_file);
+		}			
+
 #ifdef TEST_FUNCTION		
         pfacesTerminal::showInfoMessage(
             std::string("The DPA has ") + 
@@ -162,19 +171,10 @@ namespace pFacesOmegaKernels {
         );
 #endif
 
-        // create the sym-model wrapper
+#ifndef PARALLEL_IMPLEMENTATION
+		// create the sym-model wrapper
         pSymModel = std::make_shared<SymModel<post_func_t>>(x_symbols, u_symbols, initial_states, get_sym_posts);
 
-		if(write_dpa){
-			std::string dpa_file = 
-				pfacesFileIO::getFileDirectoryPath(m_spCfg->getConfigFilePath()) + 
-				m_spCfg->readConfigValueString("project_name") + 
-				std::string(".dpa");
-
-			pSymSpec->dpa.writeToFile(dpa_file);
-		}
-
-#ifndef PARALLEL_IMPLEMENTATION
 		// create the parity game
 		pParityGame = std::make_shared<PGame<post_func_t, L_x_func_t, L_u_func_t>>(*pSymSpec, *pSymModel);
 #endif
