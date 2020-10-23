@@ -7,9 +7,13 @@
 
 #include "omega.h"
 
+// uncomment this to get the parallel implementation (Experimental!)
+//#define PARALLEL_IMPLEMENTATION
+
+
 namespace pFacesOmegaKernels {
 
-
+#ifndef PARALLEL_IMPLEMENTATION
 	/* a function to retrive the posts (must conform with omegaControlProblem.h) */
 	std::vector<symbolic_t> get_sym_posts(symbolic_t x_flat, symbolic_t u_flat){
 		
@@ -80,7 +84,7 @@ namespace pFacesOmegaKernels {
 		}		
 
 		// collect posts
-		std::vector<symbolic_t> ret;
+		std::vector<symbolic_t> ret(n_rect_symbols);
 		for (size_t p = 0; p < n_rect_symbols; p++)
 		{
 			/* compute the symbolic index of the post from its flat index */
@@ -88,7 +92,7 @@ namespace pFacesOmegaKernels {
 			for (size_t i = 0; i<ssDim; i++)
 				post_x_flat += (sym_lb[i] + postcell[i])* first_cell_in_dim[i];
 
-			ret.push_back(post_x_flat);
+			ret[p] = post_x_flat;
 
 			// prepare the counters for other posts
 			postcell[0]++;
@@ -131,7 +135,7 @@ namespace pFacesOmegaKernels {
 		
 		return (symbolic_t)pMasks[u];
 	}
-
+#endif
     /* to init the function */
     void pFacesOmega::init_construct_pgame(){
 
@@ -170,10 +174,13 @@ namespace pFacesOmegaKernels {
 			pSymSpec->dpa.writeToFile(dpa_file);
 		}
 
+#ifndef PARALLEL_IMPLEMENTATION
 		// create the parity game
 		pParityGame = std::make_shared<PGame<post_func_t, L_x_func_t, L_u_func_t>>(*pSymSpec, *pSymModel);
+#endif
     }
 
+#ifndef PARALLEL_IMPLEMENTATION
 	size_t construct_pgame(void* pPackedKernel, void* pPackedParallelProgram){
 		
 		(void)pPackedParallelProgram;
@@ -192,6 +199,7 @@ namespace pFacesOmegaKernels {
 
 		return 0;
 	}
+#endif
 
     /* add the function to the instruction list */
     void pFacesOmega::add_func_construct_pgame(std::vector<std::shared_ptr<pfacesInstruction>>& instrList, const cl::Device& targetDevice){
@@ -203,6 +211,7 @@ namespace pFacesOmegaKernels {
 		instrMsg_start_construct_pgame->setAsMessage("Constructing the parity game ... ");
 		instrList.push_back(instrMsg_start_construct_pgame);	
 
+#ifndef PARALLEL_IMPLEMENTATION
 		/* a sync point */
 		std::shared_ptr<pfacesInstruction> instr_BlockingSyncPoint = std::make_shared<pfacesInstruction>();
 		instr_BlockingSyncPoint->setAsBlockingSyncPoint();
@@ -212,7 +221,8 @@ namespace pFacesOmegaKernels {
 		/* TODO: replace with parallel implementation */
 		std::shared_ptr<pfacesInstruction> instr_hostConstructPGame = std::make_shared<pfacesInstruction>();
 		instr_hostConstructPGame->setAsHostFunction(construct_pgame, "construct_pgame");
-		instrList.push_back(instr_hostConstructPGame);		
+		instrList.push_back(instr_hostConstructPGame);	
+#endif	
 
     }    
 }

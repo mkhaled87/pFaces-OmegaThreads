@@ -302,7 +302,7 @@ class Omega2dSimulator(arcade.Window):
                 u_flat = self.last_action_symbol
                 x_post_HR = self.sym_model.get_HR(x_flat, u_flat)
                 if not x_post_HR.is_element(self.sys_state):
-                    print("Warning: Simulation is unstable because of variation in CPU load causing FPS to affect exact step-time OR the supplied dynamics does not conform with the constructed symbolic model for x_flat=" + str(x_flat) + ", u_flat=" + str(u_flat) + ". Dynamics report x_post=" + str(self.sys_state) + " which is not inside the post_HR=(lb:" + str(x_post_HR.get_lb()) + ",ub:" + str(x_post_HR.get_ub()) + "). As a repair measure, x_post will be replaced with a value inside post_HR.")
+                    print("Warning: Simulation is unstable due to variations in CPU load causing FPS to affect exact step-time OR the supplied dynamics does not conform with the constructed symbolic model (please double-check!) for x_flat=" + str(x_flat) + ", u_flat=" + str(u_flat) + ". Dynamics report x_post=" + str(self.sys_state) + " which is not inside the post_HR=(lb:" + str(x_post_HR.get_lb()) + ",ub:" + str(x_post_HR.get_ub()) + "). As a repair measure, x_post will be replaced with a value inside post_HR.")
                     self.sys_state = x_post_HR.get_center_element()
 
         # set state
