@@ -18,9 +18,15 @@
     "cSpell.ignoreWords": [
         "biconditional",
         "buchi",
+        "cpus",
+        "hwas",
         "join",
         "join node type biconditional",
         "node",
+        "numpy",
+        "oclgrind",
+        "parglare",
+        "pickupdelivery",
         "strix",
         "type"
     ],

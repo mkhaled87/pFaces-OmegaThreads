@@ -7,7 +7,7 @@ Design requirements are usually given in a formal language (e.g., [linear tempor
 <p align="center"> 
     <img src="media/LTL_vehicle.gif" alt="An autonomous vehicle visiting infinitly-often two targets while avoiding an obstacle" target="_blank"/>
     <br />
-    Fig. 1: The Python-Arcade-based 2d-simulator <BR />provided by OmegaThreads. 
+    Fig. 1: The Python-Arcade-based 2d-simulator <BR />provided by OmegaThreads.
     This simulation is recorded from the <BR /><a href="/examples/vehicle3d/">Autonomous Vehicle Example</a>.
     The vehicle is supposed to infinitely-often <BR />visit the two targets (target1) and (target2) while not crashing in (avoids). <BR /><BR />
 </p>
@@ -19,29 +19,32 @@ Finally, **OmegaThreads** solving the game playing at the controller side using 
 Winning the game results in a closed-loop controller that is guaranteed to enforce the given specification on the dynamical system.
 **OmegaThreads** generates the synthesized controller as a [Mealy machine](https://en.wikipedia.org/wiki/Mealy_machine).
 
-
 In **OmegaThreads**, scalable parallel algorithms are designed to construct symbolic model, construct the parity game and to synthesize the controllers. They are implemented on top of [pFaces](https://www.parallall.com/pfaces) as a kernel that supports parallel execution within CPUs, GPUs and hardware accelerators (HWAs).
 
 ## **Installing and running OmegaThreads using Docker**
+
 Here, we assume you will be using a Linux or MacOS machine. Commands will be slightly different on Windows if you use Windows PowerShell.
 We tested OmegaThreads on Docker using Ubuntu Linux 18.04, MacOs 10.15.7 and Windows 10 x46.
 
 First, make sure you have docker installed (see Docker installation guide for: [MacOS](https://docs.docker.com/docker-for-mac/install/), [Ubuntu Linux](https://docs.docker.com/engine/install/ubuntu/) or [Windows](https://docs.docker.com/docker-for-windows/install/)). Also, make sure to [configure Docker to use sufficient resources](https://docs.docker.com/config/containers/resource_constraints/) (e.g., enough CPU cores). Otherwise, OmegaThreads will run slower than expected.
 
 Download the Dockerfile:
+
 ``` bash
 $ mkdir OmegaThreads
 $ cd OmegaThreads
 $ curl https://raw.githubusercontent.com/mkhaled87/pFaces-OmegaThreads/master/Dockerfile -o Dockerfile
-```    
+```
 
 Build the Docker container (don't forget the DOT at the end):
+
 ``` bash
 $ docker build -t omega/latest .
-```    
-The building process will take proximately 15 minutes. 
-During the build, you may recieve some red-colored messages.
-They do not indicate errors, unless you recieve an explicit red-colored error message.
+```
+
+The building process will take proximately 15 minutes.
+During the build, you may receive some red-colored messages.
+They do not indicate errors, unless you receive an explicit red-colored error message.
 Once done, run/enter the image's interactive shell:
 
 ``` bash
@@ -51,7 +54,7 @@ $ docker run -it -v ~/docker_shared:/docker_shared omega/latest
 Note that by the previous command, we made a pipe between host and the container (this part: *-v ~/docker_shared:/docker_shared*) which will later allow us to move files (e.g., the synthesized controller) from the container to the host.
 
 Now OmegaThreads is installed and we will test it with a simple example.
-In the Docker image, OmegaThreas is located in the director **pFaces-OmegaThreads**.
+In the Docker image, OmegaThreads is located in the director **pFaces-OmegaThreads**.
 Navigate to it as follows:
 
 ``` bash
@@ -66,22 +69,23 @@ You can get the latest version and build it as follows:
 /# make
 ```
 
-In the Docker image, we installed Oclgrind to simulate an OpenCL platform/device that utilizes all the CPU cores using threads. 
-As we use Oclgrind inside Docker, pFaces commands **MUST** be preceded with the command: oclgrind. 
+In the Docker image, we installed Oclgrind to simulate an OpenCL platform/device that utilizes all the CPU cores using threads.
+As we use Oclgrind inside Docker, pFaces commands **MUST** be preceded with the command: oclgrind.
 For example, to check available devices using Oclgrind and pFaces, run:
 
 ``` bash
 /# oclgrind pfaces -CG -l
 ```
 
-Now, run the pickup-delivery drone exammple and launch it using oclgrind:
+Now, run the pickup-delivery drone example and launch it using oclgrind:
 
 ``` bash
 /# cd examples/pickupdelivery
 /# oclgrind pfaces -CG -d 1 -k omega@../../kernel-pack -cfg pickupdelivery.cfg
 ```
+
 This should take some time (up to 5 minutes), during which pFaces constructs a symbolic model of the system, a parity game and solves it.
-Now, move the controller to the host for simulatio.
+Now, move the controller to the host for simulation.
 Copy it as follows to the shared folder (we copy some simulation scripts and example-related files as well):
 
 ``` bash
@@ -108,10 +112,10 @@ This should start the 2d simulator and simulate the closed loop as follows:
     Fig. 2: A simulation recorded from the <a href="/examples/pickupdelivery/">Pickup-Delivery Drone</a>.
 </p>
 
-The exaple you just ran corresponds to the problem of controller synthesis for a Pickup-Delivery drone.
-The drone in suppost to infinitly-often visit some pickup stations.
-Once reaching a pickup station (pickup1 or pickup2), the dron should finish a delivery task by reaching the corresponding delivery stateion (delivery1 or delivery2).
-During the continous operation, the drone should never hit any of the obstacles.
+The example you just ran corresponds to the problem of controller synthesis for a Pickup-Delivery drone.
+The drone in supposed to infinitely-often visit some pickup stations.
+Once reaching a pickup station (pickup1 or pickup2), the drone should finish a delivery task by reaching the corresponding delivery station (delivery1 or delivery2).
+During the continuos operation, the drone should never hit any of the obstacles.
 If the battery of the drone goes into a low-battery state, it should go to the charging station to charge.
 In case you like to know more about OmegaThreads, we advise you to start reading the **Getting Started** section below.
 
@@ -141,7 +145,7 @@ If you are using Windows, you will have to manually install OWL. Please refer to
 
 #### Python
 
-If you like to access the generated controller file using Python or simulate the closed-loop behavior using the provided 2d simulator, you need to have Python 3.6+ installed and both arcade and parglare packages. To install the required packages, run:
+If you like to access the generated controller file using Python or simulate the closed-loop behavior using the provided 2d simulator, you need to have Python 3.6+ installed and both Arcade and Parglare packages. To install the required packages, run:
 
 ``` bash
 $ pip3 install numpy
@@ -211,7 +215,7 @@ This should start the 2d simulator and simulate the closed loop as depicted in F
 
 ## **Getting started with OmegaThreads**
 
-In the previous sections, you installed OmegaThreads and ran it with a small example. 
+In the previous sections, you installed OmegaThreads and ran it with a small example.
 We now tell you more about it.
 
 ### **File structure of OmegaThreads**
@@ -237,7 +241,7 @@ The following are all the keys that can be used in OmegaThreads config files:
 
 - **system.states.quantizers**: declares a vector of size N describing the space between each two symbols in the state set of the symbolic model.
 
-- **system.states.initial_state**: declares a the initial state of the system.
+- **system.states.initial_set**: declares a the initial set of the system.
 
 - **system.states.subsets.names**: declares a comma separated list of names for atomic propositions on the states set. A set with name (**ABC**) should be followed with a mapping declaration in **system.states.subsets.mapping_ABC** describing which state sets map to the atomic proposition **ABC**.
 
@@ -257,7 +261,11 @@ The following are all the keys that can be used in OmegaThreads config files:
 void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t* x, const concrete_t* u);
 ```
 
+- **system.write_symmodel**: a "true" or "false" value that instructs OmegaThreads to write/not-write the constructed symbolic model.
+
 - **specifications.ltl_formula**: the LTL formula describing the specifications to be enforced on the system. Only the atomic propositions declared in **system.states.subsets.names** and **system.controls.subsets.names** can be used.
+
+- **specifications.dpa_file**: point to file describing the a DPA for the specification. You cant use this option if you already specified the specifications as LTL. See the [robot_dpa](/examples/robot2d_dpa) for hints about the DPA file. We will soon be publishing more information about it.
 
 - **specifications.write_dpa**: a "true" or "false" value that instructs OmegaThreads to write/not-write the constructed parity automaton.
 
@@ -265,3 +273,26 @@ void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t*
 
 - **implementation.generate_controller**: a "true" or "false" value that instructs OmegaThreads to save the controller or not.
 
+- **simulation.window_width**: a number that specifies the width of the simulation window in pixels.
+
+- **simulation.window_height**: a number that specifies the height of the simulation window in pixels.
+
+- **simulation.widow_title**: a text that specifies the title of the simulation window.
+
+- **simulation.initial_state**: should be either **center**, **random** or a vector of size n. **center** asks the simulator to start the system at the center of the initial set. **random** asks the simulator to start the simulation in a random point in the initial set. Otherwise, the specified vector is used as initial state for the system.
+
+- **simulation.controller_file**: a path to the controller file synthesized by OmegaThreads to be used by the simulator.
+
+- **simulation.system_image**: an image to be used by the simulator to visualize the system.
+
+- **simulation.system_image_scale**: a multiplier for the system's image.
+
+- **simulation.step_time**: the simulation step time.
+
+- **simulation.use_ode**: a "true" or "false" value that instructs the simulator to use/not-use an ODE solver.
+
+- **simulation.visualize_3rdDim**: a "true" or "false" value that instructs the simulator to visualize 3-dimensional systems. The third dimension is visualized as the angle of the system's image.
+
+- **simulation.skip_APs**: a list of atomic proposition to be excluded from the visualization.
+
+- **simulation.model_dump_file**: a dump file of the symbolic model to be checked against the dynamics.
