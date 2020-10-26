@@ -52,11 +52,18 @@ Note that by the previous command, we made a pipe between host and the container
 
 Now OmegaThreads is installed and we will test it with a simple example.
 In the Docker image, OmegaThreas is located in the director **pFaces-OmegaThreads**.
-Navigate to it and update the repository as follows:
+Navigate to it as follows:
 
 ``` bash
 /# cd pFaces-OmegaThreads
+```
+
+In case you built the Docker image a while ago, there is a chance that we made some updates to **pFaces-OmegaThreads**.
+You can get the latest version and build it as follows:
+
+``` bash
 /# git pull
+/# make
 ```
 
 In the Docker image, we installed Oclgrind to simulate an OpenCL platform/device that utilizes all the CPU cores using threads. 
