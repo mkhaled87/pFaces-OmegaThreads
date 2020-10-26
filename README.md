@@ -28,27 +28,22 @@ We tested OmegaThreads on Docker using Ubuntu Linux 18.04, MacOs 10.15.7 and Win
 
 First, make sure you have docker installed (see Docker installation guide for: [MacOS](https://docs.docker.com/docker-for-mac/install/), [Ubuntu Linux](https://docs.docker.com/engine/install/ubuntu/) or [Windows](https://docs.docker.com/docker-for-windows/install/)). Also, make sure to [configure Docker to use sufficient resources](https://docs.docker.com/config/containers/resource_constraints/) (e.g., enough CPU cores). Otherwise, OmegaThreads will run slower than expected.
 
-Download the Dockerfile:
+You may work directly with a Docker image we provide or build the Docker image locally.
+
+### **Using OmegaThreads from the pre-built Docker image**
+
+Working with the pre-built version will save you the build time.
+The image size is around 2.5 GB and downloading it will take time depending on your internet connection.
+First, download the Dockerfile:
 
 ``` bash
-$ mkdir OmegaThreads
-$ cd OmegaThreads
-$ curl https://raw.githubusercontent.com/mkhaled87/pFaces-OmegaThreads/master/Dockerfile -o Dockerfile
+$ docker pull mkhaled87/omega:latest
 ```
 
-Build the Docker container (don't forget the DOT at the end):
+Once done, run the container and enter the interactive shell:
 
 ``` bash
-$ docker build -t omega/latest .
-```
-
-The building process will take proximately 15 minutes.
-During the build, you may receive some red-colored messages.
-They do not indicate errors, unless you receive an explicit red-colored error message.
-Once done, run/enter the image's interactive shell:
-
-``` bash
-$ docker run -it -v ~/docker_shared:/docker_shared omega/latest
+$ docker run -it -v ~/docker_shared:/docker_shared mkhaled87/omega
 ```
 
 Note that by the previous command, we made a pipe between host and the container (this part: *-v ~/docker_shared:/docker_shared*) which will later allow us to move files (e.g., the synthesized controller) from the container to the host.
@@ -118,6 +113,34 @@ Once reaching a pickup station (pickup1 or pickup2), the drone should finish a d
 During the continuos operation, the drone should never hit any of the obstacles.
 If the battery of the drone goes into a low-battery state, it should go to the charging station to charge.
 In case you like to know more about OmegaThreads, we advise you to start reading the **Getting Started** section below.
+
+### **Building from the provided Dockerfile**
+
+In case you are interessted in building the Docker image locally, you may use the provided [Dockerfile](Dockerfile).
+First, download the Dockerfile locally in some directory (we create one here):
+
+``` bash
+$ mkdir OmegaThreads
+$ cd OmegaThreads
+$ curl https://raw.githubusercontent.com/mkhaled87/pFaces-OmegaThreads/master/Dockerfile -o Dockerfile
+```
+
+Build the Docker image (don't forget the DOT at the end):
+
+``` bash
+$ docker build -t omega/latest .
+```
+
+The building process will take proximately 15 minutes.
+During the build, you may receive some red-colored messages.
+They do not indicate errors, unless you receive an explicit red-colored error message.
+Once done, run the container and enter the interactive shell:
+
+``` bash
+$ docker run -it -v ~/docker_shared:/docker_shared omega/latest
+```
+
+Now, you are inside the container and can use it as described before.
 
 ## **Building and running OmegaThreads using Source Code**
 
