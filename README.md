@@ -33,7 +33,7 @@ You may work directly with a Docker image we provide or build the Docker image l
 ### **Using OmegaThreads from the pre-built Docker image**
 
 Working with the pre-built version will save you the build time.
-The image size is around 2.5 GB and downloading it will take time depending on your internet connection.
+The image size is around 1.0 GB and downloading it will take time depending on your internet connection.
 First, download the Dockerfile:
 
 ``` bash
