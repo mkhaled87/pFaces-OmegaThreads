@@ -111,11 +111,22 @@ namespace pFacesOmegaKernels{
 		xu_symbols = x_symbols * u_symbols;	
 
 		// print info
-		std::cout << "X-space (" << x_dim << "d) has " << x_symbols << " symbols: ";
-		pfacesUtils::PrintVector(x_widths, 'x');
-		std::cout << "U-space (" << u_dim << "d) has " << u_symbols << " symbols: ";
-		pfacesUtils::PrintVector(u_widths, 'x');
-		std::cout << "XU-space has " << xu_symbols << " symbols." << std::endl;
+		std::stringstream ss_x_widths, ss_u_widths;
+		pfacesUtils::PrintVector(x_widths, 'x', false, ss_x_widths);
+		pfacesUtils::PrintVector(u_widths, 'x', false, ss_u_widths);
+		pfacesTerminal::showInfoMessage(
+			std::string("Symbolic model: X-space (") + std::to_string(x_dim) + 
+			std::string("d) is quantized and it has ") + std::to_string(x_symbols) + std::string(" symbols: ") +
+			ss_x_widths.str()
+		);
+		pfacesTerminal::showInfoMessage(
+			std::string("Symbolic model: U-space (") + std::to_string(u_dim) + 
+			std::string("d) is quantized and it has ") + std::to_string(u_symbols) + std::string(" symbols: ") +
+			ss_x_widths.str()
+		);
+		pfacesTerminal::showInfoMessage(
+			std::string("Symbolic model: XU-space should have ") + std::to_string(xu_symbols) + std::string(" symbols.")
+		);		
 
 
 		// check and prepare the dynamics code file

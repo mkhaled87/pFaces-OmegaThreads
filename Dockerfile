@@ -15,7 +15,7 @@ RUN apt-get -qq update \
 # install required libs/tools
 RUN apt-get -qq install -y wget git unzip build-essential libcpprest-dev opencl-c-headers  opencl-clhpp-headers ocl-icd-opencl-dev clinfo oclgrind cmake
 
-# install pFaces (1.1.0 demo)
+# install pFaces (1.1.1 demo)
 RUN mkdir pfaces \
 	&& cd pfaces \
 	&& wget https://github.com/parallall/pFaces/releases/download/Release_1.1.1d/pFaces-1.1.1-Ubuntu18.04.zip \

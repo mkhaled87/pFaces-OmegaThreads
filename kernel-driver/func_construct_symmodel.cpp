@@ -38,7 +38,7 @@ namespace pFacesOmegaKernels {
 		}
         
         pfacesTerminal::showInfoMessage(
-            std::string("test_construct_symmodel: Test completed.")
+            std::string("Symbolic model construction test completed successfully!")
         );
 		return 0;
 	}
@@ -95,11 +95,11 @@ namespace pFacesOmegaKernels {
 		
 #ifdef TEST_FUNCTION		
 		std::string initial_states_info = "";
-		initial_states_info += std::string("SymModel has ") + std::to_string(initial_states.size())  + std::string(" initial states:");
+		initial_states_info += std::string("Initial set has ") + std::to_string(initial_states.size())  + std::string(" elemnts: ");
 		for (symbolic_t x : initial_states)
 			initial_states_info += std::string(" x_") + std::to_string(x);
 		pfacesTerminal::showInfoMessage(
-            std::string("init_construct_symmodel: " + initial_states_info)
+            std::string("Symbolic model: " + initial_states_info)
         );
 #endif
 

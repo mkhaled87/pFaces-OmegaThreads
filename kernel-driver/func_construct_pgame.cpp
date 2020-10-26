@@ -147,12 +147,22 @@ namespace pFacesOmegaKernels {
 		if(!dpa_file.empty() && !ltl_formula.empty())
 			throw std::runtime_error("pFacesOmega::init_construct_pgame: you have to provide either dpa_file or ltl_formula as specification but not both at the same time.");
 
+#ifdef TEST_FUNCTION
+		pfacesTimer tmr_dpa;
+		tmr_dpa.tic();
+#endif
+
+
 		if(!ltl_formula.empty())
         	pSymSpec = std::make_shared<SymSpec<L_x_func_t, L_u_func_t>>(x_aps, u_aps, ltl_formula, L_x, L_u);
 		else if(!dpa_file.empty())
 			pSymSpec = std::make_shared<SymSpec<L_x_func_t, L_u_func_t>>(dpa_file, L_x, L_u);			
 		else
 			throw std::runtime_error("pFacesOmega::init_construct_pgame: no valid specification is provided in the config file.");
+
+#ifdef TEST_FUNCTION
+		auto time_dpa = tmr_dpa.toc();
+#endif			
 
 		if(write_dpa){
 			std::string dpa_file = 
@@ -165,7 +175,9 @@ namespace pFacesOmegaKernels {
 
 #ifdef TEST_FUNCTION		
         pfacesTerminal::showInfoMessage(
-            std::string("The DPA has ") + 
+            std::string("The DPA is constructed in ") +
+			std::to_string(time_dpa.count()) + 
+			std::string(" seconds and it has ") + 
 			std::to_string(pSymSpec->count_DPA_states()) +
             std::string(" states. ")
         );
