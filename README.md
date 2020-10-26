@@ -131,7 +131,7 @@ Build the Docker image (don't forget the DOT at the end):
 $ docker build -t omega/latest .
 ```
 
-The building process will take proximately 15 minutes.
+The building process will take proximately 45 minutes.
 During the build, you may receive some red-colored messages.
 They do not indicate errors, unless you receive an explicit red-colored error message.
 Once done, run the container and enter the interactive shell:
