@@ -319,3 +319,14 @@ void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t*
 - **simulation.skip_APs**: a list of atomic proposition to be excluded from the visualization.
 
 - **simulation.model_dump_file**: a dump file of the symbolic model to be checked against the dynamics.
+
+
+### TODO List
+
+- [x] A parallel version of the game solver (CPU-only)
+- [ ] An OpenCL-based version of the parity game constructor.
+- [ ] Re-Parallelize the game solver in OpenCL.
+- [ ] C/C++ and VHDL/Verilog code generators for the Mealy machines.
+- [ ] More examples.
+- [ ] A guide for the Docker image.
+- [ ] Documentation.

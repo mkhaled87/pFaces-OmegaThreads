@@ -247,15 +247,16 @@ namespace pFacesOmegaKernels{
 		kernel_path = spLaunchState->kernelPackPath;
 		pKernel = this;
 
+		// initialize the params
+		param_names = { "@@concrete_t_name@@", "@@symbolic_t_name@@"};
+		param_values = { concrete_t_cl_string,  symbolic_t_cl_string};
+
 		// initialize the kernel/functions
 		init_kernel();
 		init_kernel_functions();
 			
 		// update the params
-		updatePrameters(
-			{ "@@concrete_t_name@@", "@@symbolic_t_name@@"},
-			{ concrete_t_cl_string,  symbolic_t_cl_string}
-		);
+		updatePrameters(param_names, param_values);
 	}
 
 	/* provide the parallel program */

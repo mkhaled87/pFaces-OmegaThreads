@@ -153,8 +153,8 @@ TotalDPA::TotalDPA(const std::vector<std::string>& _inVars, const std::vector<st
         // for all io possibilities
         // TODO: improve this as done in strix using the Seq iterators
         // to avoid irrelevant IOs
-        size_t n_possibilities = std::pow(2,n_io_vars);
-        for(strix_aut::letter_t io_letter=0; io_letter < n_possibilities; io_letter++){
+        n_possible_letters = std::pow(2,n_io_vars);
+        for(strix_aut::letter_t io_letter=0; io_letter < n_possible_letters; io_letter++){
 
             // get the successor
             strix_aut::product_state_t successor(product_state_size);
@@ -194,6 +194,9 @@ atomic_proposition_status_t TotalDPA::getVariableStatus(int variable){
 }
 size_t TotalDPA::getStatesCount() const {
     return states.size();
+}
+size_t TotalDPA::getLettersCount() const {
+    return n_possible_letters;
 }
 std::vector<std::string> TotalDPA::getInVars(){
     return inVars;

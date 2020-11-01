@@ -47,6 +47,8 @@ namespace pFacesOmegaKernels {
 
 		// some vars
 		std::string kernel_path;
+		std::vector<std::string> param_names;
+		std::vector<std::string> param_values;
 		std::string extra_inc_dir;
 		size_t verbosity;
 		size_t x_dim;

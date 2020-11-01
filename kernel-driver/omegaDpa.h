@@ -47,6 +47,7 @@ class TotalDPA{
     std::vector<std::string> outVars;
     std::string ltl_formula;
     size_t n_io_vars;
+    size_t n_possible_letters;
     size_t product_state_size;
 
     // DPA metadata
@@ -88,6 +89,7 @@ public:
     strix_aut::color_t getMaxColor();
     atomic_proposition_status_t getVariableStatus(int variable);
     size_t getStatesCount() const;
+    size_t getLettersCount() const;
     std::vector<std::string> getInVars();
     std::vector<std::string> getOutVars();
     std::string getLtlFormula();
