@@ -321,7 +321,7 @@ void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t*
 - **simulation.model_dump_file**: a dump file of the symbolic model to be checked against the dynamics.
 
 
-### TODO List
+## Future Features
 
 - [x] A parallel version of the game solver (CPU-only)
 - [ ] An OpenCL-based version of the parity game constructor.
