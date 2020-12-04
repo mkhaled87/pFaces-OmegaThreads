@@ -42,12 +42,21 @@ namespace pFacesOmegaKernels {
 
         pKernel->pControllerImpl->construct(*pKernel->pParityGame, *pKernel->pParityGameSolver);
 
-        std::string target_file = 
-            pfacesFileIO::getFileDirectoryPath(pParallelProgram->m_spCfgReader->getConfigFilePath()) + 
-            pParallelProgram->m_spCfgReader->readConfigValueString("project_name") + 
-            std::string(".mdf");
+        std::string config_dir = pfacesFileIO::getFileDirectoryPath(pParallelProgram->m_spCfgReader->getConfigFilePath());
+        std::string target_file = config_dir + pParallelProgram->m_spCfgReader->readConfigValueString("project_name") +  std::string(".mdf");
 
         pKernel->pControllerImpl->writeToFile(target_file);
+
+
+        //  gen code ?
+        bool gen_code = pParallelProgram->m_spCfgReader->readConfigValueBool("implementation.generate_code");
+        if(gen_code){
+
+            std::string module_name = pParallelProgram->m_spCfgReader->readConfigValueString("implementation.module_name");
+            CodeTypes code_type = MachineCodeGenerator::parse_code_type(pParallelProgram->m_spCfgReader->readConfigValueString("implementation.code_type"));
+            MachineCodeGenerator codeGenerator(pKernel->kernel_path, module_name, config_dir);
+            codeGenerator.machine2code(pKernel->pControllerImpl->getTransitions(), code_type);
+        }
 
 		return 0;
 	}

@@ -19,6 +19,7 @@
         "biconditional",
         "buchi",
         "cpus",
+        "dpas",
         "hwas",
         "join",
         "join node type biconditional",

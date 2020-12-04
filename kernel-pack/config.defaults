@@ -34,3 +34,6 @@ specifications.write_dpa = "false";
 # implementation defaults
 implementation.type = "mealy_machine";
 implementation.generate_controller = "false";
+implementation.generate_code = "false";
+implementation.code_type = "";
+implementation.module_name = "";

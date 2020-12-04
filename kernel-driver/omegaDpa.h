@@ -22,6 +22,7 @@
 
 namespace pFacesOmegaKernels{
 
+
 // Edge of a total DPA
 class TotalDpaEdge {
 public:
@@ -94,12 +95,19 @@ public:
     std::vector<std::string> getOutVars();
     std::string getLtlFormula();
 
-    // get the successor DPA state (yes it is only one sucessor as it is a (D)PA)
+    // get the successor DPA state (yes it is only one successor as it is a (D)PA)
     strix_aut::ColorScore getSuccessor(const symbolic_t& state_idx, symbolic_t& successor_idx, const strix_aut::letter_t& io_letter);
 
     // is a state TOP/BUTTOM ?
     bool isTopState(const symbolic_t& state_idx);
     bool isBottomState(const symbolic_t& state_idx);
+
+    // dump the dpa to memory
+    // the vector will contain a groups of symbolic_t values
+    // each group correspond to one state of the DPA states and contain:
+    //  symbolic_t successors[DPA_NUM_LETTERS]
+    //  symbolic_t colors[DPA_NUM_LETTERS]
+    void dumpDPA(std::vector<symbolic_t>& dpa_data);
 
     // print the DPA info
     void printInfo();

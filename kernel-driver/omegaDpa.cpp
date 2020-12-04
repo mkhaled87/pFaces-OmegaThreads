@@ -237,6 +237,26 @@ bool TotalDPA::isBottomState(const symbolic_t& state_idx){
     return states_is_bottom[found_state.second];
 }    
 
+void TotalDPA::dumpDPA(std::vector<symbolic_t>& dpa_data){
+    size_t num_dpa_states = getStatesCount();
+    size_t num_dpa_letters = getLettersCount();
+
+    dpa_data.reserve(2*num_dpa_states*num_dpa_letters);
+
+    // for each state
+    for(size_t state_idx = 0; state_idx < num_dpa_states; state_idx++){
+        // add post states for each letter
+        for(size_t letter_idx = 0; letter_idx < num_dpa_letters; letter_idx++){
+            dpa_data.push_back(state_edges[state_idx][letter_idx].successor_idx);
+        }
+
+        // add colors for each letter
+        for(size_t letter_idx = 0; letter_idx < num_dpa_letters; letter_idx++){
+            dpa_data.push_back(state_edges[state_idx][letter_idx].cs.color);
+        }        
+    }
+}
+
 void TotalDPA::printInfo(){
     const size_t n_states = states.size();
 

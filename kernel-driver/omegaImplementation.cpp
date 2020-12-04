@@ -438,4 +438,78 @@ void Machine<T, L1, L2>::constructMealyMachine(PGame<T, L1, L2>& arena, PGSolver
 /* force the compiler to implement the class for needed function types */
 template class Machine<post_func_t, L_x_func_t, L_u_func_t>;
 
+
+// ------------------------------------------
+// class MachineCodeGenerator
+// ------------------------------------------
+std::string MachineCodeGenerator::transitions2pythonlist(const machine_t& machine_transitions, bool statePerLine){
+    std::stringstream ss_transitions;
+
+    size_t state_idx = 0;
+    // for each state
+    for(auto state_transitions : machine_transitions){
+        ss_transitions << "[";
+
+        // for each state-transition
+        size_t trans_idx = 0;
+        for(auto state_trans : state_transitions){
+            ss_transitions << "[[" << state_trans.nextState << "], [";
+            ss_transitions << state_trans.input << "], [";
+            ss_transitions << pfacesUtils::vector2string(state_trans.output) << "]]";
+
+            if(trans_idx != (state_transitions.size()-1)){
+                ss_transitions << ",";
+            }
+            trans_idx++;
+        }
+
+        ss_transitions << "]";
+        if(state_idx != (machine_transitions.size()-1)){
+            ss_transitions << ",";
+            if(statePerLine)
+                ss_transitions << std::endl;
+        }
+        state_idx++;
+    }
+
+    return ss_transitions.str();
+}
+void MachineCodeGenerator::machine2rospython(const machine_t& machine_transitions, const std::string& node_name){
+
+    // load the template
+    std::string template_path = templates_path + std::string("ROS_PYTHON.py");
+    std::string tmp_txt = pfacesFileIO::readTextFromFile(template_path);
+
+    // machine data
+    std::string machine_data = MachineCodeGenerator::transitions2pythonlist(machine_transitions, true);
+
+    // replace some fields
+    tmp_txt = pfacesUtils::strReplaceAll(tmp_txt, "##NODE_NAME##", node_name);
+    tmp_txt = pfacesUtils::strReplaceAll(tmp_txt, "##MACHINE_DATA##", machine_data);
+
+    // write
+    std::string out_file = codeget_dir + std::string("ros_") + node_name + std::string(".py");
+    pfacesFileIO::writeTextToFile(out_file, tmp_txt, false);
+}
+MachineCodeGenerator::MachineCodeGenerator(const std::string& krnl_path, const std::string name, const std::string& _codeget_dir){
+    templates_path = krnl_path + std::string("templates") + std::string(PFACES_PATH_SPLITTER);
+    machine_name = name;
+    codeget_dir = _codeget_dir;
+}
+void MachineCodeGenerator::machine2code(const machine_t& machine_transitions, CodeTypes codeType){
+    switch(codeType){
+        case CodeTypes::ROS_PYTHON:
+            machine2rospython(machine_transitions, machine_name);
+            break;
+        default:
+            throw std::runtime_error("MachineCodeGenerator::machine2code: unsupported code type.");
+    }
+}
+CodeTypes MachineCodeGenerator::parse_code_type(const std::string& strCodeType){
+    if (strCodeType == std::string("ros-python"))
+        return CodeTypes::ROS_PYTHON;
+
+    throw std::runtime_error("MachineCodeGenerator::parse_code_type: unsupported code type.");
+}
+
 }

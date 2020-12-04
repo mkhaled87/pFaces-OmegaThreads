@@ -36,7 +36,7 @@ public:
     static void print(const MachineTransition& machine, std::ostream& ost);
 };
 
-// type: the machine is a set of transition for each state
+// type: the machine is a set of transitions for each state
 typedef std::vector<std::vector<MachineTransition>> machine_t;
 
 // a machine can be mealy or moore
@@ -88,5 +88,28 @@ public:
 private:
     void constructMealyMachine(PGame<T, L1, L2>& arena, PGSolver<T, L1, L2>& solver);
 };
+
+// a code-generator
+enum class CodeTypes{
+    ROS_PYTHON
+};
+class MachineCodeGenerator{
+    // general
+    std::string templates_path;
+    std::string machine_name;
+    std::string codeget_dir;
+
+    // ROS_PYTHON
+    std::string transitions2pythonlist(const machine_t& machine_transitions, bool statePerLine = true);
+    void machine2rospython(const machine_t& machine_transitions, const std::string& node_name);
+
+public:
+    MachineCodeGenerator(const std::string& krnl_path, const std::string name, const std::string& _codeget_dir);
+    void machine2code(const machine_t& machine_transitions, CodeTypes codeType);
+
+    // static functions
+    static CodeTypes parse_code_type(const std::string& strCodeType);
+};
+
 
 }

@@ -10,6 +10,9 @@
 // uncomment this to get the parallel implementation (Experimental!)
 //#define PARALLEL_IMPLEMENTATION
 
+#ifdef PARALLEL_IMPLEMENTATION
+std::vector<symbolic_t> dpa_data;
+#endif
 
 namespace pFacesOmegaKernels {
 
@@ -143,15 +146,17 @@ namespace pFacesOmegaKernels {
         std::string ltl_formula = m_spCfg->readConfigValueString("specifications.ltl_formula");
 		std::string dpa_file = m_spCfg->readConfigValueString("specifications.dpa_file");
 		bool write_dpa = m_spCfg->readConfigValueBool("specifications.write_dpa");
+		std::string save_dpa_file = 
+			pfacesFileIO::getFileDirectoryPath(m_spCfg->getConfigFilePath()) + 
+			m_spCfg->readConfigValueString("project_name") + 
+			std::string(".dpa");		
 
 		if(!dpa_file.empty() && !ltl_formula.empty())
 			throw std::runtime_error("pFacesOmega::init_construct_pgame: you have to provide either dpa_file or ltl_formula as specification but not both at the same time.");
 
-#ifdef TEST_FUNCTION
+#ifndef PARALLEL_IMPLEMENTATION
 		pfacesTimer tmr_dpa;
 		tmr_dpa.tic();
-#endif
-
 
 		if(!ltl_formula.empty())
         	pSymSpec = std::make_shared<SymSpec<L_x_func_t, L_u_func_t>>(x_aps, u_aps, ltl_formula, L_x, L_u);
@@ -160,20 +165,13 @@ namespace pFacesOmegaKernels {
 		else
 			throw std::runtime_error("pFacesOmega::init_construct_pgame: no valid specification is provided in the config file.");
 
-#ifdef TEST_FUNCTION
 		auto time_dpa = tmr_dpa.toc();
-#endif			
 
 		if(write_dpa){
-			std::string dpa_file = 
-				pfacesFileIO::getFileDirectoryPath(m_spCfg->getConfigFilePath()) + 
-				m_spCfg->readConfigValueString("project_name") + 
-				std::string(".dpa");
+			pSymSpec->dpa.writeToFile(save_dpa_file);
+		}
 
-			pSymSpec->dpa.writeToFile(dpa_file);
-		}			
 
-#ifdef TEST_FUNCTION		
         pfacesTerminal::showInfoMessage(
             std::string("The DPA is constructed in ") +
 			std::to_string(time_dpa.count()) + 
@@ -181,14 +179,45 @@ namespace pFacesOmegaKernels {
 			std::to_string(pSymSpec->count_DPA_states()) +
             std::string(" states. ")
         );
-#endif
 
-#ifndef PARALLEL_IMPLEMENTATION
 		// create the sym-model wrapper
         pSymModel = std::make_shared<SymModel<post_func_t>>(x_symbols, u_symbols, initial_states, get_sym_posts);
 
 		// create the parity game
 		pParityGame = std::make_shared<PGame<post_func_t, L_x_func_t, L_u_func_t>>(*pSymSpec, *pSymModel);
+#endif			
+
+
+#ifdef PARALLEL_IMPLEMENTATION
+		// create a total-DPA from the specs
+		std::shared_ptr<TotalDPA> pDpa;
+		if(!ltl_formula.empty())
+			pDpa = std::make_shared<TotalDPA>(x_aps, u_aps, ltl_formula);
+		else
+			pDpa = std::make_shared<TotalDPA>(dpa_file);
+
+		if(write_dpa){
+			pDpa->writeToFile(save_dpa_file);
+		}
+
+		// dump the dpa to raw memory (here as a vector of symbolic_t)
+		pDpa->dumpDPA(dpa_data);
+
+		// add some params needed by the parallel program
+		param_names.push_back("@@DPA_NUM_STATES@@");
+		param_values.push_back(std::to_string(pDpa->getStatesCount()));
+		param_names.push_back("@@DPA_NUM_LETTERS@@");
+		param_values.push_back(std::to_string(pDpa->getLettersCount()));
+		param_names.push_back("@@DPA_MAX_COLOR@@");
+		param_values.push_back(std::to_string(pDpa->getMaxColor()));
+		param_names.push_back("@@DPA_PARITY@@");
+		param_values.push_back(std::to_string(pDpa->getParity()));
+		param_names.push_back("@@MAX_POSTS@@");
+		param_values.push_back(m_spCfg->readConfigValueString("system.max_posts"));
+		param_names.push_back("@@NUM_STATE_APS@@");
+		param_values.push_back(std::to_string(pDpa->getInVars().size()));
+		param_names.push_back("@@SYMBOLIC_MAX@@");
+		param_values.push_back(std::to_string(std::numeric_limits<symbolic_t>::max()));
 #endif
     }
 
@@ -199,7 +228,6 @@ namespace pFacesOmegaKernels {
 		static pFacesOmega* pKernel = (pFacesOmega*)pPackedKernel;
 		pKernel->pParityGame->constructArena();
 
-#ifdef TEST_FUNCTION		
         pfacesTerminal::showInfoMessage(
             std::string("construct_pgame: The PGame has ") + 
 			std::to_string(pKernel->pParityGame->get_n_env_nodes()) + std::string(" model nodes, ") +
@@ -207,7 +235,6 @@ namespace pFacesOmegaKernels {
 			std::to_string(pKernel->pParityGame->get_n_sys_nodes()) + std::string(" controller nodes, and ") +
 			std::to_string(pKernel->pParityGame->get_n_sys_edges()) + std::string(" controller edges.")
         );
-#endif
 
 		return 0;
 	}

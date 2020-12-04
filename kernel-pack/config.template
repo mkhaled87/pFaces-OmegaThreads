@@ -44,7 +44,10 @@ specifications.ltl_formula = string
 specifications.dpa_file = string
 specifications.write_dpa = boolean
 
-# specifications: holds info about the implementation of the controller
+# implementation: holds info about the implementation of the controller
 implementation = scope
 implementation.type = string
 implementation.generate_controller = boolean
+implementation.generate_code = boolean
+implementation.code_type = string
+implementation.module_name = string
