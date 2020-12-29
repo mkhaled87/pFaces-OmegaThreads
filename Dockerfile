@@ -19,7 +19,7 @@ RUN apt-get -qq install -y cmake wget git unzip build-essential libcpprest-dev o
 RUN mkdir pfaces \
 	&& cd pfaces \
 	&& wget https://github.com/parallall/pFaces/releases/download/Release_1.2.0d/pFaces-1.2.0-Ubuntu18.04.zip \
-	&& unzip pFaces-1.1.1-Ubuntu18.04.zip
+	&& unzip pFaces-1.2.0-Ubuntu18.04.zip
 RUN cd /pfaces && sh install.sh
 
 ## Install GraalVM (20.1 AMD64)
