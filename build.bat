@@ -1,5 +1,7 @@
 ECHO OFF
 
+echo "!!!!!!!! NOT TESTED BEFORE !!!!!!!!"
+
 rem CMake settings for using Visual Studio (you may only chnage the 
 rem VS version with one from the list in 'cmake --help')
 set BUILDTYPE=Release
