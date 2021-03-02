@@ -1,0 +1,18 @@
+# binaries, temp files and temp build dir
+build/
+kernel-pack/*.driver
+**/*.render*
+**/*.log
+
+# any generated RAW files from the examples
+**/*.raw
+
+# VS and VSCode
+.vs/
+.vscode/
+
+# Others
+.settings/
+.DS_Store
+**/.DS_Store
+
