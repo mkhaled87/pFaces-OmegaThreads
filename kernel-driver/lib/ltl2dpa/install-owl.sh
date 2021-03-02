@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # install GraalVM
-if [ "$OSTYPE" == "darwin"* ]; then
+if [[ "$OSTYPE" == *"darwin"* ]]; then
     echo "Installing GraalVM-20.1.0 for MacOS ..."
     GRAALVM_FILE=graalvm-ce-java11-darwin-amd64-20.1.0.tar.gz
     PROFILE_FILE=~/.zshrc 
@@ -20,7 +20,7 @@ fi
 echo "Downloading GraalVM ... [please be patient as it takes some time]"
 GRAALVM_URL=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/$GRAALVM_FILE
 wget -q $GRAALVM_URL
-echo "Unpacking GraalVM ... "
+echo "Unpacking/Installing GraalVM ... [Please enter user password if requested]"
 tar -zxvf $GRAALVM_FILE 2>/dev/null
 rm $GRAALVM_FILE
 sudo mv graalvm-ce-java11-20.1.0 $INSTALL_PATH/ 2>/dev/null
@@ -42,10 +42,11 @@ JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH java --version
 echo "Installing GraalVM-20.1.0 Native-Image ..."
 sudo $INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH/gu install native-image
 
-# Install owl/latest
-echo "Installing OWL/latest ..."
+# Install owl/release-20.06.00
+OWL_VER=release-20.06.00
+echo "Installing OWL/$OWL_VER ..."
 rm -rf ./owl
-git clone --depth=1 https://gitlab.lrz.de/i7/owl 
+git clone --depth=1 https://gitlab.lrz.de/i7/owl --branch $OWL_VER
 cd owl
-PATH=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH:\$PATH JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH ./gradlew clean
-PATH=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH:\$PATH JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH ./gradlew distZip -x javadoc -Pdisable-pandoc
+PATH=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH:$PATH JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH ./gradlew clean
+PATH=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH:$PATH JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH ./gradlew distZip -x javadoc -Pdisable-pandoc
