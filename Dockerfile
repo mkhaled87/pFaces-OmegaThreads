@@ -42,4 +42,4 @@ RUN git clone --depth=1 https://github.com/mkhaled87/pFaces-OmegaThreads \
 RUN cp /pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa/owl/build/native-library/libowl.so /usr/lib/
 RUN cd /pFaces-OmegaThreads/ \
 	&& export PFACES_SDK_ROOT=$PWD/../pfaces/pfaces-sdk/ \
-	&& make
+	&& sh build.sh

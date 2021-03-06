@@ -176,38 +176,38 @@ $ pip3 install arcade
 $ pip3 install parglare
 ```
 
-#### Build Tools before Building pFaces-OmegaThreads
+#### Build Tools Needed before Building pFaces-OmegaThreads
 
 OmegaThreads is given as source code that need to be built before running it. This requires a modern C/C++ compiler such as:
 
-- For windows: Microsoft Visual C++ (OmegaThreads is tested with Visual Studio 2019 community edition);
-- For Linux/MacOS: GCC/G++.
+- For windows: Microsoft Visual C++ (OmegaThreads is tested with Visual Studio 2019 community edition) and CMake;
+- For Linux/MacOS: GCC/G++ and CMake.
+
 
 ### **Building OmegaThreads**
 
-#### Windows
-
-If you will be using Visual Studio on Windows, download the repository and open the provided VisualStudio-solution file [pFaces-OmegaThreads.sln](pFaces-OmegaThreads.sln) and build it using the **Release (x64)** configuration. Building with **Debug** configuration will result in a slower operation and requires having the debug binaries of pFaces.
-
-#### Linux or MacOS
-
-If you will be using Linux or MacOS, assuming you have a GIT client, simply run the following command to clone this repo:
+The following steps applies to MacOS, Linux and Windows.
+For Windows, we suggest using Powershell with access to developer tools of Visual Studio since we will be using CMake.
+We assume git is installed.
+Clone this repo:
 
 ``` bash
 $ git clone --depth=1 https://github.com/mkhaled87/pFaces-OmegaThreads
 ```
-
-OmegaThreads requires to link with pFaces SDK. The environment variable **PFACES_SDK_ROOT** should point to pFaces SDK root directory. Make sure you have the environment variable **PFACES_SDK_ROOT** pointing to the full absolute pFaces SDK folder. If not, do it as follows:
-
-``` bash
-$ export PFACES_SDK_ROOT=/full/path/to/pfaces-sdk
-```
-
 Now, navigate to the created repo folder and build OmegaThreads:
 
 ``` bash
 $ cd pFaces-OmegaThreads
-$ make
+```
+
+Finally, build it:
+
+``` bash
+$ mkdir build
+$ cd build
+$ cmake ..
+$ cmake .. -DCMAKE_BUILD_TYPE=Release
+$ cmake --build . --config Release
 ```
 
 ### **Running an example**

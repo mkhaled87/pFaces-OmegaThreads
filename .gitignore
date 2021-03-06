@@ -1,12 +1,15 @@
 # binaries, temp files and temp build dir
 build/
 kernel-pack/*.driver
-kernel-pack/lib/ltl2dpa/owl/
+kernel-driver/lib/ltl2dpa/owl/
 **/*.render*
 **/*.log
 
+
 # any generated RAW files from the examples
 **/*.raw
+**/*.mdf
+**/*.symmodel
 
 # VS and VSCode
 .vs/
@@ -16,4 +19,3 @@ kernel-pack/lib/ltl2dpa/owl/
 .settings/
 .DS_Store
 **/.DS_Store
-

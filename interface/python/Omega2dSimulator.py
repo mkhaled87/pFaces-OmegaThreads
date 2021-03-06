@@ -5,10 +5,11 @@ import os
 
 # insert interace folder of pFaces
 if 'PFACES_SDK_ROOT' in os.environ:
-    pfaces_interface_path = sys.path.insert(1, os.environ['PFACES_SDK_ROOT'] + "../interface/python")
+    pfaces_interface_path = sys.path.insert(1, os.environ['PFACES_SDK_ROOT'] + "/../interface/python")
+else:
+    raise Exception('pFaces is not installed correctly.')
+
 from ConfigReader import ConfigReader
-
-
 from OmegaInterface import Controller
 from OmegaInterface import Quantizer
 from OmegaInterface import RungeKuttaSolver
@@ -32,6 +33,19 @@ def str2list(strList):
     for s in lst:
         out.append(float(s.replace(' ', "")))
     
+    return out
+
+def shift_and_add(lst, itm):
+    out = lst
+    lst_len = len(lst)
+    
+    if lst_len == 0:
+        return out
+
+    for i in range(lst_len-1):
+        lst[i] = lst[i+1]
+    lst[len(lst)-1] = itm
+
     return out
 
 
@@ -93,6 +107,7 @@ class Omega2dSimulator(arcade.Window):
         self.avg_delta = 0.0
         self.total_sim_time = 0.0
         arcade.set_background_color(arcade.color.WHITE)
+        self.path_tail = [None]*self.path_tail_length
 
     def load_configs(self, config_file):
         # load some values form the config file
@@ -117,6 +132,12 @@ class Omega2dSimulator(arcade.Window):
         self.model_image_scale = float(self.config_reader.get_value_string("simulation.system_image_scale"))
         self.controller_file = self.config_reader.get_value_string("simulation.controller_file")
         self.use_ODE = ( "true" == self.config_reader.get_value_string("simulation.use_ode"))
+
+        strTmp = self.config_reader.get_value_string("simulation.path_tail_length")
+        if strTmp == "" or strTmp == None:
+            self.path_tail_length = 0
+        else:    
+            self.path_tail_length = int(strTmp)
 
         self.model_dump_file = self.config_reader.get_value_string("simulation.model_dump_file")
         if(self.model_dump_file == "" or self.model_dump_file == None):
@@ -254,6 +275,11 @@ class Omega2dSimulator(arcade.Window):
         self.system.draw()
         self.print_info()
 
+        # draw tail
+        for line in self.path_tail:
+            if line != None:
+                arcade.draw_line(line[0][0], line[0][1], line[1][0], line[1][1], arcade.color.BLACK)
+
     def translate_sys_to_arena(self, state):
         arena_x = self.ZERO_BASE_X + (state[0] - self.x_lb[0] + self.x_eta[0]/2)*self.X_SCALE_FACTOR
         arena_y = self.ZERO_BASE_Y + (state[1] - self.x_lb[1] + self.x_eta[1]/2)*self.Y_SCALE_FACTOR
@@ -301,9 +327,16 @@ class Omega2dSimulator(arcade.Window):
                 x_flat = self.qnt_x.conc_to_flat(self.sys_state_step_0)
                 u_flat = self.last_action_symbol
                 x_post_HR = self.sym_model.get_HR(x_flat, u_flat)
+                
                 if not x_post_HR.is_element(self.sys_state):
                     print("Warning: Simulation is unstable due to variations in CPU load causing FPS to affect exact step-time OR the supplied dynamics does not conform with the constructed symbolic model (please double-check!) for x_flat=" + str(x_flat) + ", u_flat=" + str(u_flat) + ". Dynamics report x_post=" + str(self.sys_state) + " which is not inside the post_HR=(lb:" + str(x_post_HR.get_lb()) + ",ub:" + str(x_post_HR.get_ub()) + "). As a repair measure, x_post will be replaced with a value inside post_HR.")
                     self.sys_state = x_post_HR.get_center_element()
+
+
+        # add to tail
+        start_arena = self.translate_sys_to_arena(self.sys_state_step_0)
+        end_arena = self.translate_sys_to_arena(self.sys_state)
+        self.path_tail = shift_and_add(self.path_tail,[start_arena,end_arena])
 
         # set state
         state_arena = self.translate_sys_to_arena(self.sys_state)
