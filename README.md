@@ -33,6 +33,7 @@ You may work directly with a Docker image we provide or build the Docker image l
 ### **Using OmegaThreads from the pre-built Docker image**
 
 Working with the pre-built version will save you the build time.
+It might be however outdated and we always advise that you built an image from the provided Docker file as described in the next section.
 The image size is around 1.0 GB and downloading it will take time depending on your internet connection.
 First, download the Dockerfile:
 
@@ -128,7 +129,7 @@ $ curl https://raw.githubusercontent.com/mkhaled87/pFaces-OmegaThreads/master/Do
 Build the Docker image (don't forget the DOT at the end):
 
 ``` bash
-$ docker build -t omega/latest .
+$ docker build -t omega:latest .
 ```
 
 The building process will take proximately 45 minutes.
@@ -137,7 +138,7 @@ They do not indicate errors, unless you receive an explicit red-colored error me
 Once done, run the container and enter the interactive shell:
 
 ``` bash
-$ docker run -it -v ~/docker_shared:/docker_shared omega/latest
+$ docker run -it -v ~/docker_shared:/docker_shared omega:latest
 ```
 
 Now, you are inside the container and can use it as described before.
