@@ -4,6 +4,7 @@ kernel-pack/*.driver
 kernel-driver/lib/ltl2dpa/owl/
 **/*.render*
 **/*.log
+interface/python/__pycache__/*.*
 
 
 # any generated RAW files from the examples
