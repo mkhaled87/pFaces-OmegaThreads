@@ -125,7 +125,7 @@ class Omega2dSimulator(arcade.Window):
         self.SCREEN_WIDTH = int(self.config_reader.get_value_string("simulation.window_width"))
         self.SCREEN_HEIGHT = int(self.config_reader.get_value_string("simulation.window_height"))
         self.title = self.config_reader.get_value_string("simulation.widow_title")
-        self.step_time = float(self.config_reader.get_value_string("simulation.step_time"))
+        self.step_time = float(self.config_reader.get_value_string("system.dynamics.step_time"))
         self.skip_aps = self.config_reader.get_value_string("simulation.skip_APs").replace(" ", "").split(",")
         self.visualize_3rd_dim = ( "true" == self.config_reader.get_value_string("simulation.visualize_3rdDim"))
         self.model_image = self.config_reader.get_value_string("simulation.system_image")
@@ -334,9 +334,10 @@ class Omega2dSimulator(arcade.Window):
 
 
         # add to tail
-        start_arena = self.translate_sys_to_arena(self.sys_state_step_0)
-        end_arena = self.translate_sys_to_arena(self.sys_state)
-        self.path_tail = shift_and_add(self.path_tail,[start_arena,end_arena])
+        if self.sub_steps >= self.steps_in_tau:
+            start_arena = self.translate_sys_to_arena(self.sys_state_step_0)
+            end_arena = self.translate_sys_to_arena(self.sys_state)
+            self.path_tail = shift_and_add(self.path_tail,[start_arena,end_arena])
 
         # set state
         state_arena = self.translate_sys_to_arena(self.sys_state)

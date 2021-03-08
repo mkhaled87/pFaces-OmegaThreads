@@ -7,6 +7,10 @@
 *            model from the concrete system provided by the user.
 */
 
+// The step time to be used in case the system has an ODE to be 
+// numerically solved
+#define STEP_TIME (@@STEP_TIME@@)
+
 // prototype of the post function from the included code file
 void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub, const concrete_t* x, const concrete_t* u);
 
@@ -18,6 +22,7 @@ typedef struct __attribute__((packed)) xu_posts {
 	concrete_t  cnc_dest_states_lb[ssDim];
 	concrete_t  cnc_dest_states_ub[ssDim];
 } xu_posts_t;
+
 
 // K E R N E L   F U N C T I O N
 // over: symbolic xu space

@@ -6,7 +6,7 @@
  *-----------------------------------------------------------------------*/
 
 // sampling period for the vehilce dynamics
-#define SAMPLING_PERIOD 0.3f
+#define SAMPLING_PERIOD STEP_TIME
 
 // post dynamics (ODE)
 void post_dynamics(concrete_t* xx, const concrete_t* x, const concrete_t* u);

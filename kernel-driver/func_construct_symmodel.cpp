@@ -109,6 +109,10 @@ namespace pFacesOmegaKernels {
 				construct_symmodel_func_name.c_str(), {
 					std::make_tuple(construct_symmodel_arg_names[0], size_struct_xu_posts, xu_symbols)
 				});
+
+		/* init any required params */
+		param_values.push_back(m_spCfg->readConfigValueString("system.dynamics.step_time"));
+		param_names.push_back("@@STEP_TIME@@");    
 	}
 
 	/* add the function to the instruction list */
@@ -186,5 +190,4 @@ namespace pFacesOmegaKernels {
 		}
 #endif	
 	}
-    
 }

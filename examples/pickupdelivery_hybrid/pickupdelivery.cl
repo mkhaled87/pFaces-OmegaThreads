@@ -5,7 +5,7 @@
  * Desc: This file gives description of the model dynamocs.
  *-----------------------------------------------------------------------*/
 
-#define SAMPLING_PERIOD 0.1f
+#define SAMPLING_PERIOD STEP_TIME
 
 // we use 2 ODEs to compute the behaviour of the model starting with
 // a cell in the quantized state represented by a centroid and radius
