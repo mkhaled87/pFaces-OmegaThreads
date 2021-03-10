@@ -278,7 +278,7 @@ class Omega2dSimulator(arcade.Window):
         # draw tail
         for line in self.path_tail:
             if line != None:
-                arcade.draw_line(line[0][0], line[0][1], line[1][0], line[1][1], arcade.color.BLACK)
+                arcade.draw_line(line[0][0], line[0][1], line[1][0], line[1][1], arcade.color.BLUE)
 
     def translate_sys_to_arena(self, state):
         arena_x = self.ZERO_BASE_X + (state[0] - self.x_lb[0] + self.x_eta[0]/2)*self.X_SCALE_FACTOR
