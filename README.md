@@ -323,12 +323,13 @@ void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t*
 
 
 ## Future Features
-
+- [x] CMake version of the build.
 - [x] A parallel version of the game solver (CPU-only)
+- [x] Code-generation: ROS nodes in Python representing the controllers.
+- [ ] Code-generation: C/C++ and VHDL/Verilog code generators for the Mealy machines.
 - [ ] Activate and test the support for LTL-f.
 - [ ] An OpenCL-based version of the parity game constructor.
 - [ ] Re-Parallelize the game solver in OpenCL.
-- [ ] C/C++ and VHDL/Verilog code generators for the Mealy machines.
 - [ ] More examples.
 - [ ] A guide for the Docker image.
 - [ ] Documentation.
