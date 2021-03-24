@@ -19,6 +19,8 @@ Finally, **OmegaThreads** solving the game playing at the controller side using 
 Winning the game results in a closed-loop controller that is guaranteed to enforce the given specification on the dynamical system.
 **OmegaThreads** generates the synthesized controller as a [Mealy machine](https://en.wikipedia.org/wiki/Mealy_machine).
 
+In **OmegaThreads**, scalable parallel algorithms are designed to construct symbolic model, construct the parity game and to synthesize the controllers. They are implemented on top of [pFaces](https://www.parallall.com/pfaces) as a kernel that supports parallel execution within CPUs, GPUs and hardware accelerators (HWAs).
+
 More details about theory of OmegaThreads can be found in the following tallk:
 
 <p align="center"> 
@@ -26,9 +28,6 @@ More details about theory of OmegaThreads can be found in the following tallk:
         <img src="https://img.youtube.com/vi/p5e4MFC1ygg/0.jpg" alt="AMYTISS Demo/Intro" target="_blank"/>
     </a>
 </p>
-
-
-In **OmegaThreads**, scalable parallel algorithms are designed to construct symbolic model, construct the parity game and to synthesize the controllers. They are implemented on top of [pFaces](https://www.parallall.com/pfaces) as a kernel that supports parallel execution within CPUs, GPUs and hardware accelerators (HWAs).
 
 ## **Installing and running OmegaThreads using Docker**
 
