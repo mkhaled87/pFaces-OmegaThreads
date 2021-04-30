@@ -21,7 +21,7 @@ Winning the game results in a closed-loop controller that is guaranteed to enfor
 
 In **OmegaThreads**, scalable parallel algorithms are designed to construct symbolic model, construct the parity game and to synthesize the controllers. They are implemented on top of [pFaces](https://www.parallall.com/pfaces) as a kernel that supports parallel execution within CPUs, GPUs and hardware accelerators (HWAs).
 
-More details about theory of OmegaThreads can be found in the following tallk:
+More details about theory and techniques behind OmegaThreads can be found in the following tallk:
 
 <p align="center"> 
     <a href="https://www.youtube.com/watch?v=p5e4MFC1ygg">
