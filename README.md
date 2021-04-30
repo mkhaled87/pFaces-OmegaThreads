@@ -70,7 +70,7 @@ You can get the latest version and build it as follows:
 
 ``` bash
 /# git pull
-/# make
+/# sh build.sh
 ```
 
 In the Docker image, we installed Oclgrind to simulate an OpenCL platform/device that utilizes all the CPU cores using threads.
