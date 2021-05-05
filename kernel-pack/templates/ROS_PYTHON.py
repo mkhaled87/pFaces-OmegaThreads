@@ -45,10 +45,10 @@ def get_inputs(sym_mdl_state):
     found_mdl_state = False
     actions = []
     for trans in machine_data[machine_state]:
-        if trans[1] == sym_mdl_state:
+        if sym_mdl_state in trans[1]:
             found_mdl_state = True
             actions = trans[2]
-            machine_state = trans[0]
+            machine_state = trans[0][0]
             break
 
     if not found_mdl_state:
@@ -63,6 +63,7 @@ def get_inputs(sym_mdl_state):
 
 def input_callback(data):
     global control_time_idx
+    global ##NODE_NAME##_delivery
     mdl_state_symbolic = int(data.data)
     actions = get_inputs(mdl_state_symbolic)
     if actions:
@@ -78,7 +79,7 @@ def start_machine():
     
     while not rospy.is_shutdown():
         if not ##NODE_NAME##_delivery.empty():
-            deliver = ##NODE_NAME##_delivery.get()
+            deliver = str(##NODE_NAME##_delivery.get())
             pub.publish(deliver)
             if PRINT_LOGS:
                 delivery_log = "delivered: %s" % deliver
