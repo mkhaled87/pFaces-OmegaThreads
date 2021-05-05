@@ -40,6 +40,8 @@ control_time_idx = 0
 
 # access the machine data and update its state
 def get_inputs(sym_mdl_state):
+    global machine_state
+    global machine_data
     found_mdl_state = False
     actions = []
     for trans in machine_data[machine_state]:
@@ -60,6 +62,7 @@ def get_inputs(sym_mdl_state):
 ##NODE_NAME##_delivery = queue.Queue()
 
 def input_callback(data):
+    global control_time_idx
     mdl_state_symbolic = int(data.data)
     actions = get_inputs(mdl_state_symbolic)
     if actions:
