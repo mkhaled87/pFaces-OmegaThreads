@@ -1,0 +1,1 @@
+velocities = medfilt1(velocities,5);

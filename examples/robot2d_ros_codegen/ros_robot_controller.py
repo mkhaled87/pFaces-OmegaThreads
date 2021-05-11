@@ -50,13 +50,15 @@ control_time_idx = 0
 
 # access the machine data and update its state
 def get_inputs(sym_mdl_state):
+    global machine_state
+    global machine_data
     found_mdl_state = False
     actions = []
     for trans in machine_data[machine_state]:
-        if trans[1] == sym_mdl_state:
+        if sym_mdl_state in trans[1]:
             found_mdl_state = True
             actions = trans[2]
-            machine_state = trans[0]
+            machine_state = trans[0][0]
             break
 
     if not found_mdl_state:
@@ -70,6 +72,8 @@ def get_inputs(sym_mdl_state):
 robot_controller_delivery = queue.Queue()
 
 def input_callback(data):
+    global control_time_idx
+    global robot_controller_delivery
     mdl_state_symbolic = int(data.data)
     actions = get_inputs(mdl_state_symbolic)
     if actions:
@@ -85,7 +89,7 @@ def start_machine():
     
     while not rospy.is_shutdown():
         if not robot_controller_delivery.empty():
-            deliver = robot_controller_delivery.get()
+            deliver = str(robot_controller_delivery.get())
             pub.publish(deliver)
             if PRINT_LOGS:
                 delivery_log = "delivered: %s" % deliver
