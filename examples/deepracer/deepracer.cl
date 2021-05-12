@@ -123,10 +123,17 @@ void post_dynamics(concrete_t* xx, const concrete_t* x, const concrete_t* u) {
 // radius dynamics (difference equation)
 void radius_dynamics(concrete_t* rr, const concrete_t* r, const concrete_t* u);
 void radius_dynamics(concrete_t* rr, const concrete_t* r, const concrete_t* u) {
+#ifdef USE_DETERMINISTIC_DYNAMICS
+	rr[0] = 0.0f;
+	rr[1] = 0.0f;
+	rr[2] = 0.0f;
+	rr[3] = 0.0f;
+#else
 	rr[0] = r[0];
 	rr[1] = r[1];
 	rr[2] = r[2];
 	rr[3] = r[3];
+#endif
 }
 
 // include the Runge-Kutta solver from pFaces

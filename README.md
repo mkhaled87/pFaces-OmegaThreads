@@ -293,6 +293,8 @@ The following are all the keys that can be used in OmegaThreads config files:
 void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t* x, const concrete_t* u);
 ```
 
+- **system.dynamics.code_defines**: semicolon(;)-separated list of Key=Value items. The keys are used as defines to be passed to the code file. Simply, the OpenCl compliler is called with the option -DKey=Value, for each item in the list.
+
 - **system.write_symmodel**: a "true" or "false" value that instructs OmegaThreads to write/not-write the constructed symbolic model.
 
 - **specifications.ltl_formula**: the LTL formula describing the specifications to be enforced on the system. Only the atomic propositions declared in **system.states.subsets.names** and **system.controls.subsets.names** can be used.

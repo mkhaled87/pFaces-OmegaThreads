@@ -290,6 +290,19 @@ namespace pFacesOmegaKernels{
 		std::vector<std::shared_ptr<pfacesInstruction>> instrList;	
 		create_instructions(instrList, targetDevice);
 
+		/* add any extra defines */
+		std::string extra_defines_str = parallelProgram.m_spCfgReader->readConfigValueString("system.dynamics.code_defines");
+		std::vector<std::string> extra_defines_list = pfacesUtils::strSplit(extra_defines_str, ";", false);
+		for(size_t i=0; i<extra_defines_list.size(); i++){
+			auto name_value = pfacesUtils::strSplit(extra_defines_list[i], "=", false);
+			std::string name = name_value[0];
+			std::string value = "";
+			if(name_value.size() == 2)
+				value = name_value[1];
+			parallelProgram.m_compilerDefinesList.push_back(std::make_pair(name, value));
+		}
+			
+
 		/* complete the required settings in the parallel program */
 		parallelProgram.m_Universal_globalNDRange = ndKernelRange_XU;
 		parallelProgram.m_Universal_offsetNDRange = ndKernelOffset;

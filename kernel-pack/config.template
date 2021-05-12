@@ -34,6 +34,7 @@ system.controls.subsets.names = string
 # system.dynamics: holds info about the dynamics of the model
 system.dynamics = scope
 system.dynamics.code_file = string
+system.dynamics.code_defines = string
 
 # general for system
 system.write_symmodel = boolean

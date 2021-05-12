@@ -25,4 +25,3 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=$BUILDTYPE
 cmake --build . --config $BUILDTYPE
 cd ..
-rm -rf build
