@@ -305,7 +305,13 @@ void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t*
 
 - **implementation.implementation**: the type of controller implementation. This can currently only be "mealy_machine".
 
-- **implementation.generate_controller**: a "true" or "false" value that instructs OmegaThreads to save the controller or not.
+- **implementation.generate_controller**: a "true" or "false" value that instructs OmegaThreads to save the raw controller or not.
+
+- **implementation.generate_code**: a "true" or "false" value that instructs OmegaThreads to generate code from the controller or not.
+
+- **implementation.code_type**: currently should only be set to "ros-python".
+
+- **implementation.module_name**: declares the name of the generated code module.
 
 - **simulation.window_width**: a number that specifies the width of the simulation window in pixels.
 
