@@ -351,7 +351,7 @@ class Omega2dSimulator(arcade.Window):
         state_arena = self.translate_sys_to_arena(self.sys_state)
         self.system.center_x = state_arena[0]
         self.system.center_y = state_arena[1]
-        if len(self.sys_state) == 3 and self.visualize_3rd_dim:
+        if len(self.sys_state) >= 3 and self.visualize_3rd_dim:
             self.system.angle =  state_arena[2]
 
         # if number of delta_steps_in_tau is reached, time to stop
