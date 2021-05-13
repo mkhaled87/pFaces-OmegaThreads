@@ -346,6 +346,6 @@ void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t*
 - [ ] Activate and test the support for LTL-f.
 - [ ] An OpenCL-based version of the parity game constructor.
 - [ ] Re-Parallelize the game solver in OpenCL.
-- [ ] More examples.
-- [ ] A guide for the Docker image.
+- [x] More examples: DeepRacer.
+- [x] A guide for the Docker image in the README.
 - [ ] Documentation.

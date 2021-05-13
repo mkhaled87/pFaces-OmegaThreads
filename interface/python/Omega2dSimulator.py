@@ -65,10 +65,12 @@ COLORS = [
 
 class Omega2dSimulator(arcade.Window):
 
-    def __init__(self, sys_dynamics_func, config_file):
+    def __init__(self, sys_dynamics_func, config_file, after_draw=None, after_post=None):
 
-        # local storage of sys dynamics
+        # local storage of callback functions
         self.sys_dynamics = sys_dynamics_func
+        self.after_draw = after_draw
+        self.after_post = after_post
 
         # load the configurations
         print('Loading the configuration from ' + config_file + ' ...')
@@ -76,7 +78,7 @@ class Omega2dSimulator(arcade.Window):
 
         # create a symbolic model if needed
         if(self.use_model_dump):
-            print('Loading the symbolic model from ' + self.model_dump_file + ' ...')
+            print('Loading the symbolic model from ' + self.model_dump_file + ' (may take long time) ...')
             self.sym_model = SymbolicModel(self.model_dump_file, self.qnt_x.get_num_symbols(), self.qnt_u.get_num_symbols())
 
         # create the controller object
@@ -280,6 +282,9 @@ class Omega2dSimulator(arcade.Window):
             if line != None:
                 arcade.draw_line(line[0][0], line[0][1], line[1][0], line[1][1], arcade.color.BLUE)
 
+        if self.after_draw is not None:
+            self.after_draw(arcade)
+
     def translate_sys_to_arena(self, state):
         arena_x = self.ZERO_BASE_X + (state[0] - self.x_lb[0] + self.x_eta[0]/2)*self.X_SCALE_FACTOR
         arena_y = self.ZERO_BASE_Y + (state[1] - self.x_lb[1] + self.x_eta[1]/2)*self.Y_SCALE_FACTOR
@@ -317,6 +322,9 @@ class Omega2dSimulator(arcade.Window):
         else:
             if self.sub_steps == 0:
                 self.sys_state = self.sys_dynamics(self.sys_state, self.last_action)
+
+        if self.after_post is not None:
+            self.sys_state = self.after_post(self.sys_state)
 
         # increment the sub-step
         self.sub_steps += 1

@@ -1,4 +1,3 @@
-
 import sys
 import math
 
@@ -10,10 +9,10 @@ def wrapToPi(rad):
     M_PI = math.pi
     M_2PI = 2*math.pi
     ret = rad
-    ret -= M_2PI * math.floor((*ret + M_PI) * (1.0/M_2PI))
+    ret -= M_2PI * math.floor((ret + M_PI) * (1.0/M_2PI))
     return ret
 
-# system model
+# system model (helper-)functions
 def map_steering(angle_in):
     p1 = -0.116
     p2 = -0.02581
@@ -119,8 +118,8 @@ def model_ode(x,u):
 
 # this function gets called after drawing each frame in tthe simulation
 # we use it to send the drawn image to the arena projectors
-def after_draw():
-    print("one frame drawn !")
+def after_draw(arcade):
+    return 0
 
 # this functin gets called after the simulator solves the ode and computes the post
 # we use it to update the post. moost specifically, wrap the angle in x[2] to [-pi,pi]
