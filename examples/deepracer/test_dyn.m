@@ -4,9 +4,9 @@ clc;
 draw_arena();
 
 % initialize
-tau = 0.250;
+tau = 0.5;
 Tmax = 20*tau;
-u = [1.0 -6];
+u = [1.0 3];
 x0 = [2.12 0 pi/2 0];
 draw_deepracer([x0(1) x0(2)], x0(3));
 
@@ -24,19 +24,23 @@ end
 % plot
 figure;
 subplot(4,1,1);
-plot(state_log(:,1),state_log(:,2))
+plot(state_log(:,1),state_log(:,2),'LineWidth',1)
+for tau_line = 0:tau:Tmax; xline(tau_line); end
 ylabel('x-pos')
 grid on;
 subplot(4,1,2);
-plot(state_log(:,1),state_log(:,3))
+plot(state_log(:,1),state_log(:,3),'LineWidth',1)
+for tau_line = 0:tau:Tmax; xline(tau_line); end
 ylabel('y-pos')
 grid on;
 subplot(4,1,3);
-plot(state_log(:,1),state_log(:,4))
+plot(state_log(:,1),state_log(:,4),'LineWidth',1)
+for tau_line = 0:tau:Tmax; xline(tau_line); end
 ylabel('orientation (theta)')
 grid on;
 subplot(4,1,4);
-plot(state_log(:,1),state_log(:,5))
+plot(state_log(:,1),state_log(:,5),'LineWidth',1)
+for tau_line = 0:tau:Tmax; xline(tau_line); end
 ylabel('velocity')
 xlabel('time')
 grid on;
