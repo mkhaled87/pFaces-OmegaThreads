@@ -129,10 +129,15 @@ void radius_dynamics(concrete_t* rr, const concrete_t* r, const concrete_t* u) {
 	rr[2] = 0.0f;
 	rr[3] = 0.0f;
 #else
-	rr[0] = r[0];
-	rr[1] = r[1];
-	rr[2] = r[2];
-	rr[3] = r[3];
+	// i got thse values impirically (see: InMap_Ident/r-data/)
+	// briefly, i construct the symmodel first as deterministic and
+	// then i  run it for hunderends of simulations to get these
+	// deviatin values compared to solving the ode starting from 
+	// different points in the initial cell
+	rr[0] = 0.2637f;
+	rr[1] = 0.2571f;
+	rr[2] = 0.4556f;
+	rr[3] = 0.1886f;
 #endif
 }
 
