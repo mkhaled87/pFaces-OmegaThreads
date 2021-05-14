@@ -128,9 +128,14 @@ def after_post(x):
 
 # start the simulation as main function
 if __name__ == "__main__":
-    Omega2dSimulator(
-        model_ode,              # dynamics function of the model
-        "deepracer_small.cfg",  # the config file oof the problem
-        after_draw,
-        after_post
-    ).start()
+    if len(sys.argv) <= 1:
+        print('Error: you must pass the config file as first argument.')
+    else:
+        cfg_file = sys.argv[1]
+        print('Starting the simulator with the config file: ' + cfg_file)
+        Omega2dSimulator(
+            model_ode,
+            cfg_file,
+            after_draw,
+            after_post
+        ).start()

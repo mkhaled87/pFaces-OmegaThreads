@@ -35,7 +35,7 @@ disp('r_post_ub: ')
 disp(deviation_max)
 disp(' => r_post should be: ')
 disp(deviation_max-deviation_min)
-disp('Use these values for r-dynamics in the symolc model construction.')
+disp('Use these values for r-dynamics in the symolic model construction.')
 
 
 
