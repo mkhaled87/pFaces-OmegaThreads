@@ -29,12 +29,13 @@ deviation_min = [min(xPosts_deviation(:,1)) min(xPosts_deviation(:,2)) min(xPost
 deviation_max = [max(xPosts_deviation(:,1)) max(xPosts_deviation(:,2)) max(xPosts_deviation(:,3)) max(xPosts_deviation(:,4))];
 
 % print
-disp('r_post_lb: ')
+disp('minimum post deviation: ')
 disp(deviation_min)
-disp('r_post_ub: ')
+disp('maximum post deviation: ')
 disp(deviation_max)
-disp(' => r_post should be: ')
-disp(deviation_max-deviation_min)
+disp(' => r_post should be (max-min)/2: ')
+r_post = (deviation_max-deviation_min)./2;
+disp(r_post)
 disp('Use these values for r-dynamics in the symolic model construction.')
 
 

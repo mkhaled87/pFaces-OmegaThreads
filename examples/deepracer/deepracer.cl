@@ -134,10 +134,10 @@ void radius_dynamics(concrete_t* rr, const concrete_t* r, const concrete_t* u) {
 	// then i  run it for hunderends of simulations to get these
 	// deviatin values compared to solving the ode starting from 
 	// different points in the initial cell
-	rr[0] = 0.2637f;
-	rr[1] = 0.2571f;
-	rr[2] = 0.4556f;
-	rr[3] = 0.1886f;
+	rr[0] = 0.1319;
+	rr[1] = 0.1285;
+	rr[2] = 0.2278;
+	rr[3] = 0.0943;
 #endif
 }
 
