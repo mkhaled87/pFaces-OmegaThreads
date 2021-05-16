@@ -98,7 +98,7 @@ class Omega2dSimulator(arcade.Window):
         x_0_arena = self.translate_sys_to_arena(self.x_0)
         self.system.center_x = x_0_arena[0]
         self.system.center_y = x_0_arena[1]
-        if len(self.x_lb) == 3 and self.visualize_3rd_dim:
+        if len(self.x_lb) >= 3 and self.visualize_3rd_dim:
             self.system.angle =  x_0_arena[2]
 
         # prepare for simulation
@@ -288,7 +288,7 @@ class Omega2dSimulator(arcade.Window):
     def translate_sys_to_arena(self, state):
         arena_x = self.ZERO_BASE_X + (state[0] - self.x_lb[0] + self.x_eta[0]/2)*self.X_SCALE_FACTOR
         arena_y = self.ZERO_BASE_Y + (state[1] - self.x_lb[1] + self.x_eta[1]/2)*self.Y_SCALE_FACTOR
-        if len(state) == 3:
+        if len(state) >= 3:
             arena_t = state[2]*self.Z_SCALE_FACTOR
             return [arena_x, arena_y, arena_t]
         else:

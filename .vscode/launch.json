@@ -43,6 +43,17 @@
             "program": "${workspaceFolder}/examples/vehicle3d/simulate.py",
             "cwd": "${workspaceFolder}/examples/vehicle3d/",
             "console": "integratedTerminal"
+        }, 
+        {
+            "name": "Python DeepRacer (small) Simulate",
+            "type": "python",
+            "request": "launch",
+            "program": "simulate.py",
+            "args": [
+                "deepracer_small.cfg"
+            ],
+            "cwd": "${workspaceFolder}/examples/deepracer/",
+            "console": "integratedTerminal"
         }
 
     ]
