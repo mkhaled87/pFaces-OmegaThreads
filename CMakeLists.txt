@@ -6,7 +6,11 @@ if(NOT APPLE AND NOT UNIX AND NOT WIN32)
 endif()
 
 # check installation of pFaces/pFaces-SDK
+if (WIN32)
+find_program(PFACES_BINARY "pfaces.bat")
+else()
 find_program(PFACES_BINARY "pfaces")
+endif()
 if( (NOT PFACES_BINARY) OR ("$ENV{PFACES_SDK_ROOT}" STREQUAL "") OR (NOT EXISTS "$ENV{PFACES_SDK_ROOT}/include") OR (NOT EXISTS "$ENV{PFACES_SDK_ROOT}/lib"))
     message(FATAL_ERROR "Couln't find pFaces binary. Please make sure to insttall it correctly.")
 else()
