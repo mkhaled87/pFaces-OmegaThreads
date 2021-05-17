@@ -9,7 +9,7 @@ rm -rf kernel-pack/$KERNEL_NAME.driver
 rm -rf build
 
 # install owl if needed
-if [ -d "./kernel-driver/lib/ltl2dpa/owl" ] 
+if [ -d "./kernel-driver/lib/ltl2dpa/owl/build" ] 
 then
     echo "OWL folder is found and we assume it is installed." 
 else
