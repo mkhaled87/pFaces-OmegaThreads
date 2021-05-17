@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_definitions("-fPIC")
 
 # Declare rquired stuff
-#find_package(JNI REQUIRED)
+find_package(JNI REQUIRED)
 
 # Check JNI
 #message("JNI Headers:")
