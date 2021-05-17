@@ -14,8 +14,17 @@ add_definitions("-fPIC")
 #message("JNI Libraries:")
 #message(${JNI_LIBRARIES})
 
+# Add the source file to a libraray
+add_library(ltl2dpa 
+    ./src/StrixOwl.cpp 
+    ./src/StrixAutomaton.cpp 
+    ./src/StrixLTLParser.cpp 
+    ./src/StrixLtl2Dpa.cpp
+)
+
 # Additional directories
-include_directories(${JNI_INCLUDE_DIRS} 
+target_include_directories(ltl2dpa 
+    ${JNI_INCLUDE_DIRS} 
     "${PROJECT_SOURCE_DIR}/owl/build/native-library/" 
     "${PROJECT_SOURCE_DIR}/owl/src/main/headers/" 
     "${PROJECT_SOURCE_DIR}/include/"
@@ -26,8 +35,7 @@ link_directories(
     "$ENV{PFACES_SDK_ROOT}/lib"
 )
 
-# Add the source file to a libraray
-add_library(ltl2dpa ./src/StrixOwl.cpp ./src/StrixAutomaton.cpp ./src/StrixLTLParser.cpp ./src/StrixLtl2Dpa.cpp)
-
 # link some other libs with our target lib
-target_link_libraries(ltl2dpa owl pfaces-sdk)
+target_link_libraries(ltl2dpa 
+    owl pfaces-sdk
+)
