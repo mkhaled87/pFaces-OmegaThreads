@@ -165,15 +165,6 @@ $ pfaces -CGH -l
 
 where **pfaces** calls pFaces launcher as installed in your machine. This should list all available HW configurations attached to your machine and means you are ready to work with OmegaThreads.
 
-#### OWL Library
-
-OWL library is used to construct a parity Automaton from the input LTL specifications. if you are using Linux or MacOs, we automated the installation of OWL using the a script. Run the following command to install OWL and its requirements (mainly GraalVM 20.1):
-
-``` bash
-$ sh kernel-driver/lib/ltl2dpa/install-owl.sh
-```
-
-If you are using Windows, you will have to manually install OWL. Please refer to the installation [guide of OWL](https://gitlab.lrz.de/i7/owl/blob/master/README.md) for help. Once built and generated a static library (a .lib a), use it in the link settings in Visual Studio. You will also need to point to the include directories of OWL in the include settings of Visual Studio. Once we test **OmegaThreads** on Windows, we will update this section with details on the installation of OWL or we will create an installation BATCH for it.
 
 #### Python
 
@@ -203,13 +194,22 @@ Clone this repo:
 ``` bash
 $ git clone --depth=1 https://github.com/mkhaled87/pFaces-OmegaThreads
 ```
-Now, navigate to the created repo folder and build OmegaThreads:
+Now, navigate to the created repo folder:
 
 ``` bash
 $ cd pFaces-OmegaThreads
 ```
 
-Finally, build it:
+Now, we build the OWL library. It is used to construct a parity Automaton from the input LTL specifications. If you are using Linux or MacOs, we automated the installation of OWL using the a script. Run the following command to install OWL and its requirements (mainly GraalVM 20.1):
+
+``` bash
+$ sh ./kernel-driver/lib/ltl2dpa/install-owl.sh
+```
+
+If you are using Windows, you will have to manually install OWL. Please refer to the installation [guide of OWL](https://gitlab.lrz.de/i7/owl/blob/master/README.md) for help. Once built and generated a static library (a .lib a), use it in the link settings in Visual Studio. You will also need to point to the include directories of OWL in the include settings of Visual Studio. Once we test **OmegaThreads** on Windows, we will update this section with details on the installation of OWL or we will create an installation BATCH for it.
+
+
+Finally, build OmegaThreads:
 
 ``` bash
 $ mkdir build
