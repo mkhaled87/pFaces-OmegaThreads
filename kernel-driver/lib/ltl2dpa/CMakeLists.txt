@@ -14,14 +14,6 @@ find_package(JNI REQUIRED)
 #message("JNI Libraries:")
 #message(${JNI_LIBRARIES})
 
-# Add the source file to a libraray
-add_library(ltl2dpa 
-    ./src/StrixOwl.cpp 
-    ./src/StrixAutomaton.cpp 
-    ./src/StrixLTLParser.cpp 
-    ./src/StrixLtl2Dpa.cpp
-)
-
 # Additional directories
 target_include_directories(ltl2dpa PRIVATE
     ${JNI_INCLUDE_DIRS} 
@@ -39,3 +31,4 @@ link_directories(
 target_link_libraries(ltl2dpa PRIVATE
     owl pfaces-sdk
 )
+
