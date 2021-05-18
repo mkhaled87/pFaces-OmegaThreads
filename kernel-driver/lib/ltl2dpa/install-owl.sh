@@ -43,10 +43,12 @@ echo "Installing GraalVM-20.1.0 Native-Image ..."
 sudo $INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH/gu install native-image
 
 # Install owl/release-20.06.00
-OWL_VER=release-20.06.00
+#OWL_VER=release-20.06.00
 echo "Installing OWL/$OWL_VER ..."
 rm -rf ./owl
-git clone --depth=1 https://gitlab.lrz.de/i7/owl --branch $OWL_VER
+#git clone --depth=1 https://gitlab.lrz.de/i7/owl --branch $OWL_VER
+mkdir owl
 cd owl
+unzip ../owl-release-20.06.00.zip
 PATH=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH:$PATH JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH ./gradlew clean
 PATH=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH:$PATH JAVA_HOME=$INSTALL_PATH/graalvm-ce-java11-20.1.0/$HOME_PATH ./gradlew distZip -x javadoc -Pdisable-pandoc

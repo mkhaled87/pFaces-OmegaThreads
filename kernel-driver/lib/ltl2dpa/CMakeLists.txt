@@ -23,7 +23,7 @@ add_library(ltl2dpa
 )
 
 # Additional directories
-target_include_directories(ltl2dpa 
+target_include_directories(ltl2dpa PRIVATE
     ${JNI_INCLUDE_DIRS} 
     "${PROJECT_SOURCE_DIR}/owl/build/native-library/" 
     "${PROJECT_SOURCE_DIR}/owl/src/main/headers/" 
@@ -36,6 +36,6 @@ link_directories(
 )
 
 # link some other libs with our target lib
-target_link_libraries(ltl2dpa 
+target_link_libraries(ltl2dpa PRIVATE
     owl pfaces-sdk
 )

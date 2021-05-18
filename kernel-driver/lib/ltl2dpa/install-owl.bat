@@ -18,10 +18,12 @@ SET JAVA_HOME=C:\GraalVM\graalvm-ce-java11-20.1.0
 ECHO Installing GraalVM-20.1.0 Native-Image ...
 %JAVA_HOME%\lib\installer\bin\gu.exe install native-image
 
-SET OWL_VER=release-20.06.00
+rem SET OWL_VER=release-20.06.00
 ECHO Installing OWL/%OWL_VER% ...
 RMDIR /S /Q owl
-git clone --depth=1 https://gitlab.lrz.de/i7/owl --branch %OWL_VER%
+rem git clone --depth=1 https://gitlab.lrz.de/i7/owl --branch %OWL_VER%
+MKDIR owl
 CD owl
+tar -xf ..\owl-release-20.06.00.zip
 gradlew.bat clean
 gradlew.bat distZip -Pdisable-default
