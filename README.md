@@ -181,8 +181,13 @@ $ pip3 install parglare
 OmegaThreads is given as source code that need to be built before running it. This requires a modern C/C++ compiler such as:
 
 - For windows: Microsoft Visual C++ (OmegaThreads is tested with Visual Studio 2019 community edition) and CMake;
-- For Linux/MacOS: GCC/G++ and CMake.
+- For Linux/MacOS: GCC/G++.
 
+Make sure you have the following installed:
+- Cmake
+- wget (not needed for Windows)
+
+For MacOS, we suggest installign Homebrew and using it to install Cmake and WGET.
 
 ### **Building OmegaThreads**
 
