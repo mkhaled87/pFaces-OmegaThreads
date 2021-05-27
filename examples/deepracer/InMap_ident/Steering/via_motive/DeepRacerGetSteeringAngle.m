@@ -7,8 +7,8 @@ src = './data/';
 addpath(src);
 
 % configs
-STEP_LEVEL = 1.0;
-DIRECTION = 'P';
+STEP_LEVEL = 1.00;
+DIRECTION = 'N';
 MotiveDataFile = [src DIRECTION '_' num2str(STEP_LEVEL*100) '.csv'];
 
 % inport the data file => gets a table [time,x,y,z] for marker1
@@ -31,18 +31,38 @@ end
 
 % collect
 time = timed_matrix(:,1);
-xy = timed_matrix(:,[2 4]);
+xy = timed_matrix(:,[4 2]);
 
 % plots
 figure;
 plot(xy(1,1), xy(1,2), 'ok');
 hold on;
-plot(xy(:,1), xy(:,2), 'b');
+plot(xy(:,1), xy(:,2), '*b');
 title(strrep(MotiveDataFile, '_', '\_'));
 xlabel('X');
 ylabel('Y');
-legend('Start')
+
 
 
 % estimate the radius via nonlinear regression to a circle
+circlefun = @(b, X) (X(:,1).^2 + X(:,2).^2 + b(1)*X(:,1) + b(2)*X(:,2) + b(3));
+beta0 = [0 0 0];
+mdl = fitnlm(xy, zeros(size(xy,1),1),circlefun,beta0);
+B = mdl.Coefficients.Estimate;
+Xm = -B(1)/2;
+Ym = -B(2)/2;
+R = sqrt((Xm^2 + Ym^2) - B(3));
+D = R*2;
+plot(Xm, Ym, '*r');
+text(Xm, Ym+0.05, ['R = ' num2str(R)])
+plot([Xm Xm+R], [Ym Ym], 'r');
+rectangle('Position', [(Xm-R) (Ym-R) D D], 'Curvature', [1,1], 'EdgeColor', 'green');
+legend('Start','Data','Center','Radius')
+sign = '+';
+if DIRECTION == 'N'
+    sign = '-';
+end
+disp(['R = ' sign num2str(R)])
+disp(['D = ' sign num2str(D)])
+
 

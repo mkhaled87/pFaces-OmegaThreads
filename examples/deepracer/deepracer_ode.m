@@ -13,31 +13,31 @@ function dxdt = deepracer_ode(~,x,u)
 end
 function [a,b] = get_v_params(u_speed)
     if u_speed == 0.0
-        K = 1.5; T = 0.25;
+        K = 0.0; T = 0.25;
     elseif u_speed == 0.45
-        K = 1.9353; T = 0.9092;
+        K = 1.9953; T = 0.9933;
     elseif u_speed == 0.50
-        K = 2.2458; T = 0.8942;
+        K = 2.3567; T = 0.8943;
     elseif u_speed == 0.55
-        K = 2.8922; T = 0.8508;
+        K = 3.0797; T = 0.88976;
     elseif u_speed == 0.60
-        K = 3.0332; T = 0.8642;
+        K = 3.2019; T = 0.87595;
     elseif u_speed == 0.65
-        K = 3.1274; T = 0.8419;
+        K = 3.3276; T = 0.89594;
     elseif u_speed == 0.70
-        K = 3.7112; T = 0.8822;
+        K = 3.7645; T = 0.92501;
     elseif u_speed == -0.45
-        K = 1.6392; T = 1.3008;
+        K = 1.8229; T = 1.8431;
     elseif u_speed == -0.50
-        K = 2.5998; T = 0.9882;
+        K = 2.3833; T = 1.2721;
     elseif u_speed == -0.55
-        K = 2.8032; T = 0.9640;
+        K = 2.512; T = 1.1403;
     elseif u_speed == -0.60
-        K = 3.1457; T = 0.9741;
+        K = 3.0956; T = 1.12781;
     elseif u_speed == -0.65
-        K = 3.6170; T = 0.9481;
+        K = 3.55; T = 1.1226;
     elseif u_speed == -0.70
-        K = 3.6391; T = 0.9285;
+        K = 3.6423; T = 1.1539;
     else
         error('Invalid input !');
     end
@@ -45,10 +45,10 @@ function [a,b] = get_v_params(u_speed)
     b = K/T;
 end
 function psi = map_steering(angle_in)
-    p1 = -0.116;
-    p2 = -0.02581;
-    p3 = 0.3895;
-    p4 = 0.02972;
+    p1 = -0.1167;
+    p2 = 0.01949;
+    p3 = 0.3828;
+    p4 = -0.0293;
     x = angle_in;
     psi = p1*x^3 + p2*x^2 + p3*x + p4;
 end

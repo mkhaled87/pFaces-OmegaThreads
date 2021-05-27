@@ -15,10 +15,10 @@
 
 // some maps : see the file ./InMap_Ident/Details.pdf for more details
 inline concrete_t map_steering(const concrete_t angle_in){
-    concrete_t p1 = -0.116;
-    concrete_t p2 = -0.02581;
-    concrete_t p3 = 0.3895;
-    concrete_t p4 = 0.02972;
+    concrete_t p1 = -0.1167;
+    concrete_t p2 = 0.01949;
+    concrete_t p3 = 0.3828;
+    concrete_t p4 = -0.0293;
     concrete_t x = angle_in;
     return p1*x*x*x + p2*x*x + p3*x + p4;
 }
@@ -43,56 +43,56 @@ inline concrete_t map_speed(const symbolic_t speed_in){
 inline void get_v_params(concrete_t u_speed, concrete_t* a, concrete_t* b){
 	concrete_t K,T;
     if (u_speed == 0.0f){
-        K = 1.5f; 
+        K = 0.0f; 
 		T = 0.25f;
 	}
 	else if (u_speed == 0.45f){
-        K = 1.9353f; 
-		T = 0.9092f;
+        K = 1.9953f; 
+		T = 0.9933f;
     }
 	else if (u_speed == 0.50f){
-        K = 2.2458f; 
-		T = 0.8942f;
+        K = 2.3567f;
+		T = 0.8943f;
     }
 	else if (u_speed == 0.55f){
-        K = 2.8922f; 
-		T = 0.8508f;
+        K = 3.0797f; 
+		T = 0.88976f;
     }
 	else if (u_speed == 0.60f){
-        K = 3.0332f; 
-		T = 0.8642f;
+        K = 3.2019f; 
+		T = 0.87595f;
     }
 	else if (u_speed == 0.65f){
-        K = 3.1274f; 
-		T = 0.8419f;
+        K = 3.3276f; 
+		T = 0.89594f;
     }
 	else if (u_speed == 0.70f){
-        K = 3.7112f; 
-		T = 0.8822f;
+        K = 3.7645f; 
+		T = 0.92501f;
     }
 	else if (u_speed == -0.45f){
-        K = 1.6392f; 
-		T = 1.3008f;
+        K = 1.8229f; 
+		T = 1.8431f;
     }
 	else if (u_speed == -0.50f){
-        K = 2.5998f; 
-		T = 0.9882f;
+        K = 2.3833f; 
+		T = 1.2721f;
     }
 	else if (u_speed == -0.55f){
-        K = 2.8032f; 
-		T = 0.9640f;
+        K = 2.512f; 
+		T = 1.1403f;
     }
 	else if (u_speed == -0.60f){
-        K = 3.1457f; 
-		T = 0.9741f;
+        K = 3.0956f; 
+		T = 1.1278f;
     }
 	else if (u_speed == -0.65f){
-        K = 3.6170f; 
-		T = 0.9481f;
+        K = 3.55f; 
+		T = 1.1226f;
     }
 	else if (u_speed == -0.70f){
-        K = 3.6391f; 
-		T = 0.9285f;
+        K = 3.6423f; 
+		T = 1.1539f;
 	}
     else{
         printf("get_v_params: Invalid input !\n");

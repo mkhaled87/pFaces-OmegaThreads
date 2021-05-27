@@ -5,9 +5,9 @@ draw_arena();
 
 % initialize
 tau = 0.5;
-Tmax = 5*tau;
-u = [-0.8 1];
-x0 = [-2.12 0 -pi/2 0];
+Tmax = 7*tau;
+u = [0.05 -1];
+x0 = [2 2 pi/4 0];
 draw_deepracer([x0(1) x0(2)], x0(3));
 
 % simulate
