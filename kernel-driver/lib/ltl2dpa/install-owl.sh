@@ -1,5 +1,17 @@
 #!/bin/sh
 
+# checks
+if ! command -v wget &> /dev/null
+then
+    echo "WGET is not installed. Please install it first."
+    exit
+fi
+if ! command -v unzip &> /dev/null
+then
+    echo "UNZIP is not installed. Please install it first."
+    exit
+fi
+
 # install GraalVM
 if [[ "$OSTYPE" == *"darwin"* ]]; then
     echo "Installing GraalVM-20.1.0 for MacOS ..."
