@@ -7,13 +7,10 @@ then
     exit
 fi
 
-# CMake cofiguration
+# Configurations
 BUILDTYPE=Release
 KERNEL_NAME=omega
-
-# remove old build binaries
-rm -rf kernel-pack/$KERNEL_NAME.driver
-rm -rf build
+CLEAN_BUILD=false
 
 # install owl if needed
 if [ -d "./kernel-driver/lib/ltl2dpa/owl/build" ] 
@@ -24,6 +21,13 @@ else
     cd ./kernel-driver/lib/ltl2dpa/
     sh install-owl.sh
     cd ../../..
+fi
+
+# remove old build binaries
+if [ $CLEAN_BUILD = true ]
+then 
+    rm -rf kernel-pack/$KERNEL_NAME.driver
+    rm -rf build
 fi
 
 # building ...

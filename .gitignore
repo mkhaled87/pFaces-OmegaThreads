@@ -20,3 +20,5 @@ interface/python/__pycache__/*.*
 .settings/
 .DS_Store
 **/.DS_Store
+**/*.pyc
+**/__pycache__

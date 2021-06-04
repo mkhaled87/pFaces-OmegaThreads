@@ -12,7 +12,7 @@
 #include "omegaUtils.h"
 
 // comment this to exclude the test functions
-#define TEST_FUNCTION
+//#define TEST_FUNCTION
 
 namespace pFacesOmegaKernels {
 
