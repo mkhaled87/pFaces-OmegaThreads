@@ -62,17 +62,15 @@ jobs:
         
       - name: Clone OmegaThreads and install OWL
         run: |
-          git clone --depth=1 https://github.com/mkhaled87/pFaces-OmegaThreads
-          cd ./pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa
-          git clone --depth 1 --branch release-20.06.00 https://gitlab.lrz.de/i7/owl
+          cd ${{ github.workspace }}
+          cd kernel-driver/lib/ltl2dpa
+          sh install-owl.sh
           cd owl
-          ./gradlew clean
-          ./gradlew distZip -x javadoc -Pdisable-pandoc
           sudo cp ./build/native-library/libowl.so /usr/lib/
           
       - name: Build OmegaThreads
         run: |
-          cd ./pFaces-OmegaThreads/
+          cd ${{ github.workspace }}
           export PFACES_SDK_ROOT=$PWD/../pfaces/pfaces-sdk/
           sh build.sh
           
