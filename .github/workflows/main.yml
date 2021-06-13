@@ -62,10 +62,11 @@ jobs:
         
       - name: Clone OmegaThreads and install OWL
         run: |
-          cd ${{ github.workspace }}
-          cd kernel-driver/lib/ltl2dpa
-          sh install-owl.sh
-          cd owl
+          cd ${{github.workspace}}
+          cd ./kernel-driver/lib/ltl2dpa
+          chmod +x ./install-owl.sh
+          ./install-owl.sh
+          cd ./owl
           sudo cp ./build/native-library/libowl.so /usr/lib/
           
       - name: Build OmegaThreads
