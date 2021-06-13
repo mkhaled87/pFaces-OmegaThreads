@@ -19,21 +19,20 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-18.04
+    with:
+      timezoneLinux: "Europe/Berlin"
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      - name: Make Ubuntu Ready for time zone 
-        run: sudo ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
         
       - name: Install stuff
         run: 
           sudo apt-get update
-          apt-get install -y --no-install-recommends apt-util
-          apt-get upgrade -y
-          apt-get install -y cmake wget git unzip build-essential libcpprest-dev opencl-c-headers  opencl-clhpp-headers ocl-icd-opencl-dev clinfo oclgrind cmake
+          sudo apt-get install -y --no-install-recommends apt-util
+          sudo apt-get upgrade -y
+          sudo apt-get install -y cmake wget git unzip build-essential libcpprest-dev opencl-c-headers  opencl-clhpp-headers ocl-icd-opencl-dev clinfo oclgrind cmake
 
       - name: Install pFaces
         run: 
