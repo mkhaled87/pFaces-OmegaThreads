@@ -43,9 +43,19 @@ jobs:
           wget https://github.com/parallall/pFaces/releases/download/Release_1.2.0d/pFaces-1.2.0-Ubuntu18.04.zip
           unzip pFaces-1.2.0-Ubuntu18.04.zip
           sudo sh install.sh
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+          
+      - name: Install GraalVM (20.1 AMD64)
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          wget -q https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/graalvm-ce-java11-linux-amd64-20.1.0.tar.gz
+          echo '18f2dc19652c66ccd5bd54198e282db645ea894d67357bf5e4121a9392fc9394 graalvm-ce-java11-linux-amd64-20.1.0.tar.gz' | sha256sum --check
+          tar -zxvf graalvm-ce-java11-linux-amd64-20.1.0.tar.gz
+          rm graalvm-ce-java11-linux-amd64-20.1.0.tar.gz
+          mv graalvm-ce-java11-20.1.0 /opt/
+          
+      - name: Update Env Vars for Java
+        run: |
+          echo "PATH=/opt/graalvm-ce-java11-20.1.0/bin/:${{ env.PATH }}" >> $GITHUB_ENV
+          echo "JAVA_HOME=/opt/graalvm-ce-java11-20.1.0/" >> $GITHUB_ENV
+          
+      - name: Install Native-Image
+        run: gu install native-image
