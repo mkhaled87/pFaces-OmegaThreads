@@ -25,12 +25,15 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Make Ubuntu Ready
+      - name: Make Ubuntu Ready for time zone 
         run: sudo ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-        run: sudo apt-get -qq update
-        run: sudo apt-get -qq install -y --no-install-recommends apt-util
-        run: sudo apt-get -qq -y upgrade
-        run: sudo apt-get -qq install -y cmake wget git unzip build-essential libcpprest-dev opencl-c-headers  opencl-clhpp-headers ocl-icd-opencl-dev clinfo oclgrind cmake
+        
+      - name: Install stuff
+        run: 
+          sudo apt-get update
+          apt-get install -y --no-install-recommends apt-util
+          apt-get upgrade -y
+          apt-get install -y cmake wget git unzip build-essential libcpprest-dev opencl-c-headers  opencl-clhpp-headers ocl-icd-opencl-dev clinfo oclgrind cmake
 
       - name: Install pFaces
         run: 
