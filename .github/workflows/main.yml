@@ -26,12 +26,11 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Make Ubuntu Ready
-        run: 
-          sudo ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-          sudo apt-get -qq update
-          sudo apt-get -qq install -y --no-install-recommends apt-util
-          sudo apt-get -qq -y upgrade
-          sudo apt-get -qq install -y cmake wget git unzip build-essential libcpprest-dev opencl-c-headers  opencl-clhpp-headers ocl-icd-opencl-dev clinfo oclgrind cmake
+        run: sudo ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+        run: sudo apt-get -qq update
+        run: sudo apt-get -qq install -y --no-install-recommends apt-util
+        run: sudo apt-get -qq -y upgrade
+        run: sudo apt-get -qq install -y cmake wget git unzip build-essential libcpprest-dev opencl-c-headers  opencl-clhpp-headers ocl-icd-opencl-dev clinfo oclgrind cmake
 
       - name: Install pFaces
         run: 
