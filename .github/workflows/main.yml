@@ -64,7 +64,8 @@ jobs:
         run: |
           cd ${{github.workspace}}
           cd ./kernel-driver/lib/ltl2dpa
-          chmod +x ./install-owl.sh
+          ls -all
+          sudo chmod +x ./install-owl.sh
           ./install-owl.sh
           cd ./owl
           sudo cp ./build/native-library/libowl.so /usr/lib/
