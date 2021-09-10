@@ -1,0 +1,39 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[latin1]{inputenc}
+
+\title{
+  HyConSys Lab: AWS DeepRacer
+  \vspace{-1.4cm}
+}
+\date{10.09.2021}
+
+\begin{document}
+\maketitle
+
+\section{Mathematical Model}
+
+\begin{equation} \label{eq1}
+\begin{split}
+\dot x_1 &= x_4 \cos(x_3) \\
+\dot x_2 &= x_4 \sin(x_3) \\
+\dot x_3 &= \frac{x_4}{L} \tan(u_1)\\
+\dot x_4 &= a x_4 + b u_2,
+\end{split}
+\end{equation}
+
+where 
+$(x_1,x_2) \in [-2.1,2.1]^2$ is the car's postion, 
+$x_3 \in [-\pi,\pi]$ is its orientation,
+$x_4 \in [-1.9,1.9]$ is its forward velocity,
+$L := 0.165$  is its length, 
+$u_1 \in [-\pi/8,\pi/8]$ is the steering angle,
+$u_2 \in [-0.7,0.7]$ is the control input to rear wheels,
+$(a,b) := f(u_2)$, and 
+$f$ is an imperically-identified static map.
+
+
+
+\end{document}
