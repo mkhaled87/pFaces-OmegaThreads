@@ -1,12 +1,5 @@
 #!/bin/sh
 
-# check
-if ! command -v cmake &> /dev/null
-then
-    echo "CMAKE is not installed. Please install it first."
-    exit
-fi
-
 # Configurations
 BUILDTYPE=Release
 KERNEL_NAME=omega
