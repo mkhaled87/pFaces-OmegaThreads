@@ -1,6 +1,10 @@
 # pFaces-OmegaThreads
 
+<!---
 ![example workflow](https://github.com/mkhaled87/pFaces-OmegaThreads/actions/workflows/main.yml/badge.svg)
+-->
+
+> **Note:** This tool works on top of the demo version of pFaces. If you face any LICENSE issues (e.g., expired license), install the latest version of pFaces or use the latest license file from the latest demo version of pFaces. Latest demo version of pFaces can always be found [here](https://github.com/parallall/pFaces/releases).
 
 Automatic design of correct-by-construction software is a becoming a popular approach to design controllers for safety-critical systems.
 This eliminates the need for post-testing/post-verification steps.
