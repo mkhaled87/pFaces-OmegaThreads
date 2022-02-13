@@ -143,7 +143,7 @@ $ curl https://raw.githubusercontent.com/mkhaled87/pFaces-OmegaThreads/master/Do
 Build the Docker image (don't forget the DOT at the end):
 
 ``` bash
-$ docker build -t omega:latest .
+$ docker build -t omega .
 ```
 
 The building process will take proximately 45 minutes.
@@ -152,7 +152,7 @@ They do not indicate errors, unless you receive an explicit red-colored error me
 Once done, run the container and enter the interactive shell:
 
 ``` bash
-$ docker run -it -v ~/docker_shared:/docker_shared omega:latest
+$ docker run -it -v ~/docker_shared:/docker_shared omega
 ```
 
 Now, you are inside the container and can use it as described before.

@@ -8,12 +8,6 @@ add_definitions("-fPIC")
 # Declare rquired stuff
 find_package(JNI REQUIRED)
 
-# Check JNI
-#message("JNI Headers:")
-#message(${JNI_INCLUDE_DIRS})
-#message("JNI Libraries:")
-#message(${JNI_LIBRARIES})
-
 add_library(ltl2dpa 
     ./src/StrixOwl.cpp 
     ./src/StrixAutomaton.cpp 
@@ -25,7 +19,7 @@ add_library(ltl2dpa
 target_include_directories(ltl2dpa PRIVATE
     ${JNI_INCLUDE_DIRS} 
     "${PROJECT_SOURCE_DIR}/owl/build/native-library/" 
-    "${PROJECT_SOURCE_DIR}/owl/src/main/headers/" 
+    "${PROJECT_SOURCE_DIR}/owl/src/main/c/headers/" 
     "${PROJECT_SOURCE_DIR}/include/"
     "$ENV{PFACES_SDK_ROOT}/include/cudd/"
 )
