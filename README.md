@@ -104,7 +104,8 @@ Copy it as follows to the shared folder (we copy some simulation scripts and exa
 /# cp drone.png /docker_shared/
 /# cp simulate.py /docker_shared/
 /# cp ../../interface/python/*.py /docker_shared/
-/# cp $PFACES_SDK_ROOT/../interface/python/*.* /docker_shared/
+/# cp $PFACES_SDK_ROOT/../interface/python/ConfigFileGrammer.pg /docker_shared/
+/# cp $PFACES_SDK_ROOT/../interface/python/ConfigReader.py /docker_shared/
 ```
 
 Now, without closing the running docker container, start a new terminal on the host and simulate the controller (make sure Python 3.6+, Arcade and Parglare are installed before running this command and refer to Python's requirements below for a small installation guide):
