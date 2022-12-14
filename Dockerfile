@@ -34,6 +34,8 @@ RUN gu install native-image
 
 # install OWL (release-20.06.00) and OmegaThreads (latest)
 RUN git clone --depth=1 https://github.com/mkhaled87/pFaces-OmegaThreads \
+  && cd /pFaces-OmegaThreads/ \
+  && git checkout tags/PFACES_UP_TO_1.2 \
 	&& cd /pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa \
 	&& git clone --depth 1 --branch release-20.06.00 https://gitlab.lrz.de/i7/owl \
 	&& cd owl \
