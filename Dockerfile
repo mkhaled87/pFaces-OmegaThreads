@@ -33,7 +33,7 @@ ENV JAVA_HOME=/opt/graalvm-ce-java11-20.1.0/
 RUN gu install native-image
 
 # install OWL (release-20.06.00) and OmegaThreads (latest)
-RUN git clone --depth=1 https://github.com/mkhaled87/pFaces-OmegaThreads \
+RUN git clone https://github.com/mkhaled87/pFaces-OmegaThreads \
   && cd /pFaces-OmegaThreads/ \
   && git checkout tags/PFACES_UP_TO_1.2 \
 	&& cd /pFaces-OmegaThreads/kernel-driver/lib/ltl2dpa \
