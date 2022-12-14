@@ -269,8 +269,8 @@ namespace pFacesOmegaKernels{
 		if(multiple_devices)
 			throw std::runtime_error("This kernel does not currently supposed multiple device.");
 
-		auto thisMachine = parallelProgram.getMachine();
-		auto targetDevice = parallelProgram.getTargetDevices()[0];
+		const auto& thisMachine = parallelProgram.getMachine();
+		const auto& targetDevice = parallelProgram.getTargetDevices()[0];
 
 		/* init the ranges/offsets to be used */
 		ndKernelRange_X  = cl::NDRange(x_symbols, 1 ,1);

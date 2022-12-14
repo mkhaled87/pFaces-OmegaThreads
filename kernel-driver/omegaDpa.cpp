@@ -8,7 +8,10 @@
 */
 
 #include "omegaDpa.h"
+
 #include "omegaUtils.h"
+
+#include <bitset>
 
 namespace pFacesOmegaKernels{
 

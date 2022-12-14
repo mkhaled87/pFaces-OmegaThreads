@@ -23,6 +23,10 @@ then
     rm -rf build
 fi
 
+# Prepare JAVA paths
+JVM_VER=$(cat ./kernel-driver/lib/ltl2dpa/gvm_name.txt)
+export JAVA_HOME=$(pwd)/kernel-driver/lib/ltl2dpa/GraalVM/$JVM_VER/
+
 # building ...
 mkdir -p build
 cd build
