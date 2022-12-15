@@ -2,15 +2,13 @@ cmake_minimum_required(VERSION 3.10)
 
 project(testProject)
 
-# compile for C++17
-set(CMAKE_CXX_STANDARD 17)
+# compile for C++14
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_BUILD_TYPE Debug)
-
 
 # add boost
 find_package (Boost 1.53 REQUIRED)
 include_directories (${Boost_INCLUDE_DIRS})
-
 
 # add ltl2dpa lib
 include_directories("../../include")

@@ -13,6 +13,9 @@ endif()
 # Needed libraries: ltl2dpa
 add_subdirectory("./kernel-driver/lib/ltl2dpa/")
 
+# Needed libraries: boost
+find_package(Boost 1.53 REQUIRED)
+
 # Kernel and its sources
 set(PFACES_KERNEL omega)
 set(PFACES_KERNEL_SOURCES 
@@ -42,6 +45,7 @@ target_include_directories(${PFACES_KERNEL} PUBLIC
     "./kernel-driver/lib/ltl2dpa/include/"
     "./kernel-driver/lib/ltl2dpa/owl/build/native-library/"
     "./kernel-driver/lib/ltl2dpa/owl/src/main/headers/"
+    ${Boost_INCLUDE_DIRS}
 )
 target_link_directories(${PFACES_KERNEL} PUBLIC
     "./kernel-driver/lib/ltl2dpa/owl/build/native-library/"

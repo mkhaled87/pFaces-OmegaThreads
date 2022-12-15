@@ -23,7 +23,7 @@ tar -zxvf $GRAALVM_FILE 2>/dev/null
 rm $GRAALVM_FILE
 mv graalvm-ce-java11-20.1.0 $INSTALL_PATH/ 2>/dev/null
 rm -rf graalvm-ce-java11-20.1.0
-echo "graalvm-ce-java11-20.1.0" > $GVM_SETUP_FILE
+echo "graalvm-ce-java11-20.1.0/$HOME_PATH" > $GVM_SETUP_FILE
 
 echo "GraalVM installed, checking JAVA ... "
 export PATH="$INSTALL_PATH/graalvm-ce-java11-20.1.0/$BIN_PATH:$PATH"

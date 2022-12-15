@@ -25,7 +25,8 @@ fi
 
 # Prepare JAVA paths
 JVM_VER=$(cat ./kernel-driver/lib/ltl2dpa/gvm_name.txt)
-export JAVA_HOME=$(pwd)/kernel-driver/lib/ltl2dpa/GraalVM/$JVM_VER/
+export JAVA_HOME=$(pwd)/kernel-driver/lib/ltl2dpa/GraalVM/$JVM_VER
+echo "JH: $JAVA_HOME"
 
 # building ...
 mkdir -p build

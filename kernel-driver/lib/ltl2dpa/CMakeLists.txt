@@ -1,19 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 project(StrixAutomataLibC)
 
-# compile for C++11
-set(CMAKE_CXX_STANDARD 17)
-add_definitions("-fPIC")
-
-# Declare rquired stuff
+# JNI
+set(JAVA_AWT_LIBRARY NotNeeded)
+set(JAVA_JVM_LIBRARY NotNeeded)
+set(JAVA_INCLUDE_PATH2 NotNeeded)
+set(JAVA_AWT_INCLUDE_PATH NotNeeded)
 find_package(JNI REQUIRED)
 
-# Check JNI
-#message("JNI Headers:")
-#message(${JNI_INCLUDE_DIRS})
-#message("JNI Libraries:")
-#message(${JNI_LIBRARIES})
-
+# Add lib ltl2dpa
 add_library(ltl2dpa 
     ./src/StrixOwl.cpp 
     ./src/StrixAutomaton.cpp 
@@ -21,7 +16,7 @@ add_library(ltl2dpa
     ./src/StrixLtl2Dpa.cpp
 )
 
-# Additional directories
+# Include directories
 target_include_directories(ltl2dpa PRIVATE
     ${JNI_INCLUDE_DIRS} 
     "${PROJECT_SOURCE_DIR}/owl/build/native-library/" 
@@ -38,4 +33,3 @@ link_directories(
 target_link_libraries(ltl2dpa PRIVATE
     owl pfaces-sdk
 )
-

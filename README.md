@@ -233,8 +233,6 @@ $ cmake .. -DCMAKE_BUILD_TYPE=Release
 $ cmake --build . --config Release
 ```
 
-In case ypu facce errors complaining about the missing OpenSSL library, replace the 'cmake ..' command with 'cmake -DOPENSSL_ROOT_DIR=$OPENSS_PATH -DOPENSSL_LIBRARIES=$OPENSS_PATH/lib ..', where '$OPENSS_PATH' is the path to your OpenSSL library. If you are using MacOS, getting the location of OpenSSL can  be done by running the command 'brew info openssl'. 
-
 ### **Running an example**
 
 Navigate to any of the examples in the directory [/examples](/examples). Within each example, one or more .cfg files are provided. Config files tells OmegaThreads about the system under consideration and the requirements it should consider when designing a controller for the system.
