@@ -50,7 +50,11 @@ target_include_directories(${PFACES_KERNEL} PUBLIC
 target_link_directories(${PFACES_KERNEL} PUBLIC
     "./kernel-driver/lib/ltl2dpa/owl/build/native-library/"
 )
-target_link_libraries(${PFACES_KERNEL} ltl2dpa owl)
+if(MSVC)
+  target_link_libraries(${PFACES_KERNEL} ltl2dpa)
+else()
+  target_link_libraries(${PFACES_KERNEL} ltl2dpa owl)
+endif()
 
 # Include link configs for the kernel.
 include($ENV{PFACES_SDK_ROOT}/pfaces_link.cmake)

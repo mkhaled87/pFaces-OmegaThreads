@@ -30,6 +30,8 @@ link_directories(
 )
 
 # link some other libs with our target lib
-target_link_libraries(ltl2dpa PRIVATE
-    owl pfaces-sdk
-)
+if(MSVC)
+  target_link_libraries(ltl2dpa PRIVATE "libowl.lib" pfaces-sdk)
+else()
+  target_link_libraries(ltl2dpa PRIVATE owl pfaces-sdk)
+endif()

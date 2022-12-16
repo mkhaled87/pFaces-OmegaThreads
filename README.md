@@ -201,37 +201,40 @@ For MacOS, we suggest installign Homebrew and using it to install Cmake and WGET
 The following steps applies to MacOS, Linux and Windows.
 For Windows, we suggest using Powershell with access to developer tools of Visual Studio since we will be using CMake.
 We assume git is installed.
-Clone this repo:
 
+pFaces uses Boost and you need to nistall boost first. For MacOS, it is advised to use Homebrew ('$ brew install boost'), and for Linus, use 'apt' ('sudo apt install boost'). 
+For windows, we advise using VCPkg. Run the following commmand from the VCPkg folder:
+``` bash
+> .\vcpkg.exe install boost boost:x64-windows
+```
+
+Now we install pFaces-OmegaThreads. Clone this repo:
 ``` bash
 $ git clone --depth=1 https://github.com/mkhaled87/pFaces-OmegaThreads
 ```
-Now, navigate to the created repo folder:
-
+Then, navigate to the created repo folder:
 ``` bash
 $ cd pFaces-OmegaThreads
 ```
 
-Now, we build the OWL library. It is used to construct a parity Automaton from the input LTL specifications. If you are using Linux or MacOs, we automated the installation of OWL using the a script. Run the following command to install OWL and its requirements (mainly GraalVM 20.1):
-
+Now, we build the OWL library. It is used to construct a parity Automaton from the input LTL specifications. If you are using Linux or MacOs, we automated the installation of OWL using the a script. On MacOS/Linux, run the following command to install OWL and its requirements (mainly GraalVM 20.1):
 ``` bash
 $ cd ./kernel-driver/lib/ltl2dpa/
 $ sh install-owl.sh
 $ cd ../../../
 ```
+On Windows, this should be changed to run the BAT file instead:
+``` bash
+$ cd .\kernel-driver\lib\ltl2dpa
+$ .\install-owl.bat
+$ cd ..\..\..
+```
 
 If you are using Windows, you will have to manually install OWL. Please refer to the installation [guide of OWL](https://gitlab.lrz.de/i7/owl/blob/master/README.md) for help. Once built and generated a static library (a .lib a), use it in the link settings in Visual Studio. You will also need to point to the include directories of OWL in the include settings of Visual Studio. Once we test **OmegaThreads** on Windows, we will update this section with details on the installation of OWL or we will create an installation BATCH for it.
 
 
-Finally, build OmegaThreads:
+Finally, build OmegaThreads by running the build script ('build.sh' for MacOS/Linux, or 'build.bat' for Windows).
 
-``` bash
-$ mkdir build
-$ cd build
-$ cmake ..
-$ cmake .. -DCMAKE_BUILD_TYPE=Release
-$ cmake --build . --config Release
-```
 
 ### **Running an example**
 

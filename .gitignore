@@ -1,6 +1,9 @@
 # binaries, temp files and temp build dir
 build/
 kernel-pack/*.driver
+kernel-pack/*.dll
+kernel-pack/*.exp
+kernel-pack/*.lib
 kernel-driver/lib/ltl2dpa/owl/
 kernel-driver/lib/ltl2dpa/GraalVM/
 kernel-driver/lib/ltl2dpa/gvm_name.txt
