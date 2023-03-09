@@ -256,7 +256,7 @@ namespace pFacesOmegaKernels{
 		init_kernel_functions();
 			
 		// update the params
-		updatePrameters(param_names, param_values);
+		updateParameters(param_names, param_values);
 	}
 
 	/* provide the parallel program */
