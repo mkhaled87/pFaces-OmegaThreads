@@ -239,12 +239,12 @@ namespace pFacesOmegaKernels{
 		const std::shared_ptr<pfacesKernelLaunchState>& spLaunchState, 
 		const std::shared_ptr<pfacesConfigurationReader>& spCfg) :
 			pfaces2DKernel(
-				spLaunchState->getDefaultSourceFilePath(kernel_source, spLaunchState->kernelScope, spLaunchState->kernelPackPath), 
+				spLaunchState->getDefaultSourceFilePath(kernel_source), 
 				spCfg
 			), 
 			m_spCfg(spCfg){
 
-		kernel_path = spLaunchState->kernelPackPath;
+		kernel_path = spLaunchState->getKernelPackPath();
 		pKernel = this;
 
 		// initialize the params
