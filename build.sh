@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Please install the following packages: unzip
+
+
 # Configurations
 BUILD_TYPE=Release
 KERNEL_NAME=omega
