@@ -1,12 +1,12 @@
 @ECHO OFF
 
-rem CMake settings for using Visual Studio (you may need to chnage the 
+rem CMake settings for using Visual Studio (you may need to change the 
 rem VS version with one from the list in 'cmake --help'. You may also need
 rem point the VCPKG_PATH to a correct one where you have all needed libs
-set BUILDTYPE=Release
+set BUILD_TYPE=Release
 set KERNEL_NAME=gb_fp
-set VSVERSION="Visual Studio 17 2022"
-set BUILD_DEF=-DCMAKE_BUILD_TYPE=%BUILDTYPE%
+set VS_VERSION="Visual Studio 17 2022"
+set BUILD_DEF=-DCMAKE_BUILD_TYPE=%BUILD_TYPE%
 set VCPKG_PATH=C:/src/vcpkg
 set VCPKG_TRIPLET=-DVCPKG_TARGET_TRIPLET=x64-windows
 
@@ -27,6 +27,6 @@ rem Building ....
 set vcpkg=-DCMAKE_TOOLCHAIN_FILE=%VCPKG_PATH%/scripts/buildsystems/vcpkg.cmake
 mkdir build
 cd build
-cmake .. -Wno-dev -Wno-deprecated %BUILD_DEF% %vcpkg% %VCPKG_TRIPLET% -G %VSVERSION% -DKERNEL=%KERNEL_NAME% -DCUSTOM_OPENCL:BOOL=%CUSTOM_OPENCL% -DCUSTOM_OPENCL_INC_DIR="%CUSTOM_OPENCL_INC_DIR%" -DCUSTOM_OPENCL_LIB_PATH="%CUSTOM_OPENCL_LIB_PATH%" -DJAVA_HOME="%JAVA_HOME%"
-cmake --build . --config %BUILDTYPE%
+cmake .. -Wno-dev -Wno-deprecated %BUILD_DEF% %vcpkg% %VCPKG_TRIPLET% -G %VS_VERSION% -DKERNEL=%KERNEL_NAME% -DCUSTOM_OPENCL:BOOL=%CUSTOM_OPENCL% -DCUSTOM_OPENCL_INC_DIR="%CUSTOM_OPENCL_INC_DIR%" -DCUSTOM_OPENCL_LIB_PATH="%CUSTOM_OPENCL_LIB_PATH%" -DJAVA_HOME="%JAVA_HOME%"
+cmake --build . --config %BUILD_TYPE%
 cd ..
