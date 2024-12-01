@@ -3,7 +3,7 @@
 # Configurations
 BUILD_TYPE=Release
 KERNEL_NAME=omega
-CLEAN_BUILD=false
+CLEAN_BUILD=true
 
 # install owl if needed
 if [ -d "./kernel-driver/lib/ltl2dpa/owl/build" ] 
