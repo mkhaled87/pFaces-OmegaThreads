@@ -14,6 +14,7 @@ else
 fi
 INSTALL_PATH=$(pwd)/GraalVM
 GVM_SETUP_FILE=./gvm_name.txt
+mkdir -p $INSTALL_PATH
 
 echo "Downloading GraalVM ... [please be patient as it takes some time]"
 GRAALVM_URL=https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/$GRAALVM_FILE
