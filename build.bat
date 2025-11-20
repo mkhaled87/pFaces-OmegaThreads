@@ -4,6 +4,7 @@ rem CMake settings for using Visual Studio (you may need to change the
 rem VS version with one from the list in 'cmake --help'. You may also need
 rem point the VCPKG_PATH to a correct one where you have all needed libs
 set BUILD_TYPE=Release
+set CLEAN_BUILD="False"
 set KERNEL_NAME=gb_fp
 set VS_VERSION="Visual Studio 17 2022"
 set BUILD_DEF=-DCMAKE_BUILD_TYPE=%BUILD_TYPE%
@@ -19,11 +20,14 @@ rem Prepare JAVA paths
 SET JAVA_HOME=%cd:\=/%/kernel-driver/lib/ltl2dpa/GraalVM/graalvm-ce-java11-20.1.0
 
 rem Remove any old build
-IF NOT EXIST .\build GOTO BUILDING
-  rmdir /S/Q .\build
+IF %CLEAN_BUILD% == "True" (
+  IF EXIST .\build (
+    echo Deleting old BUILD folder because a clean build is requsted.
+    rmdir /S/Q .\build
+  )
+)
 
 rem Building ....
-:BUILDING
 set vcpkg=-DCMAKE_TOOLCHAIN_FILE=%VCPKG_PATH%/scripts/buildsystems/vcpkg.cmake
 mkdir build
 cd build
