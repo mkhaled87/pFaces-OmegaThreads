@@ -7,6 +7,9 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 DEVICE_ID="${PFACES_DEVICE_ID:-1}"
 
+# build kernel driver if not present
+[ ! -f "$SCRIPT_DIR/kernel-pack/omega.driver" ] && (cd "$SCRIPT_DIR" && sh ./build.sh)
+
 if ! command -v pfaces >/dev/null 2>&1; then
     echo "Error: 'pfaces' is not on PATH." >&2
     exit 1
