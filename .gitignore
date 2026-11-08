@@ -2,11 +2,15 @@
 build/
 kernel-pack/*.driver
 kernel-pack/*.dll
+kernel-pack/*.dylib
+kernel-pack/*.so
 kernel-pack/*.exp
 kernel-pack/*.lib
 kernel-driver/lib/ltl2dpa/owl/
 kernel-driver/lib/ltl2dpa/GraalVM/
 kernel-driver/lib/ltl2dpa/gvm_name.txt
+kernel-driver/lib/ltl2dpa/tests/*/build/
+**/*.o
 **/*.render*
 **/*.log
 interface/python/__pycache__/*.*

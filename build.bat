@@ -1,36 +1,68 @@
 @ECHO OFF
+setlocal enabledelayedexpansion
 
-rem CMake settings for using Visual Studio (you may need to change the 
-rem VS version with one from the list in 'cmake --help'. You may also need
-rem point the VCPKG_PATH to a correct one where you have all needed libs
-set BUILD_TYPE=Release
-set CLEAN_BUILD="False"
-set KERNEL_NAME=gb_fp
-set VS_VERSION="Visual Studio 17 2022"
-set BUILD_DEF=-DCMAKE_BUILD_TYPE=%BUILD_TYPE%
-set VCPKG_PATH=C:/src/vcpkg
-set VCPKG_TRIPLET=-DVCPKG_TARGET_TRIPLET=x64-windows
+pushd "%~dp0"
+set "SCRIPT_DIR=%CD%"
 
-rem In case you need to use a custom OpenCL implementation, update this (OFF, or ON and fill values)
-set CUSTOM_OPENCL=OFF
-set CUSTOM_OPENCL_INC_DIR=%OCL_ROOT%\include
-set CUSTOM_OPENCL_LIB_PATH=%OCL_ROOT%\lib\x86_64\OpenCL.lib
+set "BUILD_TYPE=Release"
+set "CLEAN_BUILD=True"
+set "KERNEL_NAME=omega"
+set "VS_VERSION=Visual Studio 17 2022"
+set "BUILD_DEF=-DCMAKE_BUILD_TYPE=%BUILD_TYPE%"
 
-rem Prepare JAVA paths
-SET JAVA_HOME=%cd:\=/%/kernel-driver/lib/ltl2dpa/GraalVM/graalvm-ce-java11-20.1.0
+if not defined PFACES_SDK_ROOT (
+    echo Error: PFACES_SDK_ROOT is not set.
+    popd
+    exit /b 1
+)
+
+rem Install Owl native library if missing
+set "OWL_LIB_DIR=%SCRIPT_DIR%\kernel-driver\lib\ltl2dpa\owl\build\native-library"
+if not exist "%OWL_LIB_DIR%\libowl.h" (
+    call "%SCRIPT_DIR%\kernel-driver\lib\ltl2dpa\install-owl.bat"
+    if !ERRORLEVEL! NEQ 0 (
+        popd
+        exit /b 1
+    )
+) else if not exist "%OWL_LIB_DIR%\libowl.dll" (
+    call "%SCRIPT_DIR%\kernel-driver\lib\ltl2dpa\install-owl.bat"
+    if !ERRORLEVEL! NEQ 0 (
+        popd
+        exit /b 1
+    )
+)
 
 rem Remove any old build
-IF %CLEAN_BUILD% == "True" (
-  IF EXIST .\build (
-    echo Deleting old BUILD folder because a clean build is requsted.
-    rmdir /S/Q .\build
-  )
+if /I "%CLEAN_BUILD%"=="True" (
+    if exist "%SCRIPT_DIR%\kernel-pack\%KERNEL_NAME%.driver" del /f /q "%SCRIPT_DIR%\kernel-pack\%KERNEL_NAME%.driver"
+    if exist "%SCRIPT_DIR%\build" rmdir /S /Q "%SCRIPT_DIR%\build"
 )
 
 rem Building ....
-set vcpkg=-DCMAKE_TOOLCHAIN_FILE=%VCPKG_PATH%/scripts/buildsystems/vcpkg.cmake
-mkdir build
-cd build
-cmake .. -Wno-dev -Wno-deprecated %BUILD_DEF% %vcpkg% %VCPKG_TRIPLET% -G %VS_VERSION% -DKERNEL=%KERNEL_NAME% -DCUSTOM_OPENCL:BOOL=%CUSTOM_OPENCL% -DCUSTOM_OPENCL_INC_DIR="%CUSTOM_OPENCL_INC_DIR%" -DCUSTOM_OPENCL_LIB_PATH="%CUSTOM_OPENCL_LIB_PATH%" -DJAVA_HOME="%JAVA_HOME%"
+mkdir "%SCRIPT_DIR%\build"
+cd /d "%SCRIPT_DIR%\build"
+cmake .. -Wno-dev -Wno-deprecated %BUILD_DEF% -G "%VS_VERSION%" -A x64 -DKERNEL=%KERNEL_NAME%
+if %ERRORLEVEL% NEQ 0 (
+    popd
+    exit /b 1
+)
 cmake --build . --config %BUILD_TYPE%
-cd ..
+if %ERRORLEVEL% NEQ 0 (
+    popd
+    exit /b 1
+)
+
+if not exist "%SCRIPT_DIR%\kernel-pack\%KERNEL_NAME%.driver" (
+    echo Error: kernel-pack\%KERNEL_NAME%.driver was not produced.
+    popd
+    exit /b 1
+)
+if not exist "%SCRIPT_DIR%\kernel-pack\libowl.dll" (
+    echo Error: kernel-pack\libowl.dll was not produced.
+    popd
+    exit /b 1
+)
+
+echo Build complete: kernel-pack\%KERNEL_NAME%.driver and kernel-pack\libowl.dll
+popd
+exit /b 0

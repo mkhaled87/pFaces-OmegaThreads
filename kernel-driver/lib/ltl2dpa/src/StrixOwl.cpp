@@ -13,9 +13,10 @@ namespace strix_owl {
         }
         else {
             // large string, use dynamic allocation
-            char* dyn_buffer;
+            char* dyn_buffer = nullptr;
             size_t size = SIZE;
             while (len >= size) {
+                delete[] dyn_buffer;
                 size *= 2;
                 dyn_buffer = new char[size];
                 len = print_object_handle(owl, object, dyn_buffer, size);

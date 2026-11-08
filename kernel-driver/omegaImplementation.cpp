@@ -164,7 +164,7 @@ void Machine<T, L1, L2>::construct(PGame<T, L1, L2>& arena, PGSolver<T, L1, L2>&
     if(semantic == MachineSemantic::MEALY)
         constructMealyMachine(arena, solver);
     else
-        std::runtime_error("Not yet implemented !");
+        throw std::runtime_error("Not yet implemented !");
 }
 
 template<class T, class L1, class L2>

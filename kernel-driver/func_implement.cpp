@@ -29,9 +29,7 @@ namespace pFacesOmegaKernels {
         else
             throw std::runtime_error("Invalid implementation type in config file");
 
-		// initiate a machine to cotain the implementation
-        std::vector<std::string> in_vars = pKernel->pSymSpec->get_state_APs();
-        std::vector<std::string> out_vars = pKernel->pSymSpec->get_control_APs();
+		// initiate a machine to contain the implementation
         pControllerImpl = std::make_shared<Machine<post_func_t, L_x_func_t, L_u_func_t>>(impl_type);
     }    
 

@@ -33,6 +33,7 @@ system.controls.subsets.names = string
 
 # system.dynamics: holds info about the dynamics of the model
 system.dynamics = scope
+system.dynamics.step_time = string
 system.dynamics.code_file = string
 system.dynamics.code_defines = string
 

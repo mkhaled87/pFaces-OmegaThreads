@@ -161,15 +161,19 @@ namespace pFacesOmegaKernels {
 
 
 		/* write the memory buffers */
+		std::shared_ptr<pfacesInstruction> instr_writeArg0 = std::make_shared<pfacesInstruction>();
 		std::shared_ptr<pfacesInstruction> instr_writeArg1 = std::make_shared<pfacesInstruction>();
 		std::shared_ptr<pfacesInstruction> instr_writeArg2 = std::make_shared<pfacesInstruction>();
 		std::shared_ptr<pfacesInstruction> instr_writeArg3 = std::make_shared<pfacesInstruction>();
+		instr_writeArg0->setAsWriteDeviceBuffer(
+			std::make_shared<pfacesDeviceWriteJob>(targetDevice, funcIdx, numArgs, 0));
 		instr_writeArg1->setAsWriteDeviceBuffer(
 			std::make_shared<pfacesDeviceWriteJob>(targetDevice, funcIdx, numArgs, 1));
 		instr_writeArg2->setAsWriteDeviceBuffer(
 			std::make_shared<pfacesDeviceWriteJob>(targetDevice, funcIdx, numArgs, 2));
 		instr_writeArg3->setAsWriteDeviceBuffer(
 			std::make_shared<pfacesDeviceWriteJob>(targetDevice, funcIdx, numArgs, 3));
+		instrList.push_back(instr_writeArg0);
 		instrList.push_back(instr_writeArg1);
 		instrList.push_back(instr_writeArg2);
 		instrList.push_back(instr_writeArg3);
@@ -209,6 +213,11 @@ namespace pFacesOmegaKernels {
 		
 		if(dont_discover_u_aps)
 			return;
+
+		// zero u_aps_bags
+		size_t buff0Idx = getBufferIndex(discover_u_aps_func_name, discover_u_aps_arg_names[0], memReport);
+		cl_uint* pBuff0 = (cl_uint*)dataPool[buff0Idx].first;
+		std::fill_n(pBuff0, u_symbols, static_cast<cl_uint>(0));
 
 		// write to num_aps_subsets
 		size_t buff1Idx = getBufferIndex(discover_u_aps_func_name, discover_u_aps_arg_names[1], memReport);

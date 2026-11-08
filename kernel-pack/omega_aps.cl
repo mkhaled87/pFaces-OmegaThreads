@@ -32,12 +32,13 @@ __kernel void discover_x_aps(
 	__private concrete_t  x[ssDim];
 	__private char ap_maps_to;
 	__private uint ap_mask;
+	__private uint total_ap_mask = 0;
 	__private symbolic_t thread_idx;
 
 	thread_idx = UNIVERSAL_INDEX_X;
 	get_concrete_x(thread_idx, x);
 
-	// for eachh interval
+	// for each interval
 	for(uint ap_i=0;  ap_i < *num_aps_subsets; ap_i++){
 
 		// is x \in AP[i] ?
@@ -54,10 +55,12 @@ __kernel void discover_x_aps(
 		// if x \in AP[i], set its flag
 		if(is_inside){
 			ap_maps_to = aps_subsets_assignments[ap_i];
-			ap_mask = 1 << ap_maps_to;
-			x_aps_bags[thread_idx] = x_aps_bags[thread_idx] | ap_mask;
+			ap_mask = 1u << (uint)ap_maps_to;
+			total_ap_mask = total_ap_mask | ap_mask;
 		}
 	}
+
+	x_aps_bags[thread_idx] = total_ap_mask;
 }
 
 // K E R N E L   F U N C T I O N
@@ -73,12 +76,13 @@ __kernel void discover_u_aps(
 	__private concrete_t  u[isDim];
 	__private char ap_maps_to;
 	__private uint ap_mask;
+	__private uint total_ap_mask = 0;
 	__private symbolic_t thread_idx;
 
 	thread_idx = UNIVERSAL_INDEX_X;
 	get_concrete_u(thread_idx, u);
 
-	// for eachh interval
+	// for each interval
 	for(uint ap_i=0;  ap_i<*num_aps_subsets; ap_i++){
 
 		// is u \in AP[i] ?
@@ -95,8 +99,10 @@ __kernel void discover_u_aps(
 		// if u \in AP[i], set its flag
 		if(is_inside){
 			ap_maps_to = aps_subsets_assignments[ap_i];
-			ap_mask = 1 << ap_maps_to;
-			u_aps_bags[thread_idx] = u_aps_bags[thread_idx] | ap_mask;
+			ap_mask = 1u << (uint)ap_maps_to;
+			total_ap_mask = total_ap_mask | ap_mask;
 		}
 	}
+
+	u_aps_bags[thread_idx] = total_ap_mask;
 }

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <cassert>
 #include <cmath>
 #include <cstring>
 #include <limits>
@@ -14,13 +15,51 @@
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
-
-// boost is only used to hash a range (e.g., a vector)
-// we may replace it with another simpler function or extract their
-// hash range
-#include <boost/functional/hash.hpp>
+#include <functional>
 
 #include "Ltl2Dpa.h"
+
+template <>
+struct std::hash<BDD> {
+    std::size_t operator()(const BDD& bdd) const {
+        return reinterpret_cast<std::size_t>(bdd.getNode());
+    }
+};
+
+namespace {
+    template <typename T>
+    struct value_hash {
+        std::size_t operator()(const T& val) const {
+            return std::hash<T>{}(val);
+        }
+    };
+
+    template <typename T>
+    inline void hash_combine_val(std::size_t& seed, const T& val) {
+        seed ^= value_hash<T>{}(val) + static_cast<std::size_t>(0x9e3779b97f4a7c15ULL) + (seed << 6) + (seed >> 2);
+    }
+
+    template <typename It>
+    inline void hash_range_vals(std::size_t& seed, It first, It last) {
+        for (; first != last; ++first) {
+            hash_combine_val(seed, *first);
+        }
+    }
+
+    template <typename It>
+    inline std::size_t hash_range_vals(It first, It last) {
+        std::size_t seed = 0;
+        hash_range_vals(seed, first, last);
+        return seed;
+    }
+
+    template <typename U, typename Alloc>
+    struct value_hash<std::vector<U, Alloc>> {
+        std::size_t operator()(const std::vector<U, Alloc>& vec) const {
+            return hash_range_vals(vec.cbegin(), vec.cend());
+        }
+    };
+}
 
 struct Edge {
     strix_aut::node_id_t successor;
@@ -43,8 +82,8 @@ template <>
 struct std::hash<Edge> {
     std::size_t operator()(const Edge& edge) const {
         std::size_t seed = 0;
-        boost::hash_combine(seed, edge.successor);
-        boost::hash_combine(seed, edge.color);
+        hash_combine_val(seed, edge.successor);
+        hash_combine_val(seed, edge.color);
         return seed;
     }
 };
@@ -53,7 +92,7 @@ struct std::hash<Edge> {
 template <typename Container>
 struct container_hash {
     std::size_t operator()(Container const& c) const {
-        return boost::hash_range(c.cbegin(), c.cend());
+        return hash_range_vals(c.cbegin(), c.cend());
     }
 };
 size_t hash_value(const Edge& edge) {
@@ -697,8 +736,8 @@ public:
             const size_t begin = sys_succs_begin[sys_node];
             const size_t end = sys_succs_begin[sys_node + 1];
             size_t seed = 0;
-            boost::hash_range(seed, sys_succs.cbegin() + begin, sys_succs.cbegin() + end);
-            boost::hash_range(seed, sys_output.cbegin() + begin, sys_output.cbegin() + end);
+            hash_range_vals(seed, sys_succs.cbegin() + begin, sys_succs.cbegin() + end);
+            hash_range_vals(seed, sys_output.cbegin() + begin, sys_output.cbegin() + end);
             return seed;
         };
         auto sys_node_equal = [this](const strix_aut::node_id_t sys_node_1, const strix_aut::node_id_t sys_node_2) {

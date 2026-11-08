@@ -9,13 +9,44 @@
 
 #include "omegaParityGames.h"
 
+#include <cassert>
 #include <iomanip>
 #include <map>
 #include <queue>
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
-#include <boost/functional/hash.hpp>
+#include <functional>
+
+namespace {
+    template <typename T>
+    struct value_hash {
+        std::size_t operator()(const T& val) const {
+            return std::hash<T>{}(val);
+        }
+    };
+
+    template <typename T>
+    inline void hash_combine_val(std::size_t& seed, const T& val) {
+        seed ^= value_hash<T>{}(val) + static_cast<std::size_t>(0x9e3779b97f4a7c15ULL) + (seed << 6) + (seed >> 2);
+    }
+
+    template <typename It>
+    inline void hash_range_vals(std::size_t& seed, It first, It last) {
+        for (; first != last; ++first) {
+            hash_combine_val(seed, *first);
+        }
+    }
+
+    template <typename U, typename Alloc>
+    struct value_hash<std::vector<U, Alloc>> {
+        std::size_t operator()(const std::vector<U, Alloc>& vec) const {
+            std::size_t seed = 0;
+            hash_range_vals(seed, vec.cbegin(), vec.cend());
+            return seed;
+        }
+    };
+}
 
 // unlock this to revert back to the serial version extracted from STRIX (i.e., no OpenMP)
 #define USE_PFACES_PARALLEL
@@ -38,22 +69,22 @@ template <>
 struct std::hash<pFacesOmegaKernels::GameEdge> {
     std::size_t operator()(const pFacesOmegaKernels::GameEdge& edge) const {
         std::size_t seed = 0;
-        boost::hash_combine(seed, edge.successor);
-        boost::hash_combine(seed, edge.color);
+        hash_combine_val(seed, edge.successor);
+        hash_combine_val(seed, edge.color);
         return seed;
     }
 };
 
 namespace pFacesOmegaKernels{
 
-// boost-based container hash
+// container hash
 template <typename Container>
 struct container_hash {
     std::size_t operator()(Container const& c) const {
         std::size_t seed = 0;
-        boost::hash_combine(seed, std::get<0>(c));
-        boost::hash_combine(seed, std::get<1>(c).value);
-        boost::hash_combine(seed, std::get<2>(c));
+        hash_combine_val(seed, std::get<0>(c));
+        hash_combine_val(seed, std::get<1>(c).value);
+        hash_combine_val(seed, std::get<2>(c));
         return seed;
     }
 };
@@ -172,8 +203,8 @@ void PGame<T, L1, L2>::constructArena(){
         const size_t begin = sys_succs_begin[sys_node];
         const size_t end = sys_succs_begin[sys_node + 1];
         size_t seed = 0;
-        boost::hash_range(seed, sys_succs.cbegin() + begin, sys_succs.cbegin() + end);
-        boost::hash_range(seed, sys_output.cbegin() + begin, sys_output.cbegin() + end);
+        hash_range_vals(seed, sys_succs.cbegin() + begin, sys_succs.cbegin() + end);
+        hash_range_vals(seed, sys_output.cbegin() + begin, sys_output.cbegin() + end);
         return seed;
     };
     auto sys_node_equal = [this](const strix_aut::node_id_t sys_node_1, const strix_aut::node_id_t sys_node_2) {

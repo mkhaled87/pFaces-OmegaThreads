@@ -1,39 +1,62 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -eu
+if (set -o pipefail) 2>/dev/null; then
+    set -o pipefail
+fi
 
-# Please install the following packages: unzip
+# Please install the following packages: unzip (or python3), curl (or wget), cmake
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
 
 # Configurations
 BUILD_TYPE=Release
 KERNEL_NAME=omega
 CLEAN_BUILD=true
 
-# install owl if needed
-if [ -d "./kernel-driver/lib/ltl2dpa/owl/build" ] 
-then
-    echo "OWL folder is found and we assume it is installed." 
+if [ -z "${PFACES_SDK_ROOT:-}" ]; then
+    echo "Error: PFACES_SDK_ROOT is not set." >&2
+    exit 1
+fi
+
+OWL_LIB_DIR="$SCRIPT_DIR/kernel-driver/lib/ltl2dpa/owl/build/native-library"
+case "$(uname -s)" in
+    Darwin) OWL_LIB_EXT="dylib" ;;
+    Linux)  OWL_LIB_EXT="so" ;;
+    *)      OWL_LIB_EXT="so" ;;
+esac
+
+# Install Owl native library if needed
+if [ -f "$OWL_LIB_DIR/libowl.h" ] && [ -f "$OWL_LIB_DIR/libowl.$OWL_LIB_EXT" ]; then
+    echo "OWL native library is found ($OWL_LIB_DIR/libowl.$OWL_LIB_EXT)."
 else
-    echo "OWL folder not found and we install it ..."
-    cd ./kernel-driver/lib/ltl2dpa/
-    sh install-owl.sh
-    cd ../../..
+    echo "OWL native library not found; installing via install-owl.sh..."
+    bash "$SCRIPT_DIR/kernel-driver/lib/ltl2dpa/install-owl.sh"
 fi
 
-# remove old build binaries
-if [ $CLEAN_BUILD = true ]
-then 
-    rm -rf kernel-pack/$KERNEL_NAME.driver
-    rm -rf build
+if [ ! -f "$OWL_LIB_DIR/libowl.h" ] || [ ! -f "$OWL_LIB_DIR/libowl.$OWL_LIB_EXT" ]; then
+    echo "Error: libowl.h or libowl.$OWL_LIB_EXT missing after install-owl.sh." >&2
+    exit 1
 fi
 
-# Prepare JAVA paths
-JVM_VER=$(cat ./kernel-driver/lib/ltl2dpa/gvm_name.txt)
-export JAVA_HOME=$(pwd)/kernel-driver/lib/ltl2dpa/GraalVM/$JVM_VER
-echo "JH: $JAVA_HOME"
+# Remove old build binaries
+if [ "$CLEAN_BUILD" = "true" ]; then
+    rm -rf "$SCRIPT_DIR/kernel-pack/$KERNEL_NAME.driver"
+    rm -rf "$SCRIPT_DIR/kernel-pack/libowl.$OWL_LIB_EXT"
+    rm -rf "$SCRIPT_DIR/build"
+fi
 
-# building ...
-mkdir -p build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-cmake --build . --config $BUILD_TYPE
-cd ..
+# Build C++ driver
+cmake -S "$SCRIPT_DIR" -B "$SCRIPT_DIR/build" -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+cmake --build "$SCRIPT_DIR/build" --config "$BUILD_TYPE" --parallel
+
+if [ ! -f "$SCRIPT_DIR/kernel-pack/$KERNEL_NAME.driver" ]; then
+    echo "Error: kernel-pack/$KERNEL_NAME.driver was not built." >&2
+    exit 1
+fi
+if [ ! -f "$SCRIPT_DIR/kernel-pack/libowl.$OWL_LIB_EXT" ]; then
+    echo "Error: kernel-pack/libowl.$OWL_LIB_EXT was not colocated." >&2
+    exit 1
+fi
+
+echo "Build complete: kernel-pack/$KERNEL_NAME.driver and kernel-pack/libowl.$OWL_LIB_EXT"

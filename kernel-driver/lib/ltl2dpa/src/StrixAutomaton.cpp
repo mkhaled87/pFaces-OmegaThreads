@@ -1285,8 +1285,8 @@ namespace strix_aut {
                     else {
                         parity_child_index = 0;
                     }
-                    parity_child_parity = children[parity_child]->parity;
-                    parity_child_max_color = children[parity_child]->max_color;
+                    parity_child_parity = children[parity_child_index]->parity;
+                    parity_child_max_color = children[parity_child_index]->max_color;
                 }
             }
 

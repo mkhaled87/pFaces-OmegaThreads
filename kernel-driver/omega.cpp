@@ -122,7 +122,7 @@ namespace pFacesOmegaKernels{
 		pfacesTerminal::showInfoMessage(
 			std::string("Symbolic model: U-space (") + std::to_string(u_dim) + 
 			std::string("d) is quantized and it has ") + std::to_string(u_symbols) + std::string(" symbols: ") +
-			ss_x_widths.str()
+			ss_u_widths.str()
 		);
 		pfacesTerminal::showInfoMessage(
 			std::string("Symbolic model: XU-space should have ") + std::to_string(xu_symbols) + std::string(" symbols.")
