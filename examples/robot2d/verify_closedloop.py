@@ -8,11 +8,17 @@ Validates that synthesized controller satisfies LTL specifications in closed loo
   - Avoids all obstacles along the entire trajectory
   - Remains in target set (FG target satisfaction)
   - Operates deterministically across initial state(s)
+  - Generates visual verification plot: closedloop_trajectory.png
 """
 
 import argparse
 import os
 import sys
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 # Add interface/python to module search path
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -159,8 +165,86 @@ def simulate_closed_loop(x_0, cfg_reader, controller, sym_model=None, max_steps=
         "steps_in_target": steps_in_target,
         "final_state": state,
         "safety_violations": 0,
+        "trace": trace,
     }
     return metrics
+
+
+def plot_trajectories(cfg_reader, all_metrics, output_png):
+    """Generate visual verification plot for 2D robot paths."""
+    fig, ax = plt.subplots(figsize=(8, 8))
+
+    target_HRs = str2hyperrects(cfg_reader.get_value_string("system.states.subsets.mapping_target"))
+    obstacle_HRs = str2hyperrects(cfg_reader.get_value_string("system.states.subsets.mapping_obstacles"))
+
+    # Draw Obstacles (red)
+    for i, hr in enumerate(obstacle_HRs):
+        lb = hr.get_lb()
+        ub = hr.get_ub()
+        rect = patches.Rectangle(
+            (lb[0], lb[1]), ub[0] - lb[0], ub[1] - lb[1],
+            linewidth=1.8, edgecolor='darkred', facecolor='red', alpha=0.35,
+            label='Obstacles' if i == 0 else None, hatch='//', zorder=2
+        )
+        ax.add_patch(rect)
+        ax.text((lb[0] + ub[0]) / 2.0, (lb[1] + ub[1]) / 2.0, 'Obstacle',
+                color='darkred', weight='bold', fontsize=11, ha='center', va='center', zorder=3)
+
+    # Draw Target (green)
+    for i, hr in enumerate(target_HRs):
+        lb = hr.get_lb()
+        ub = hr.get_ub()
+        rect = patches.Rectangle(
+            (lb[0], lb[1]), ub[0] - lb[0], ub[1] - lb[1],
+            linewidth=1.8, edgecolor='darkgreen', facecolor='forestgreen', alpha=0.35,
+            label='Target' if i == 0 else None, zorder=2
+        )
+        ax.add_patch(rect)
+        ax.text((lb[0] + ub[0]) / 2.0, (lb[1] + ub[1]) / 2.0, 'Target',
+                color='darkgreen', weight='bold', fontsize=13, ha='center', va='center', zorder=3)
+
+    colors = ['royalblue', 'darkorange', 'purple', 'teal']
+    for idx, m in enumerate(all_metrics):
+        x_0 = m["x_0"]
+        trace = m["trace"]
+        color = colors[idx % len(colors)]
+        xs = [pt[0] for pt in trace]
+        ys = [pt[1] for pt in trace]
+
+        # Draw trajectory
+        ax.plot(
+            xs, ys, '-o', color=color, linewidth=2.5, markersize=5,
+            label=f'Path from x0={list(x_0)} ({m["target_reached_step"]} steps to target)',
+            zorder=4
+        )
+
+        # Mark Start
+        ax.plot(xs[0], ys[0], 's', color=color, markersize=10,
+                markeredgecolor='black', markeredgewidth=1.5, zorder=5)
+        offset_y = -16 if idx % 2 == 0 else 10
+        ax.annotate(
+            f'Start {list(x_0)}', (xs[0], ys[0]),
+            textcoords="offset points", xytext=(-35, offset_y), fontsize=9, fontweight='bold',
+            bbox=dict(boxstyle="round,pad=0.2", fc="white", ec=color, alpha=0.85), zorder=6
+        )
+
+        # Mark End point (in target)
+        ax.plot(xs[-1], ys[-1], '*', color='gold', markersize=14,
+                markeredgecolor='black', markeredgewidth=1.2, zorder=7)
+
+    ax.set_xlim(-0.1, 4.3)
+    ax.set_ylim(-0.1, 4.3)
+    ax.set_xlabel('X coordinate', fontsize=12)
+    ax.set_ylabel('Y coordinate', fontsize=12)
+    ax.set_title('Robot2D Closed-Loop Trajectories\nLTL Spec: FG(target) & G(!(obstacles))', fontsize=13, fontweight='bold')
+    ax.grid(True, linestyle='--', alpha=0.6)
+    ax.set_aspect('equal')
+    ax.legend(loc='upper left', framealpha=0.92, fontsize=10)
+
+    plt.tight_layout()
+    plt.savefig(output_png, dpi=150)
+    plt.close(fig)
+    print(f"Saved visual verification plot: {output_png}")
 
 
 def main():
@@ -169,6 +253,7 @@ def main():
     parser.add_argument("--mdf", default=None, help="Path to robot.mdf (defaults to cfg simulation.controller_file)")
     parser.add_argument("--symmodel", default=None, help="Path to robot.symmodel (optional)")
     parser.add_argument("--max-steps", type=int, default=50, help="Maximum steps for simulation")
+    parser.add_argument("--output-png", default=os.path.join(SCRIPT_DIR, "closedloop_trajectory.png"), help="Path to output plot PNG")
     parser.add_argument("--verbose", action="store_true", default=True, help="Verbose output")
     args = parser.parse_args()
 
@@ -250,6 +335,10 @@ def main():
                 f"| Total steps: {m['total_steps']} | Invariant steps: {m['steps_in_target']} "
                 f"| Obstacle hits: {m['safety_violations']} | Status: PASS"
             )
+
+        # Plot trajectories
+        plot_trajectories(cfg_reader, all_metrics, os.path.abspath(args.output_png))
+
         print("[PASS] All initial states satisfied specification with 0 violations.\n")
         return 0
 
