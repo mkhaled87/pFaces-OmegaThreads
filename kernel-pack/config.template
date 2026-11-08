@@ -28,28 +28,28 @@ system.controls.dimension = int
 system.controls.first_symbol = string
 system.controls.last_symbol = string
 system.controls.quantizers = string
-system.controls.subsets = scope
-system.controls.subsets.names = string
+@optional system.controls.subsets = scope
+@optional system.controls.subsets.names = string
 
 # system.dynamics: holds info about the dynamics of the model
 system.dynamics = scope
-system.dynamics.step_time = string
+@optional system.dynamics.step_time = string
 system.dynamics.code_file = string
-system.dynamics.code_defines = string
+@optional system.dynamics.code_defines = string
 
 # general for system
-system.write_symmodel = boolean
+@optional system.write_symmodel = boolean
 
 # specifications: defines the specifications need to be enforced
 specifications = scope
 specifications.ltl_formula = string
-specifications.dpa_file = string
-specifications.write_dpa = boolean
+@optional specifications.dpa_file = string
+@optional specifications.write_dpa = boolean
 
 # implementation: holds info about the implementation of the controller
 implementation = scope
 implementation.type = string
 implementation.generate_controller = boolean
-implementation.generate_code = boolean
-implementation.code_type = string
-implementation.module_name = string
+@optional implementation.generate_code = boolean
+@optional implementation.code_type = string
+@optional implementation.module_name = string
