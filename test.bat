@@ -17,8 +17,18 @@ if %ERRORLEVEL% NEQ 0 (
     popd
     exit /b 1
 )
+call :run_verify "examples\robot2d"
+if %ERRORLEVEL% NEQ 0 (
+    popd
+    exit /b 1
+)
 
 call :run_case "examples\pickupdelivery" "pickupdelivery.cfg" "pickupdelivery.mdf" ""
+if %ERRORLEVEL% NEQ 0 (
+    popd
+    exit /b 1
+)
+call :run_verify "examples\pickupdelivery"
 if %ERRORLEVEL% NEQ 0 (
     popd
     exit /b 1
@@ -77,6 +87,22 @@ if not "%OUT2%"=="" (
     )
     for %%A in ("%FULL_DIR%\%OUT2%") do if %%~zA LEQ 0 (
         echo Error: empty output file %EX_DIR%\%OUT2%.
+        exit /b 1
+    )
+)
+exit /b 0
+
+:run_verify
+set "EX_DIR=%~1"
+set "FULL_DIR=%SCRIPT_DIR%\%EX_DIR%"
+if exist "%FULL_DIR%\verify_closedloop.py" (
+    echo === Running closed-loop E2E verification: %EX_DIR%\verify_closedloop.py ===
+    pushd "%FULL_DIR%"
+    python verify_closedloop.py
+    set "VERIFY_ERR=!ERRORLEVEL!"
+    popd
+    if !VERIFY_ERR! NEQ 0 (
+        echo Error: closed-loop verification failed for %EX_DIR%.
         exit /b 1
     )
 )
