@@ -355,6 +355,149 @@ void model_post(concrete_t* post_x_lb, concrete_t* post_x_ub,  const concrete_t*
 - **simulation.model_dump_file**: a dump file of the symbolic model to be checked against the dynamics.
 
 
+## **Verified Reactive LTL Synthesis Benchmarks**
+
+OmegaThreads includes a comprehensive suite of verified reactive synthesis benchmarks demonstrating continuous dynamics abstraction, LTL-to-DPA compilation via Owl, parity game arena construction, winning strategy synthesis via McNaughton/Zielonka algorithms, and closed-loop verification of the resulting Mealy machine controllers.
+
+All benchmarks feature standalone, headless closed-loop verification scripts (`verify_closedloop.py`) that simulate the continuous/discrete system, assert formal LTL properties (safety, liveness, recurrence, invariance, and periodic lasso detection), and render publication-quality visual plots.
+
+---
+
+### **1. `vehicle3d`: 3D Kinematic Vehicle Patrol with Growth Bound ODE Abstraction**
+
+* **Directory**: [`examples/vehicle3d`](examples/vehicle3d)
+* **Continuous Dynamics**: 3D non-linear vehicle kinematics ODE (sampling period $\Delta t = 0.3\,\text{s}$):
+  $$\dot{x} = v \frac{\cos\left(\arctan\left(\frac{1}{2}\tan\delta\right) + \theta\right)}{\cos\left(\arctan\left(\frac{1}{2}\tan\delta\right)\right)}, \quad \dot{y} = v \frac{\sin\left(\arctan\left(\frac{1}{2}\tan\delta\right) + \theta\right)}{\cos\left(\arctan\left(\frac{1}{2}\tan\delta\right)\right)}, \quad \dot{\theta} = v \tan\delta$$
+  State space $(x, y, \theta) \in [0, 5] \times [0, 5] \times [-1.6, 1.6]$, control space $(v, \delta) \in [-2.0, 2.0] \times [-0.8, 0.8]$. Over-approximated reach sets are computed via 4th-order Runge-Kutta (RK4) with growth-bound radius dynamics.
+* **LTL Specification**:
+  $$\mathbf{GF}(\text{target1}) \land \mathbf{GF}(\text{target2}) \land \mathbf{G}(\neg \text{obstacles}) \land \mathbf{G}(\text{lowspeed})$$
+  - $\text{target1} = [3.7, 5.2] \times [-0.2, 1.3] \times [-3.65, 3.65]$
+  - $\text{target2} = [3.7, 5.2] \times [3.7, 5.2] \times [-3.65, 3.65]$
+  - $\text{obstacles} = [1.5, 5.5] \times [1.3, 3.7] \times [-3.65, 3.65]$
+  - $\text{lowspeed} = [-1.7, 1.7] \times [-0.9, 0.9]$
+* **Synthesis & Verification Details**:
+  - Owl translates the specification into a 3-state DPA.
+  - Constructs a parity game arena with **1,132,057 model nodes** and **7,824,529 model edges**.
+  - Synthesizes a Mealy controller (`vehicle.mdf`) with internal automaton modes in ~65 seconds.
+  - Automated closed-loop simulation verifies infinite recurrence between Target 1 and Target 2, complete obstacle avoidance, and strict compliance with low-speed control bounds.
+* **Run Commands**:
+  ```bash
+  cd examples/vehicle3d
+  pfaces -CG -d 1 -k omega@../../kernel-pack -cfg vehicle.cfg
+  python3 verify_closedloop.py
+  ```
+* **Closed-Loop Verification Plot**:
+
+  <p align="center">
+    <img src="examples/vehicle3d/closedloop_trajectory.png" alt="Vehicle3D Closed-Loop Trajectory" width="95%"/>
+  </p>
+
+---
+
+### **2. `deepracer`: Amazon DeepRacer 4D Bicycle Model (9-Step Periodic Lasso Attractor)**
+
+* **Directory**: [`examples/deepracer`](examples/deepracer)
+* **Continuous Dynamics**: 4D non-linear bicycle ODE for Amazon DeepRacer with $\Delta t = 0.5\,\text{s}$:
+  $$\dot{x} = v \cos\theta, \quad \dot{y} = v \sin\theta, \quad \dot{\theta} = \frac{v}{L} \tan\delta, \quad \dot{v} = a v + b u_{\text{speed}}$$
+  where $L = 0.165\,\text{m}$, steering angle $\delta = -0.1167 u_0^3 + 0.01949 u_0^2 + 0.3828 u_0 - 0.0293$, and $(a, b)$ are empirical motor acceleration parameters. State space $(x, y, \theta, v) \in [-1.0, 1.0] \times [-1.0, 1.0] \times [-3.2, 3.2] \times [-1.5, 1.5]$.
+* **LTL Specification**:
+  $$\mathbf{GF}(\text{target1}) \land \mathbf{GF}(\text{target2}) \land \mathbf{G}(\neg \text{obstacles})$$
+  - $\text{target1} = [0.6, 1.0] \times [0.6, 1.0] \times [-3.2, 3.2] \times [-1.8, 1.8]$
+  - $\text{target2} = [-1.0, -0.6] \times [-1.0, -0.6] \times [-3.2, 3.2] \times [-1.8, 1.8]$
+  - $\text{obstacles} = [-0.3, 0.3] \times [-0.3, 0.3] \times [-3.2, 3.2] \times [-1.8, 1.8]$
+* **Synthesis & Verification Details**:
+  - Parity game arena with **2,209,726 model nodes** and **2,209,734 model edges** solved in **11.5 seconds**.
+  - Closed-loop execution establishes a deterministic **9-step periodic limit cycle (lasso recurrence)** between Target 1 and Target 2 while dodging the central obstacle.
+* **Run Commands**:
+  ```bash
+  cd examples/deepracer
+  pfaces -CG -d 1 -k omega@../../kernel-pack -cfg deepracer_xsmall.cfg
+  python3 verify_closedloop.py
+  ```
+* **Closed-Loop Verification Plot**:
+
+  <p align="center">
+    <img src="examples/deepracer/closedloop_trajectory.png" alt="Amazon DeepRacer Closed-Loop Patrol" width="95%"/>
+  </p>
+
+---
+
+### **3. `robot2d_dpa`: Direct DPA Specification Input Pipeline**
+
+* **Directory**: [`examples/robot2d_dpa`](examples/robot2d_dpa)
+* **Discrete Dynamics**: 2D discrete grid robot moving in 4 cardinal directions ($4 \times 4$ quantized grid, $x_0 = [0.5, 1.5]$):
+  $$x_{k+1} = x_k + \Delta(u_k), \quad u_k \in \{0: \text{left}, 1: \text{up}, 2: \text{right}, 3: \text{down}\}$$
+* **Specification**: Direct input of a Deterministic Parity Automaton file (`robot.pa`), bypassing runtime Owl compilation:
+  $$\mathbf{FG}(\text{target}) \land \mathbf{G}(\neg \text{obstacles})$$
+  - $\text{target} = [3.0, 4.0] \times [0.0, 2.0]$
+  - $\text{obstacles} = [1.0, 3.0] \times [0.0, 1.0] \cup [1.0, 2.0] \times [1.0, 3.0]$
+* **Synthesis & Verification Details**:
+  - Exercises OmegaThreads' native DPA file loader and parity arena constructor in **0.07 seconds**.
+  - Verifies that the robot navigates safely around the L-shaped obstacle, reaches the target region, and remains invariant within the target region permanently (verified for 10 consecutive steps).
+* **Run Commands**:
+  ```bash
+  cd examples/robot2d_dpa
+  pfaces -CG -d 1 -k omega@../../kernel-pack -cfg robot.cfg
+  python3 verify_closedloop.py
+  ```
+* **Closed-Loop Verification Plot**:
+
+  <p align="center">
+    <img src="examples/robot2d_dpa/closedloop_trajectory.png" alt="Robot2D Direct DPA Closed-Loop Trajectory" width="70%"/>
+  </p>
+
+---
+
+### **4. `pickupdelivery`: Multi-Mission Drone with Battery Recharging (122-Step Periodic Lasso)**
+
+* **Directory**: [`examples/pickupdelivery`](examples/pickupdelivery)
+* **Hybrid/Discrete Dynamics**: 3D state space $(x, y, \text{battery})$ on a $16 \times 11 \times 100$ grid. Motion drains 1% battery per step; visiting the charging station $[6.5, 8.5] \times [3.5, 4.5]$ restores 20% battery per step up to 99%.
+* **LTL Specification**:
+  $$\mathbf{G}(\neg \text{obstacles}) \land \mathbf{GF}(\text{pickup1}) \land \mathbf{GF}(\text{pickup2}) \land \mathbf{G}(\text{pickup1} \to ((\neg \text{charger} \land \neg \text{pickup2} \land \neg \text{delivery2}) \mathbin{\mathbf{U}} \text{delivery1})) \land \mathbf{G}(\text{pickup2} \to ((\neg \text{charger} \land \neg \text{pickup1} \land \neg \text{delivery1}) \mathbin{\mathbf{U}} \text{delivery2})) \land \mathbf{G}(\text{lowbattery} \to (\text{charger} \mathbin{\mathbf{U}} \text{fullbattery}))$$
+* **Synthesis & Verification Details**:
+  - Owl compiles the complex multi-goal sequential specification into a 10-state DPA.
+  - Parity game with 252,316 nodes solved in 2.5 seconds.
+  - Closed-loop verification verifies full multi-mission patrol cycles (Mission 1: Pickup 1 $\to$ Delivery 1; Mission 2: Pickup 2 $\to$ Delivery 2), autonomous recharging without battery depletion, and converges into a **122-step periodic limit cycle**.
+* **Run Commands**:
+  ```bash
+  cd examples/pickupdelivery
+  pfaces -CG -d 1 -k omega@../../kernel-pack -cfg pickupdelivery.cfg
+  python3 verify_closedloop.py
+  ```
+* **Closed-Loop Verification Plot**:
+
+  <p align="center">
+    <img src="examples/pickupdelivery/closedloop_trajectory.png" alt="Pickup-Delivery Drone Closed-Loop Trajectory" width="95%"/>
+  </p>
+
+---
+
+### **5. `robot2d`: 2D Grid Robot with LTL Targets and Obstacles**
+
+* **Directory**: [`examples/robot2d`](examples/robot2d)
+* **Discrete Dynamics**: 2D discrete grid navigation matching `robot.cl`.
+* **LTL Specification**:
+  $$\mathbf{FG}(\text{target}) \land \mathbf{G}(\neg \text{obstacles})$$
+  - $\text{target} = [3.0, 4.0] \times [0.0, 2.0]$
+  - $\text{obstacles} = [1.0, 3.0] \times [0.0, 1.0] \cup [1.0, 2.0] \times [1.0, 3.0]$
+* **Synthesis & Verification Details**:
+  - Owl compiles formula to 2-state DPA; solves 53-node parity game in <0.5s.
+  - Synthesizes Mealy machine (`robot.mdf`) and symbolic model dump (`robot.symmodel`).
+  - Closed-loop verification confirms target reachability, obstacle avoidance, and target invariance.
+* **Run Commands**:
+  ```bash
+  cd examples/robot2d
+  pfaces -CG -d 1 -k omega@../../kernel-pack -cfg robot.cfg
+  python3 verify_closedloop.py
+  ```
+* **Closed-Loop Verification Plot**:
+
+  <p align="center">
+    <img src="examples/robot2d/closedloop_trajectory.png" alt="Robot2D Closed-Loop Trajectory" width="70%"/>
+  </p>
+
+---
+
 ## Future Features
 - [x] CMake version of the build.
 - [x] A parallel version of the game solver (CPU-only)
