@@ -1,10 +1,11 @@
 FROM ubuntu:24.04
-LABEL MAINTAINER="Mahmoud Khaled, eng.mk@msn.com"
+LABEL maintainer="Mahmoud Khaled <eng.mk@msn.com>"
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 ENV LANG=C.UTF-8
 
+# Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     build-essential \
@@ -12,25 +13,35 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     unzip \
-    python3 \
+    tar \
+    gzip \
+    zlib1g-dev \
     opencl-headers \
     ocl-icd-opencl-dev \
     pocl-opencl-icd \
     clinfo \
-    zlib1g-dev \
+    python3 \
+    python3-numpy \
+    python3-scipy \
+    python3-matplotlib \
     && rm -rf /var/lib/apt/lists/*
 
-# Build pFaces core and SDK from source
-WORKDIR /opt
-RUN git clone --depth 1 https://github.com/parallall/pFaces.git pFaces \
-    && cmake -S /opt/pFaces -B /opt/pFaces/build -DCMAKE_BUILD_TYPE=Release \
-    && cmake --build /opt/pFaces/build --parallel
+# Install pFaces v1.5 release
+WORKDIR /opt/pfaces
+RUN curl -sL https://github.com/parallall/pFaces/releases/download/v1.5.0/pFaces-1.5-Ubuntu22.04.5LTS-x86_64.zip -o pfaces.zip \
+    && unzip -q pfaces.zip \
+    && rm pfaces.zip \
+    && sh ./install.sh
 
-ENV PFACES_ROOT=/opt/pFaces
-ENV PFACES_SDK_ROOT=/opt/pFaces/pfaces-sdk
-ENV PATH="/opt/pFaces/bin:${PATH}"
+ENV PFACES_ROOT=/opt/pfaces
+ENV PFACES_SDK_ROOT=/opt/pfaces/pfaces-sdk
+ENV PATH="/opt/pfaces/bin:${PATH}"
 
-# Build OmegaThreads kernel driver + bundled Owl native library
+# Setup workspace
 WORKDIR /opt/pFaces-OmegaThreads
 COPY . /opt/pFaces-OmegaThreads
-RUN sh build.sh
+
+# Build kernel driver + Owl library and run tests
+RUN sh ./build.sh && sh ./test.sh
+
+CMD ["sh", "./test.sh"]

@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - 'revival/*'
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Ubuntu 24.04 (GCC + PoCL)
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            ca-certificates build-essential cmake curl git unzip \
+            tar gzip zlib1g-dev \
+            opencl-headers ocl-icd-opencl-dev pocl-opencl-icd clinfo \
+            python3 python3-numpy python3-scipy python3-matplotlib
+
+      - name: Download and Install pFaces v1.5
+        run: |
+          curl -sL https://github.com/parallall/pFaces/releases/download/v1.5.0/pFaces-1.5-Ubuntu22.04.5LTS-x86_64.zip -o pfaces.zip
+          sudo mkdir -p /opt/pfaces
+          sudo unzip -q pfaces.zip -d /opt/pfaces
+          cd /opt/pfaces
+          sudo sh ./install.sh
+          echo "PFACES_ROOT=/opt/pfaces" >> $GITHUB_ENV
+          echo "PFACES_SDK_ROOT=/opt/pfaces/pfaces-sdk" >> $GITHUB_ENV
+          echo "/opt/pfaces/bin" >> $GITHUB_PATH
+
+      - name: Check OpenCL devices & pFaces
+        run: |
+          clinfo -l || true
+          pfaces -h
+          pfaces -CG -l
+
+      - name: Build Driver & Owl Library
+        run: sh ./build.sh
+
+      - name: Run Tests
+        run: sh ./test.sh
