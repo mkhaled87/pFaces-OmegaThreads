@@ -26,12 +26,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-matplotlib \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pFaces v1.5 release
+# Install pFaces v1.5 release matching architecture
 WORKDIR /opt/pfaces
-RUN curl -sL https://github.com/parallall/pFaces/releases/download/v1.5.0/pFaces-1.5-Ubuntu22.04.5LTS-x86_64.zip -o pfaces.zip \
-    && unzip -q pfaces.zip \
-    && rm pfaces.zip \
-    && sh ./install.sh
+RUN ARCH=$(uname -m) && \
+    curl -sL "https://github.com/parallall/pFaces/releases/download/v1.5.1/pFaces-1.5-Linux-${ARCH}.zip" -o pfaces.zip && \
+    unzip -q pfaces.zip && \
+    rm pfaces.zip && \
+    sh ./install.sh
 
 ENV PFACES_ROOT=/opt/pfaces
 ENV PFACES_SDK_ROOT=/opt/pfaces/pfaces-sdk
