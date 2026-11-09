@@ -14,10 +14,10 @@ def wrapToPi(rad):
 
 # system model (helper-)functions
 def map_steering(angle_in):
-    p1 = -0.116
-    p2 = -0.02581
-    p3 = 0.3895
-    p4 = 0.02972
+    p1 = -0.1167
+    p2 = 0.01949
+    p3 = 0.3828
+    p4 = -0.0293
     x = angle_in
     return p1*x*x*x + p2*x*x + p3*x + p4
 
@@ -52,50 +52,14 @@ def map_speed(speed_in):
 	    return 0.0
 
 def get_v_params(u_speed):
-    if u_speed == 0.0:
-        K = 1.5
-        T = 0.25
-    elif u_speed == 0.45:
-        K = 1.9353 
-        T = 0.9092
-    elif u_speed == 0.50:
-        K = 2.2458 
-        T = 0.8942
-    elif u_speed == 0.55:
-        K = 2.8922 
-        T = 0.8508
-    elif u_speed == 0.60:
-        K = 3.0332 
-        T = 0.8642
-    elif u_speed == 0.65:
-        K = 3.1274 
-        T = 0.8419
-    elif u_speed == 0.70:
-        K = 3.7112 
-        T = 0.8822
-    elif u_speed == -0.45:
-        K = 1.6392 
-        T = 1.3008
-    elif u_speed == -0.50:
-        K = 2.5998 
-        T = 0.9882
-    elif u_speed == -0.55:
-        K = 2.8032 
-        T = 0.9640
-    elif u_speed == -0.60:
-        K = 3.1457 
-        T = 0.9741
-    elif u_speed == -0.65:
-        K = 3.6170 
-        T = 0.9481
-    elif u_speed == -0.70:
-        K = 3.6391 
-        T = 0.9285
-    else:
-        print("get_v_params: Invalid input !")
-        K = 0.0
-        T = 0.0
-
+    params = {
+        0.00: (0.0000, 0.2500),
+        0.45: (1.9953, 0.9933), 0.50: (2.3567, 0.8943), 0.55: (3.0797, 0.88976),
+        0.60: (3.2019, 0.87595), 0.65: (3.3276, 0.89594), 0.70: (3.7645, 0.92501),
+        -0.45: (1.8229, 1.8431), -0.50: (2.3833, 1.2721), -0.55: (2.5120, 1.1403),
+        -0.60: (3.0956, 1.1278), -0.65: (3.5500, 1.1226), -0.70: (3.6423, 1.1539)
+    }
+    K, T = params.get(round(u_speed, 2), (0.0, 1.0))
     a = -1.0/T
     b = K/T
     return [a, b]

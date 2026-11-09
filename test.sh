@@ -67,24 +67,46 @@ run_test_case() {
 
 run_closedloop_verification() {
     local example_dir="$1"
-    local verify_script="${SCRIPT_DIR}/${example_dir}/verify_closedloop.py"
+    local script_name="${2:-verify_closedloop.py}"
+    local verify_script="${SCRIPT_DIR}/${example_dir}/${script_name}"
 
     if [ ! -f "$verify_script" ]; then
         echo "Error: verification script '${verify_script}' does not exist." >&2
         exit 1
     fi
 
-    echo "=== Running closed-loop E2E verification: ${example_dir}/verify_closedloop.py ==="
-    if ! (cd "${SCRIPT_DIR}/${example_dir}" && "$PYTHON_BIN" verify_closedloop.py); then
+    echo "=== Running closed-loop E2E verification: ${example_dir}/${script_name} ==="
+    if ! (cd "${SCRIPT_DIR}/${example_dir}" && "$PYTHON_BIN" "$script_name"); then
         echo "Error: closed-loop verification failed for ${example_dir}." >&2
         exit 1
     fi
+
+    local expected_plot="${SCRIPT_DIR}/${example_dir}/closedloop_trajectory.png"
+    if [ ! -s "$expected_plot" ]; then
+        echo "Error: expected visual plot '${expected_plot}' was not generated or is empty." >&2
+        exit 1
+    fi
+    echo "Verified visual verification plot: ${example_dir}/closedloop_trajectory.png ($(wc -c < "$expected_plot") bytes)"
 }
 
+# 1. 2D Robot with LTL Reach-and-Stay specification (FG target & G !obstacles)
 run_test_case "examples/robot2d" "robot.cfg" "robot.mdf" "robot.symmodel"
 run_closedloop_verification "examples/robot2d"
 
+# 2. Pickup-Delivery Drone with Multi-Goal Sequential LTL & Battery Constraints
 run_test_case "examples/pickupdelivery" "pickupdelivery.cfg" "pickupdelivery.mdf"
 run_closedloop_verification "examples/pickupdelivery"
+
+# 3. 2D Robot with Direct Deterministic Parity Automaton (.pa) Specification
+run_test_case "examples/robot2d_dpa" "robot.cfg" "robot.mdf"
+run_closedloop_verification "examples/robot2d_dpa"
+
+# 4. Amazon DeepRacer with 4D Bicycle Dynamics & Recurrent Patrol LTL
+run_test_case "examples/deepracer" "deepracer_xsmall.cfg" "deepracer_xsmall.mdf"
+run_closedloop_verification "examples/deepracer"
+
+# 5. 3D Autonomous Vehicle with Growth-Bound ODE Abstraction & Multi-Target LTL
+run_test_case "examples/vehicle3d" "vehicle.cfg" "vehicle.mdf" "vehicle.symmodel"
+run_closedloop_verification "examples/vehicle3d"
 
 echo "All OmegaThreads E2E tests passed."

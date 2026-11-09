@@ -34,6 +34,39 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
+call :run_case "examples\robot2d_dpa" "robot.cfg" "robot.mdf" ""
+if %ERRORLEVEL% NEQ 0 (
+    popd
+    exit /b 1
+)
+call :run_verify "examples\robot2d_dpa"
+if %ERRORLEVEL% NEQ 0 (
+    popd
+    exit /b 1
+)
+
+call :run_case "examples\deepracer" "deepracer_xsmall.cfg" "deepracer_xsmall.mdf" ""
+if %ERRORLEVEL% NEQ 0 (
+    popd
+    exit /b 1
+)
+call :run_verify "examples\deepracer"
+if %ERRORLEVEL% NEQ 0 (
+    popd
+    exit /b 1
+)
+
+call :run_case "examples\vehicle3d" "vehicle.cfg" "vehicle.mdf" "vehicle.symmodel"
+if %ERRORLEVEL% NEQ 0 (
+    popd
+    exit /b 1
+)
+call :run_verify "examples\vehicle3d"
+if %ERRORLEVEL% NEQ 0 (
+    popd
+    exit /b 1
+)
+
 echo All OmegaThreads E2E tests passed.
 popd
 exit /b 0
