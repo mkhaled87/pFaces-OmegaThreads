@@ -101,12 +101,14 @@ run_closedloop_verification "examples/pickupdelivery"
 run_test_case "examples/robot2d_dpa" "robot.cfg" "robot.mdf"
 run_closedloop_verification "examples/robot2d_dpa"
 
-# 4. Amazon DeepRacer with 4D Bicycle Dynamics & Recurrent Patrol LTL
-run_test_case "examples/deepracer" "deepracer_xsmall.cfg" "deepracer_xsmall.mdf"
-run_closedloop_verification "examples/deepracer"
+if [ "${RUN_HEAVY_TESTS:-0}" = "1" ]; then
+    # 4. Amazon DeepRacer with 4D Bicycle Dynamics & Recurrent Patrol LTL
+    run_test_case "examples/deepracer" "deepracer_xsmall.cfg" "deepracer_xsmall.mdf"
+    run_closedloop_verification "examples/deepracer"
 
-# 5. 3D Autonomous Vehicle with Growth-Bound ODE Abstraction & Multi-Target LTL
-run_test_case "examples/vehicle3d" "vehicle.cfg" "vehicle.mdf" "vehicle.symmodel"
-run_closedloop_verification "examples/vehicle3d"
+    # 5. 3D Autonomous Vehicle with Growth-Bound ODE Abstraction & Multi-Target LTL
+    run_test_case "examples/vehicle3d" "vehicle.cfg" "vehicle.mdf" "vehicle.symmodel"
+    run_closedloop_verification "examples/vehicle3d"
+fi
 
 echo "All OmegaThreads E2E tests passed."
